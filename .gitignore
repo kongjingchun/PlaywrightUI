@@ -8,6 +8,17 @@ venv/
 .venv/
 env/
 
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Playwright
+test-results/
+playwright-report/
+.playwright/
+blob-report/
+
 # IDE
 .idea/
 .vscode/
@@ -15,6 +26,11 @@ env/
 
 # 认证/敏感信息
 auth.json
+.env
+*.local
 
 # 系统文件
 .DS_Store
+
+# 日志
+*.log
