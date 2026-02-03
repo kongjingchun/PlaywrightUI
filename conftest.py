@@ -29,6 +29,7 @@ from utils.logger import Logger
 from utils.screenshot_helper import ScreenshotHelper, ConsoleLogCollector
 from utils.allure_helper import AllureHelper
 from utils.data_loader import DataLoader
+from utils.dingtalk_notification import send_dingtalk_report
 from common.process_file import ProcessFile
 
 
@@ -366,6 +367,45 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
                 f.write(line + "\n")
     except Exception:
         pass  # 写入失败不影响测试
+    
+    # 发送钉钉通知（如果配置启用）
+    try:
+        env_name_value = config.getoption("--env")
+        env_cfg = EnvConfig(env_name_value)
+        
+        # 获取钉钉配置
+        dingtalk_config = env_cfg.get("dingtalk", {})
+        if dingtalk_config.get("enabled", False):
+            webhook = dingtalk_config.get("webhook", "")
+            secret = dingtalk_config.get("secret", "")
+            
+            if webhook:
+                logger.info("📤 开始发送钉钉通知...")
+                # 准备失败用例列表
+                failed_list = [name.strip().split('\n')[0] for name in failed_testcases] if failed_testcases else []
+                
+                # 发送通知
+                success = send_dingtalk_report(
+                    webhook=webhook,
+                    secret=secret,
+                    total=total,
+                    passed=success,
+                    failed=fail,
+                    skipped=skip,
+                    duration=duration,
+                    failed_cases=failed_list,
+                    environment=env_name_value
+                )
+                
+                if success:
+                    logger.info("✅ 钉钉通知发送成功")
+                else:
+                    logger.warning("⚠️ 钉钉通知发送失败")
+            else:
+                logger.info("ℹ️ 钉钉通知已启用但未配置 webhook，跳过发送")
+    except Exception as e:
+        logger.warning(f"⚠️ 发送钉钉通知时出错: {e}")
+        # 不影响测试执行，继续
 
 
 # ==================== 自定义 Fixtures ====================
@@ -413,6 +453,80 @@ def console_logs(page: Page) -> Generator[ConsoleLogCollector, None, None]:
 def data_loader() -> DataLoader:
     """获取数据加载器实例"""
     return DataLoader()
+
+
+@pytest.fixture(scope="session")
+def mysql_helper(env_config):
+    """
+    获取 MySQL 数据库连接实例（如果启用）
+    
+    使用示例：
+        def test_user_data(mysql_helper):
+            if mysql_helper:
+                users = mysql_helper.query("SELECT * FROM users")
+    """
+    from utils.mysql_helper import MySQLHelper
+    
+    mysql_config = env_config.get("mysql", {})
+    if not mysql_config.get("enabled", False):
+        logger.info("MySQL 未启用，跳过连接")
+        yield None
+        return
+    
+    # 创建连接
+    db = MySQLHelper(
+        host=mysql_config.get("host", "localhost"),
+        port=mysql_config.get("port", 3306),
+        user=mysql_config.get("user", "root"),
+        password=mysql_config.get("password", ""),
+        database=mysql_config.get("database", ""),
+        charset=mysql_config.get("charset", "utf8mb4")
+    )
+    
+    # 连接数据库
+    if db.connect():
+        yield db
+    else:
+        yield None
+    
+    # 清理
+    db.close()
+
+
+@pytest.fixture(scope="session")
+def redis_helper(env_config):
+    """
+    获取 Redis 连接实例（如果启用）
+    
+    使用示例：
+        def test_cache(redis_helper):
+            if redis_helper:
+                redis_helper.set("test_key", "test_value")
+    """
+    from utils.redis_helper import RedisHelper
+    
+    redis_config = env_config.get("redis", {})
+    if not redis_config.get("enabled", False):
+        logger.info("Redis 未启用，跳过连接")
+        yield None
+        return
+    
+    # 创建连接
+    redis_client = RedisHelper(
+        host=redis_config.get("host", "localhost"),
+        port=redis_config.get("port", 6379),
+        db=redis_config.get("db", 0),
+        password=redis_config.get("password", None)
+    )
+    
+    # 连接 Redis
+    if redis_client.connect():
+        yield redis_client
+    else:
+        yield None
+    
+    # 清理
+    redis_client.close()
 
 
 @pytest.fixture(autouse=True)

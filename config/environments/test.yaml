@@ -22,14 +22,32 @@ api:
   timeout: 30000
   api_key: "test-api-key-xxx"
 
-# 数据库配置
-database:
+# MySQL 数据库配置
+mysql:
+  enabled: false  # 是否启用 MySQL 连接
   host: "test-db.example.com"
   port: 3306
-  name: "test_db"
+  user: "test_user"
+  password: "test_password"
+  database: "test_db"
+  charset: "utf8mb4"
+
+# Redis 配置
+redis:
+  enabled: false  # 是否启用 Redis 连接
+  host: "test-redis.example.com"
+  port: 6379
+  db: 0
+  password: ""
 
 # 特性开关
 features:
   debug_mode: true
   mock_api: false
   verbose_logging: true
+
+# 钉钉通知配置
+dingtalk:
+  enabled: false  # 是否启用钉钉通知
+  webhook: ""  # 钉钉机器人 webhook 地址
+  secret: ""  # 钉钉机器人加签密钥（可选）

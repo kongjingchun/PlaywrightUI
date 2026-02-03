@@ -26,15 +26,34 @@ api:
   timeout: 60000  # 生产环境超时时间更长
   api_key: ""  # 生产环境敏感信息建议通过环境变量传入
 
-# 数据库配置
-# 生产环境通常不直接连接数据库
-database:
+# MySQL 数据库配置
+# ⚠️ 生产环境通常不直接操作数据库，建议通过 API
+mysql:
+  enabled: false  # 生产环境建议关闭直接数据库访问
   host: ""
-  port: 0
-  name: ""
+  port: 3306
+  user: ""
+  password: ""
+  database: ""
+  charset: "utf8mb4"
+
+# Redis 配置
+# ⚠️ 生产环境 Redis 访问需谨慎
+redis:
+  enabled: false  # 生产环境建议关闭直接 Redis 访问
+  host: ""
+  port: 6379
+  db: 0
+  password: ""
 
 # 特性开关
 features:
   debug_mode: false      # 生产环境关闭调试模式
   mock_api: false        # 生产环境不使用 mock
   verbose_logging: false # 生产环境减少日志输出
+
+# 钉钉通知配置
+dingtalk:
+  enabled: false  # 是否启用钉钉通知
+  webhook: ""  # 钉钉机器人 webhook 地址
+  secret: ""  # 钉钉机器人加签密钥（可选）

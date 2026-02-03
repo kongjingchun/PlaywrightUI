@@ -21,3 +21,13 @@ colorlog>=6.7.0                # 彩色日志输出
 # 工具类
 faker>=19.0.0                  # 测试数据生成
 requests>=2.31.0               # HTTP 请求库（用于 API 辅助测试）
+
+# 数据库支持
+pymysql>=1.1.0                 # MySQL 数据库连接
+redis>=5.0.0                   # Redis 缓存操作
+
+# 图像识别
+opencv-python>=4.8.0           # OpenCV 图像处理
+Pillow>=10.0.0                 # Python 图像库
+imagehash>=4.3.1               # 图片哈希对比
+scikit-image>=0.21.0           # 图像处理算法（SSIM）
