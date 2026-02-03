@@ -1,53 +1,100 @@
 # ========================================
-# 光穹课堂登录页面 - 简化版
+# 光穹课堂登录页面
+# ========================================
+# 继承 BasePage，使用基类方法操作元素
+# 日志在 BasePage 中统一输出，Page 层不写 log
 # ========================================
 
 from playwright.sync_api import Page
+from base.base_page import BasePage
 import allure
 
 
-class GqktLoginPage:
+class GqktLoginPage(BasePage):
     """
     光穹课堂登录页面
     
-    简化设计：
-    - 直接暴露元素定位器，不为每个元素写方法
-    - 只封装核心业务方法（如 login）
+    设计原则：
+    - 继承 BasePage，复用基类方法
+    - Page 层不写 log，日志由 BasePage 统一输出
+    - 方法返回 self 支持链式调用
+    
+    使用方法：
+        login_page = GqktLoginPage(page)
+        login_page.goto().login("admin", "123456")
     """
     
     URL = "https://www.gqkt.cn/login"
     
     def __init__(self, page: Page):
-        self.page = page
+        super().__init__(page)
         
-        # ========== 元素定位器（直接暴露，不用写 getter 方法）==========
+        # ========== 元素定位器 ==========
         self.username_input = page.get_by_placeholder("请输入您的账户")
         self.password_input = page.get_by_placeholder("请输入您的密码")
         self.login_button = page.get_by_role("button", name="登录")
     
-    def goto(self):
+    # ==================== 页面导航 ====================
+    
+    @allure.step("打开登录页面")
+    def goto(self) -> "GqktLoginPage":
         """打开登录页面"""
-        self.page.goto(self.URL)
-        self.page.wait_for_load_state("domcontentloaded")
+        self.navigate_to(self.URL)
+        return self
+    
+    # ==================== 元素操作 ====================
+    
+    @allure.step("输入账号: {username}")
+    def enter_username(self, username: str) -> "GqktLoginPage":
+        """输入账号"""
+        self.fill_input(self.username_input, username)
+        return self
+    
+    @allure.step("输入密码")
+    def enter_password(self, password: str) -> "GqktLoginPage":
+        """输入密码"""
+        self.fill_input(self.password_input, password)
+        return self
+    
+    @allure.step("点击登录按钮")
+    def click_login(self) -> "GqktLoginPage":
+        """点击登录按钮"""
+        self.click_element(self.login_button)
+        self.wait_for_load_state("networkidle")
+        return self
+    
+    # ==================== 业务方法 ====================
     
     @allure.step("登录: {username}")
-    def login(self, username: str, password: str):
+    def login(self, username: str, password: str) -> "GqktLoginPage":
         """
-        执行登录（核心业务方法，值得封装）
+        执行登录（完整登录流程）
         
         Args:
             username: 账号
             password: 密码
         """
-        self.username_input.fill(username)
-        self.password_input.fill(password)
-        self.login_button.click()
-        self.page.wait_for_load_state("networkidle")
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
+        return self
+    
+    # ==================== 断言方法 ====================
     
     def is_login_success(self) -> bool:
         """检查是否登录成功"""
         try:
             self.page.wait_for_url(lambda url: "/login" not in url, timeout=10000)
+            # 使用基类的 logger
+            self.logger.info(f"✓ 登录成功，跳转到: {self.page.url}")
             return True
-        except:
+        except Exception as e:
+            self.logger.error(f"✗ 登录失败: {e}")
             return False
+    
+    def get_error_message(self) -> str:
+        """获取错误提示信息"""
+        error_element = self.page.locator(".el-message--error, .error-message")
+        if error_element.is_visible():
+            return error_element.inner_text()
+        return ""
