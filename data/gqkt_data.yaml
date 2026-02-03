@@ -1,0 +1,16 @@
+# ========================================
+# 光穹课堂测试数据
+# ========================================
+# 网址：https://www.gqkt.cn
+# ========================================
+
+# 登录页面 URL
+login_url: "https://www.gqkt.cn/login"
+
+# 登录账号信息
+login:
+  username: "superadmin"
+  password: "gqkt111!"
+
+# 登录成功后的跳转页面（用于断言）
+success_url_keyword: "/console"

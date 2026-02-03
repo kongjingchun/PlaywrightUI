@@ -20,7 +20,7 @@ import allure
 from playwright.sync_api import Page, expect
 
 # 项目模块导入
-from pages.base_page import BasePage, PageAssertions
+from base.base_page import BasePage, PageAssertions
 from utils.logger import Logger
 from utils.data_loader import DataLoader
 from utils.wait_helper import WaitHelper

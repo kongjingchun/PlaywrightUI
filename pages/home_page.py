@@ -8,7 +8,7 @@
 from playwright.sync_api import Page
 from typing import List
 import allure
-from pages.base_page import BasePage
+from base.base_page import BasePage
 
 
 class HomePage(BasePage):

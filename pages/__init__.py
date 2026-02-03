@@ -11,13 +11,17 @@
 #
 # 目录结构：
 # pages/
-# ├── __init__.py      # 当前文件
-# ├── base_page.py     # 基础页面类（所有页面的父类）
-# ├── login_page.py    # 登录页面
-# └── home_page.py     # 首页
+# ├── __init__.py          # 当前文件
+# ├── login_page.py        # 登录页面
+# ├── home_page.py         # 首页
+# └── gqkt_login_page.py   # 光穹课堂登录页面
+#
+# base/
+# ├── base_page.py         # 基础页面类（所有页面的父类）
+# └── base_api.py          # 基础 API 类（所有接口的父类）
 # ========================================
 
-from pages.base_page import BasePage
+from base.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.gqkt_login_page import GqktLoginPage
