@@ -1,3 +1,23 @@
-pytest>=7.0.0
-playwright>=1.40.0
-pytest-playwright>=0.4.0
+# ========================================
+# Playwright 自动化测试框架 - 依赖配置
+# ========================================
+
+# 核心测试框架
+pytest>=7.4.0                  # Python 测试框架
+pytest-playwright>=0.4.3       # Playwright pytest 插件
+playwright>=1.40.0             # Playwright 自动化测试库
+
+# 报告生成
+allure-pytest>=2.13.0          # Allure 测试报告集成
+pytest-html>=4.1.0             # HTML 测试报告
+
+# 数据驱动与配置
+PyYAML>=6.0.1                  # YAML 文件解析
+python-dotenv>=1.0.0           # 环境变量管理(.env 文件支持)
+
+# 日志与监控
+colorlog>=6.7.0                # 彩色日志输出
+
+# 工具类
+faker>=19.0.0                  # 测试数据生成
+requests>=2.31.0               # HTTP 请求库（用于 API 辅助测试）

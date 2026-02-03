@@ -1,0 +1,35 @@
+# ========================================
+# 测试环境配置文件
+# ========================================
+# 该文件包含测试环境的所有配置项
+# 使用方法：设置环境变量 ENV=test（默认环境）
+# ========================================
+
+# 基础 URL - 测试环境地址
+# 这里使用 httpbin.org 作为示例，它是一个免费的 HTTP 测试服务
+base_url: "https://www.httpbin.org"
+
+# 登录凭据
+credentials:
+  username: "test_user"
+  password: "test_password"
+  admin_username: "test_admin"
+  admin_password: "test_admin_123"
+
+# API 配置
+api:
+  base_url: "https://api-test.example.com"
+  timeout: 30000
+  api_key: "test-api-key-xxx"
+
+# 数据库配置
+database:
+  host: "test-db.example.com"
+  port: 3306
+  name: "test_db"
+
+# 特性开关
+features:
+  debug_mode: true
+  mock_api: false
+  verbose_logging: true

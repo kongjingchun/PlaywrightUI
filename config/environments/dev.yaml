@@ -1,0 +1,34 @@
+# ========================================
+# 开发环境配置文件
+# ========================================
+# 该文件包含开发环境的所有配置项
+# 使用方法：设置环境变量 ENV=dev
+# ========================================
+
+# 基础 URL - 开发环境地址
+base_url: "https://dev.example.com"
+
+# 登录凭据
+credentials:
+  username: "dev_user"
+  password: "dev_password"
+  admin_username: "dev_admin"
+  admin_password: "dev_admin_123"
+
+# API 配置
+api:
+  base_url: "https://api-dev.example.com"
+  timeout: 30000
+  api_key: "dev-api-key-xxx"
+
+# 数据库配置（如需直接操作数据库）
+database:
+  host: "localhost"
+  port: 3306
+  name: "test_db_dev"
+  
+# 特性开关（开发环境可能开启更多调试特性）
+features:
+  debug_mode: true
+  mock_api: true
+  verbose_logging: true

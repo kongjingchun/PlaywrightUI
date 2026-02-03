@@ -1,0 +1,81 @@
+# ========================================
+# 搜索功能测试数据
+# ========================================
+# 该文件包含搜索功能的测试数据
+# ========================================
+
+# 搜索测试用例
+search_cases:
+  # 正常搜索
+  - id: "search_normal"
+    keyword: "playwright"
+    expected_results: true
+    min_results: 1
+    description: "搜索常见关键词"
+  
+  # 精确搜索
+  - id: "search_exact"
+    keyword: '"自动化测试"'
+    expected_results: true
+    description: "使用引号进行精确搜索"
+  
+  # 空搜索
+  - id: "search_empty"
+    keyword: ""
+    expected_results: false
+    error_message: "请输入搜索关键词"
+    description: "不输入关键词直接搜索"
+  
+  # 特殊字符搜索
+  - id: "search_special_chars"
+    keyword: "test@#$%"
+    expected_results: true
+    description: "搜索包含特殊字符的关键词"
+  
+  # 超长关键词
+  - id: "search_long_keyword"
+    keyword: "这是一个非常长的搜索关键词用于测试系统对超长输入的处理能力"
+    expected_results: true
+    description: "搜索超长关键词"
+  
+  # 无结果搜索
+  - id: "search_no_results"
+    keyword: "xyzabc123notexist"
+    expected_results: false
+    description: "搜索不存在的内容"
+
+# 搜索过滤选项
+filter_options:
+  categories:
+    - "全部"
+    - "文档"
+    - "代码"
+    - "问答"
+  
+  sort_by:
+    - value: "relevance"
+      label: "相关度"
+    - value: "date"
+      label: "日期"
+    - value: "popularity"
+      label: "热度"
+  
+  time_range:
+    - value: "all"
+      label: "全部时间"
+    - value: "day"
+      label: "最近一天"
+    - value: "week"
+      label: "最近一周"
+    - value: "month"
+      label: "最近一月"
+    - value: "year"
+      label: "最近一年"
+
+# 热门搜索词（用于搜索建议测试）
+hot_keywords:
+  - "Python"
+  - "JavaScript"
+  - "自动化测试"
+  - "Playwright"
+  - "Selenium"

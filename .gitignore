@@ -34,3 +34,14 @@ auth.json
 
 # 日志
 *.log
+logs/
+
+# 测试输出
+reports/
+screenshots/
+videos/
+har/
+
+# Allure
+allure-results/
+allure-report/

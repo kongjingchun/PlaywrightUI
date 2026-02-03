@@ -1,0 +1,100 @@
+# ========================================
+# 登录功能测试数据
+# ========================================
+# 该文件包含登录功能的所有测试数据
+# 数据驱动测试会从此文件读取测试用例
+# ========================================
+
+# 有效的登录凭据
+valid_credentials:
+  username: "admin"
+  password: "admin123"
+
+# 登录测试用例列表
+# 每个用例包含：id（用例标识）、username、password、expected（期望结果）、description（描述）
+login_cases:
+  # 正常登录场景
+  - id: "login_success"
+    username: "admin"
+    password: "admin123"
+    expected: "success"
+    description: "使用正确的用户名和密码登录"
+  
+  # 错误密码场景
+  - id: "login_wrong_password"
+    username: "admin"
+    password: "wrongpassword"
+    expected: "error"
+    error_message: "密码错误"
+    description: "使用错误密码登录，应提示错误"
+  
+  # 用户不存在场景
+  - id: "login_user_not_exist"
+    username: "nonexistent_user"
+    password: "anypassword"
+    expected: "error"
+    error_message: "用户不存在"
+    description: "使用不存在的用户名登录"
+  
+  # 空用户名场景
+  - id: "login_empty_username"
+    username: ""
+    password: "admin123"
+    expected: "error"
+    error_message: "用户名不能为空"
+    description: "用户名为空时登录"
+  
+  # 空密码场景
+  - id: "login_empty_password"
+    username: "admin"
+    password: ""
+    expected: "error"
+    error_message: "密码不能为空"
+    description: "密码为空时登录"
+
+# 不同角色的用户
+users:
+  admin:
+    username: "admin"
+    password: "admin123"
+    role: "管理员"
+    permissions:
+      - "read"
+      - "write"
+      - "delete"
+      - "admin"
+  
+  editor:
+    username: "editor"
+    password: "editor123"
+    role: "编辑"
+    permissions:
+      - "read"
+      - "write"
+  
+  viewer:
+    username: "viewer"
+    password: "viewer123"
+    role: "访客"
+    permissions:
+      - "read"
+
+# 密码规则测试数据
+password_validation:
+  min_length: 6
+  max_length: 20
+  require_uppercase: true
+  require_lowercase: true
+  require_number: true
+  require_special: false
+  
+  # 无效密码测试用例
+  invalid_passwords:
+    - password: "short"
+      reason: "密码太短（少于6位）"
+    - password: "nouppercase123"
+      reason: "缺少大写字母"
+    - password: "NOLOWERCASE123"
+      reason: "缺少小写字母"
+    - password: "NoNumbers"
+      reason: "缺少数字"
