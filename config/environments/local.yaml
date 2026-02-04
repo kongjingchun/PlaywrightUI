@@ -1,0 +1,52 @@
+# ========================================
+# 本地环境配置文件
+# ========================================
+# 用于本地开发调试，通常指向 localhost
+# 使用方法：pytest --env=local 或 ENV=local pytest
+# ========================================
+
+# 基础 URL - 本地服务地址
+base_url: "https://www.gqkt.cn"
+
+# 登录凭据
+credentials:
+  username: "admin"
+  password: "admin123"
+  admin_username: "admin"
+  admin_password: "admin123"
+
+# API 配置
+api:
+  base_url: "http://localhost:8080"
+  timeout: 30000
+  api_key: ""
+
+# MySQL 数据库配置
+mysql:
+  enabled: false
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: ""
+  database: "local_db"
+  charset: "utf8mb4"
+
+# Redis 配置
+redis:
+  enabled: false
+  host: "127.0.0.1"
+  port: 6379
+  db: 0
+  password: ""
+
+# 特性开关
+features:
+  debug_mode: true
+  mock_api: false
+  verbose_logging: true
+
+# 钉钉通知配置
+dingtalk:
+  enabled: false
+  webhook: ""
+  secret: ""

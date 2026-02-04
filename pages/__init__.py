@@ -14,7 +14,12 @@
 # ├── __init__.py          # 当前文件
 # ├── login_page.py        # 登录页面
 # ├── home_page.py         # 首页
-# └── gqkt_login_page.py   # 光穹课堂登录页面
+# ├── gqkt_login_page.py   # 光穹课堂登录页面
+# └── gqkt/
+#     ├── __init__.py
+#     └── api/
+#         ├── __init__.py
+#         └── cms_api_page.py  # CMS API 页面
 #
 # base/
 # ├── base_page.py         # 基础页面类（所有页面的父类）
@@ -22,8 +27,9 @@
 # ========================================
 
 from base.base_page import BasePage
+from base.base_api import BaseAPI
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
 from pages.gqkt_login_page import GqktLoginPage
 
-__all__ = ['BasePage', 'LoginPage', 'HomePage', 'GqktLoginPage']
+__all__ = ['BasePage', 'BaseAPI', 'LoginPage', 'HomePage', 'GqktLoginPage']

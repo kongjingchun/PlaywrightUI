@@ -6,8 +6,7 @@
 # ========================================
 
 # 基础 URL - 测试环境地址
-# 这里使用 httpbin.org 作为示例，它是一个免费的 HTTP 测试服务
-base_url: "https://www.httpbin.org"
+base_url: "https://www.gqkt.cn"
 
 # 登录凭据
 credentials:

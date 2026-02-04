@@ -45,3 +45,6 @@ har/
 # Allure
 allure-results/
 allure-report/
+
+# 临时/本地测试文件（不提交）
+test.py

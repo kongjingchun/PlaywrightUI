@@ -86,14 +86,14 @@ class ScreenshotHelper:
         """
         filepath = self._generate_filename(name)
         
-        self.logger.info(f"截取完整页面: {name}")
+        # self.logger.info(f"截取完整页面: {name}")
         
         self.page.screenshot(
             path=str(filepath),
             full_page=True  # 截取完整页面
         )
         
-        self.logger.info(f"截图已保存: {filepath}")
+        # self.logger.info(f"截图已保存: {filepath}")
         
         # 附加到 Allure 报告
         if attach_to_allure:
@@ -120,14 +120,14 @@ class ScreenshotHelper:
         """
         filepath = self._generate_filename(name)
         
-        self.logger.info(f"截取可视区域: {name}")
+        # self.logger.info(f"截取可视区域: {name}")
         
         self.page.screenshot(
             path=str(filepath),
             full_page=False  # 只截取可视区域
         )
         
-        self.logger.info(f"截图已保存: {filepath}")
+        # self.logger.info(f"截图已保存: {filepath}")
         
         if attach_to_allure:
             self._attach_to_allure(filepath, name)
@@ -160,7 +160,7 @@ class ScreenshotHelper:
         """
         filepath = self._generate_filename(name)
         
-        self.logger.info(f"截取元素: {name}")
+        # self.logger.info(f"截取元素: {name}")
         
         # 确保元素可见
         locator.wait_for(state="visible", timeout=10000)
@@ -168,7 +168,7 @@ class ScreenshotHelper:
         # 截取元素
         locator.screenshot(path=str(filepath))
         
-        self.logger.info(f"元素截图已保存: {filepath}")
+        # self.logger.info(f"元素截图已保存: {filepath}")
         
         if attach_to_allure:
             self._attach_to_allure(filepath, name)

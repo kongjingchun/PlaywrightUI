@@ -39,7 +39,7 @@ class TestPlaywrightSearch:
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.smoke
     @pytest.mark.search
-    def test_search_available(self, page: Page, screenshot_helper):
+    def test_search_available(self, page, screenshot_helper):
         """
         测试搜索功能是否可用
         

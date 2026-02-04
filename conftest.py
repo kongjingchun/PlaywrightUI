@@ -55,9 +55,9 @@ def pytest_addoption(parser):
     parser.addoption(
         "--env",
         action="store",
-        default="test",
-        choices=["dev", "test", "prod"],
-        help="选择测试环境: dev, test, prod"
+        default="prod",
+        choices=["local", "dev", "test", "prod"],
+        help="选择测试环境: local, dev, test, prod"
     )
     
     # 基础URL覆盖

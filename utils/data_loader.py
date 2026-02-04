@@ -92,11 +92,68 @@ class DataLoader:
         with open(filepath, 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f) or {}
         
+        # 应用全局变量占位符替换（如 {suffix} -> test_suffix）
+        data = self._apply_placeholders(data)
+        
         # 存入缓存
         if use_cache:
             self._cache[cache_key] = data
         
         return data
+    
+    def _apply_placeholders(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        递归替换数据中的占位符（如 {suffix}）
+        
+        从数据中提取 test_suffix 等变量，替换所有字符串中的 {suffix}。
+        支持扩展：可在数据顶层定义 variables 字典来声明更多占位符。
+        
+        Args:
+            data: 解析后的 YAML 数据
+        
+        Returns:
+            替换后的数据
+        """
+        # 收集占位符映射：占位符名 -> 替换值
+        placeholders: Dict[str, str] = {}
+        
+        # 默认：test_suffix -> {suffix}
+        if "test_suffix" in data:
+            placeholders["suffix"] = str(data["test_suffix"])
+        
+        # 扩展：支持 variables 段定义更多占位符
+        if "variables" in data and isinstance(data["variables"], dict):
+            for k, v in data["variables"].items():
+                placeholders[k] = str(v)
+        
+        if not placeholders:
+            return data
+        
+        return self._replace_placeholders(data, placeholders)
+    
+    def _replace_placeholders(
+        self, 
+        obj: Any, 
+        placeholders: Dict[str, str]
+    ) -> Any:
+        """
+        递归遍历数据结构，替换字符串中的 {key} 占位符
+        
+        Args:
+            obj: 任意类型数据
+            placeholders: 占位符名 -> 替换值
+        """
+        if isinstance(obj, dict):
+            return {k: self._replace_placeholders(v, placeholders) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._replace_placeholders(item, placeholders) for item in obj]
+        elif isinstance(obj, str):
+            result = obj
+            for key, value in placeholders.items():
+                result = result.replace("{" + key + "}", value)
+            return result
+        else:
+            return obj
     
     def load_json(self, filename: str, use_cache: bool = True) -> Dict[str, Any]:
         """

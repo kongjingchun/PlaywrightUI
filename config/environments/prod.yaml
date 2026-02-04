@@ -9,7 +9,7 @@
 # ========================================
 
 # 基础 URL - 生产环境地址
-base_url: "https://www.example.com"
+base_url: "https://www.gqkt.cn"
 
 # 登录凭据
 # ⚠️ 生产环境建议使用专门的测试账号

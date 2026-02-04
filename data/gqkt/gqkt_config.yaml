@@ -1,0 +1,67 @@
+# ========================================
+# 全局变量配置（占位符，在下方使用 {变量名} 引用）
+# ========================================
+variables:
+  suffix: "005"           # 测试环境序号，用于院系/用户/专业等
+  year: "2024"           # 学年
+  semester_value: "202401"  # 学期值
+  school_name: "智慧大学"   # 学校名称
+
+# 兼容旧格式（可选，variables 优先）
+test_suffix: "001"
+
+# 部署环境配置（可使用 {school_name} 等占位符）
+school_name: "{school_name}"
+
+# 院系信息（需要在使用之前定义，因为user部分会引用dept_name）
+department:
+  院系名称: &dept_name auto_dept{suffix}
+  院系代码: Auto_dept{suffix}
+
+user:
+  # 初始管理员
+  initial_admin:
+    username: superadmin
+    password: gqkt111!
+  # 教务管理员
+  dean:
+    姓名: &dean_name 教务管理员{suffix}
+    工号: &dean_code dean_code{suffix}
+  # CMS 教务管理员
+  dean_cms:
+    username: *dean_code
+    password: dean_code
+  # 专业管理员
+  prof:
+    姓名: &prof_name 专业负责人{suffix}
+    工号: &prof_code prof_code{suffix}
+  # CMS 专业管理员
+  prof_cms:
+    username: *prof_code
+    password: prof_code
+  # 教师
+  teacher:
+    姓名: &teacher_name 教师{suffix}
+    工号: &teacher_code teacher_code{suffix}
+    学院: *dept_name
+  # CMS 教师
+  teacher_cms:
+    username: *teacher_code
+    password: teacher_code
+
+semester:
+  学年: "{year}"
+  开始时间: "{year}-01-01"
+  结束时间: "{year}-06-31"
+  学期值: "{semester_value}"
+
+major:
+  专业名称: &major_name 计算机软件工程{suffix}
+  学校专业代码: "070102"
+  国家专业代码: "070102"
+  所属院系: *dept_name
+  专业负责人: *prof_name
+  专业建设层次: 国家一流本科专业
+  专业特色标签:
+    - 国家级特色专业
+    - 省级特色专业

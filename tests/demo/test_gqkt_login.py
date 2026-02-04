@@ -9,8 +9,8 @@ import pytest
 import allure
 from playwright.sync_api import Page
 
-from pages.gqkt_login_page import GqktLoginPage
-from utils.data_loader import load_yaml
+from pages import GqktLoginPage
+from utils import load_yaml
 
 
 # ========== 模块级加载数据 ==========
@@ -32,12 +32,13 @@ class TestGqktLogin:
     @pytest.mark.run(order=100)
     @pytest.mark.smoke
     @allure.title("登录成功")
-    def test_001_login_success(self, page: Page):
+    def test_001_login_success(self, page: Page, screenshot_helper):
         """
         测试登录成功流程
         
         Args:
             page: Playwright Page 实例（通过 pytest-playwright 注入）
+            screenshot_helper: 截图助手（通过 conftest fixture 注入）
         """
         # 获取测试数据
         username = DATA["login"]["username"]
@@ -47,19 +48,22 @@ class TestGqktLogin:
             login_page = GqktLoginPage(page)
             # 链式调用
             login_page.goto().login(username, password)
+            screenshot_helper.capture_viewport("gqkt_001_登录后")
         
         with allure.step("断言登录成功"):
             assert login_page.is_login_success(), "登录失败，未跳转到首页"
+            screenshot_helper.capture_viewport("gqkt_001_断言成功")
     
     @pytest.mark.run(order=101)
     @pytest.mark.smoke
     @allure.title("登录成功 - 分步操作")
-    def test_002_login_success_step_by_step(self, page: Page):
+    def test_002_login_success_step_by_step(self, page: Page, screenshot_helper):
         """
         测试登录成功流程（分步操作演示链式调用）
         
         Args:
             page: Playwright Page 实例
+            screenshot_helper: 截图助手（通过 conftest fixture 注入）
         """
         # 获取测试数据
         username = DATA["login"]["username"]
@@ -68,15 +72,18 @@ class TestGqktLogin:
         with allure.step("创建页面对象并打开登录页"):
             login_page = GqktLoginPage(page)
             login_page.goto()
+            screenshot_helper.capture_viewport("gqkt_002_登录页")
         
         with allure.step("输入账号密码并点击登录"):
             # 演示链式调用
             login_page.enter_username(username).enter_password(password).click_login()
+            screenshot_helper.capture_viewport("gqkt_002_点击登录后")
         
         with allure.step("断言登录成功"):
             assert login_page.is_login_success(), "登录失败"
             # 断言跳转到了控制台页面
             assert "/console" in page.url or "/login" not in page.url, "未跳转到正确页面"
+            screenshot_helper.capture_viewport("gqkt_002_断言成功")
 
 
 # ==================== 运行命令 ====================
