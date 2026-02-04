@@ -90,8 +90,8 @@ def pytest_configure(config):
     # 确保所有输出目录存在
     Settings.ensure_dirs()
     
-    # 清理并重建报告目录
-    reports_dir = Settings.PROJECT_ROOT / "reports"
+    # 清理并重建报告目录（UIreport）
+    reports_dir = Settings.REPORTS_DIR
     if reports_dir.exists():
         try:
             shutil.rmtree(reports_dir)
@@ -434,6 +434,28 @@ def base_url(request, env_config) -> str:
     url = env_config.base_url
     logger.info(f"使用环境配置的 base_url: {url}")
     return url
+
+
+@pytest.fixture(scope="session")
+def initial_admin(env_config) -> dict:
+    """
+    获取当前环境的初始管理员账号（从 config/environments/*.yaml 读取）
+    
+    优先使用 initial_admin，若无则回退到 credentials.admin_*
+    
+    使用示例：
+        def test_login(self, page, initial_admin):
+            login_page.goto().login(initial_admin["username"], initial_admin["password"])
+    """
+    admin = env_config.get("initial_admin")
+    if admin and admin.get("username"):
+        return admin
+    # 兼容：使用 credentials 中的 admin
+    creds = env_config.get("credentials", {})
+    return {
+        "username": creds.get("admin_username", "admin"),
+        "password": creds.get("admin_password", "")
+    }
 
 
 @pytest.fixture(scope="function")

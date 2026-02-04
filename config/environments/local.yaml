@@ -8,6 +8,12 @@
 # 基础 URL - 本地服务地址
 base_url: "https://www.gqkt.cn"
 
+
+# 初始管理员用户信息
+initial_admin:
+  username: "superadmin"
+  password: "gqkt111!"
+
 # 登录凭据
 credentials:
   username: "admin"

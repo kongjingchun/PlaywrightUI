@@ -2,7 +2,7 @@
 # 全局变量配置（占位符，在下方使用 {变量名} 引用）
 # ========================================
 variables:
-  suffix: "005"           # 测试环境序号，用于院系/用户/专业等
+  suffix: "007"           # 测试环境序号，用于院系/用户/专业等
   year: "2024"           # 学年
   semester_value: "202401"  # 学期值
   school_name: "智慧大学"   # 学校名称
@@ -17,12 +17,8 @@ school_name: "{school_name}"
 department:
   院系名称: &dept_name auto_dept{suffix}
   院系代码: Auto_dept{suffix}
-
+  
 user:
-  # 初始管理员
-  initial_admin:
-    username: superadmin
-    password: gqkt111!
   # 教务管理员
   dean:
     姓名: &dean_name 教务管理员{suffix}

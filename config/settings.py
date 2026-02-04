@@ -42,7 +42,7 @@ class Settings:
     PROJECT_ROOT = Path(__file__).parent.parent
     
     # 各种输出目录的路径配置
-    REPORTS_DIR = PROJECT_ROOT / "reports"          # 测试报告目录
+    REPORTS_DIR = PROJECT_ROOT / "UIreport"         # Allure 报告目录（统一使用 UIreport）
     LOGS_DIR = PROJECT_ROOT / "logs"                # 日志文件目录
     SCREENSHOTS_DIR = PROJECT_ROOT / "screenshots"  # 失败截图目录
     VIDEOS_DIR = PROJECT_ROOT / "videos"            # 录屏文件目录

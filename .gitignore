@@ -28,6 +28,7 @@ blob-report/
 auth.json
 .env
 *.local
+.auth/
 
 # 系统文件
 .DS_Store
@@ -37,7 +38,7 @@ auth.json
 logs/
 
 # 测试输出
-reports/
+UIreport/
 screenshots/
 videos/
 har/

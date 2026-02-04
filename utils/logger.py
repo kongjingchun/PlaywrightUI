@@ -4,8 +4,10 @@
 # 提供统一的日志管理功能，支持：
 # - 分级日志（DEBUG, INFO, WARNING, ERROR, CRITICAL）
 # - 彩色控制台输出
-# - 文件日志记录
-# - 每次执行生成独立的日志文件
+# - 文件日志记录（仅在 pytest 运行时生成）
+# - 每次测试执行生成独立的日志文件
+# 
+# 注意：日志文件只在 pytest 运行环境中创建，避免编辑器保存时生成文件
 # ========================================
 
 import logging
@@ -31,6 +33,17 @@ _LOG_FILE_PATH: Optional[Path] = None
 _LOG_SESSION_ID: Optional[str] = None
 
 
+def _is_pytest_running() -> bool:
+    """
+    检测当前是否在 pytest 运行环境中
+    
+    Returns:
+        True 如果在 pytest 运行中，否则 False
+    """
+    # pytest 运行时会设置 PYTEST_CURRENT_TEST 环境变量
+    return 'PYTEST_CURRENT_TEST' in os.environ
+
+
 def _get_log_file_path() -> Path:
     """
     获取当前测试运行的日志文件路径
@@ -38,12 +51,14 @@ def _get_log_file_path() -> Path:
     每次测试运行（pytest 启动）生成一个独立的日志文件。
     文件名格式：test_YYYYMMDD_HHMMSS.log
     
+    只在 pytest 运行环境中才创建日志文件，避免每次保存文件时都生成日志。
+    
     Returns:
         日志文件路径
     """
     global _LOG_FILE_PATH, _LOG_SESSION_ID
     
-    if _LOG_FILE_PATH is None:
+    if _LOG_FILE_PATH is None and _is_pytest_running():
         # 确保日志目录存在
         Settings.LOGS_DIR.mkdir(parents=True, exist_ok=True)
         
@@ -202,17 +217,26 @@ class Logger:
         获取共享的文件处理器
         
         所有 Logger 实例共享同一个文件处理器，确保写入同一个日志文件。
+        只在 pytest 运行环境中创建文件处理器。
         
         Returns:
-            配置好的文件处理器，创建失败返回 None
+            配置好的文件处理器，如果不在 pytest 环境或创建失败则返回 None
         """
         # 如果已经创建过，直接返回
         if cls._file_handler is not None:
             return cls._file_handler
         
+        # 如果不在 pytest 运行环境中，不创建文件处理器
+        if not _is_pytest_running():
+            return None
+        
         try:
             # 获取日志文件路径
             log_file = _get_log_file_path()
+            
+            # 如果没有获取到日志文件路径（不在 pytest 环境），返回 None
+            if log_file is None:
+                return None
             
             # 创建文件处理器
             cls._file_handler = logging.FileHandler(

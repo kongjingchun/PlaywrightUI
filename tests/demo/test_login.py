@@ -14,7 +14,7 @@ import pytest
 import allure
 from playwright.sync_api import Page, expect
 
-from pages.login_page import LoginPage
+from pages import LoginPage
 from utils.logger import Logger
 from utils.data_loader import DataLoader
 
@@ -302,5 +302,5 @@ class TestLoginDataDriven:
    pytest tests/test_login.py -v --headed --slow-mo=500
 
 5. 生成报告：
-   pytest tests/test_login.py -v --alluredir=reports/allure-results
+   pytest tests/test_login.py -v --alluredir=UIreport
 """

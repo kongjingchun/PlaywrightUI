@@ -13,7 +13,7 @@ import pytest
 import allure
 from playwright.sync_api import Page, expect
 
-from pages.home_page import HomePage
+from pages import HomePage
 from utils.logger import Logger
 from utils.data_loader import DataLoader
 from utils.wait_helper import WaitHelper
@@ -372,6 +372,6 @@ class TestWaitMechanisms:
    pytest tests/test_search.py -v --headed
 
 5. 生成报告：
-   pytest tests/test_search.py -v --alluredir=reports/allure-results
-   allure serve reports/allure-results
+   pytest tests/test_search.py -v --alluredir=UIreport
+   allure serve UIreport
 """

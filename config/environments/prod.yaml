@@ -13,12 +13,10 @@ base_url: "https://www.gqkt.cn"
 
 # 登录凭据
 # ⚠️ 生产环境建议使用专门的测试账号
-credentials:
-  username: "prod_test_user"
-  password: "prod_test_password"
-  # 生产环境不配置管理员账号
-  admin_username: ""
-  admin_password: ""
+# 初始管理员用户信息
+initial_admin:
+  username: "superadmin"
+  password: "gqkt111!"
 
 # API 配置
 api:

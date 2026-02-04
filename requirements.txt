@@ -18,6 +18,9 @@ python-dotenv>=1.0.0           # 环境变量管理(.env 文件支持)
 # 日志与监控
 colorlog>=6.7.0                # 彩色日志输出
 
+# 代码格式化
+autopep8>=2.0.0                # PEP 8 代码格式化
+
 # 工具类
 faker>=19.0.0                  # 测试数据生成
 requests>=2.31.0               # HTTP 请求库（用于 API 辅助测试）

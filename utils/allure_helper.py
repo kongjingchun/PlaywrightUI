@@ -240,7 +240,7 @@ class AllureHelper:
         生成 Allure 环境信息文件
         
         在报告中显示测试环境信息。
-        文件会生成在 reports/allure-results/ 目录下。
+        文件会生成在 UIreport/ 目录下。
         
         使用方法（在 conftest.py 中）:
             @pytest.fixture(scope="session", autouse=True)
@@ -262,8 +262,8 @@ class AllureHelper:
             "OS": os.name,
         }
         
-        # 确保报告目录存在
-        allure_results_dir = Settings.REPORTS_DIR / "allure-results"
+        # 确保报告目录存在（UIreport 即 Allure 结果目录）
+        allure_results_dir = Settings.REPORTS_DIR
         allure_results_dir.mkdir(parents=True, exist_ok=True)
         
         # 写入环境文件

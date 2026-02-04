@@ -8,6 +8,11 @@
 # 基础 URL - 开发环境地址
 base_url: "https://dev.example.com"
 
+# 初始管理员（用于登录初始化等）
+initial_admin:
+  username: "dev_admin"
+  password: "dev_admin_123"
+
 # 登录凭据
 credentials:
   username: "dev_user"

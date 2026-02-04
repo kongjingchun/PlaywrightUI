@@ -637,8 +637,8 @@ class TestMarkers:
    pytest tests/test_demo.py -v -m smoke
 
 7. 生成 Allure 报告：
-   pytest tests/test_demo.py -v --alluredir=reports/allure-results
-   allure serve reports/allure-results
+   pytest tests/test_demo.py -v --alluredir=UIreport
+   allure serve UIreport
 
 8. 使用慢动作模式调试：
    pytest tests/test_demo.py -v --headed --slow-mo=1000

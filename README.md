@@ -40,8 +40,7 @@ Playwright_Ui/
 │   ├── test_login.py               # 登录功能测试
 │   └── test_search.py              # 搜索功能测试
 │
-├── reports/                        # 测试报告目录（自动创建）
-│   └── allure-results/             # Allure 报告数据
+├── UIreport/                       # Allure 报告目录（自动创建）
 ├── logs/                           # 日志文件目录（自动创建）
 ├── screenshots/                    # 截图文件目录（自动创建）
 ├── videos/                         # 录屏文件目录（自动创建）
@@ -94,13 +93,13 @@ pytest tests/test_demo.py -v --headed --slow-mo=1000
 
 ```bash
 # 运行测试并生成 Allure 报告数据
-pytest --alluredir=reports/allure-results
+pytest --alluredir=UIreport
 
 # 启动 Allure 报告服务
-allure serve reports/allure-results
+allure serve UIreport
 
 # 或生成静态报告
-allure generate reports/allure-results -o reports/allure-report --clean
+allure generate UIreport -o allure-report --clean
 ```
 
 ## 🎯 核心功能
@@ -415,11 +414,11 @@ def test_login(page, base_url, login_data):
 
 ```bash
 # 方式1：启动本地服务查看
-allure serve reports/allure-results
+allure serve UIreport
 
 # 方式2：生成静态HTML报告
-allure generate reports/allure-results -o reports/allure-report --clean
-# 然后用浏览器打开 reports/allure-report/index.html
+allure generate UIreport -o allure-report --clean
+# 然后用浏览器打开 allure-report/index.html
 ```
 
 ### 日志文件
@@ -444,7 +443,7 @@ allure generate reports/allure-results -o reports/allure-report --clean
   run: |
     pip install -r requirements.txt
     playwright install
-    pytest --alluredir=reports/allure-results
+    pytest --alluredir=UIreport
 ```
 
 ### Q: 如何添加新的测试页面？
