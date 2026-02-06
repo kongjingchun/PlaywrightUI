@@ -129,12 +129,12 @@ class LoginPage(BasePage):
         
         # 步骤1：输入用户名
         with allure.step(f"输入用户名: {username}"):
-            self.fill_input(self.username_input, username)
+            self.fill_element(self.username_input, username)
         
         # 步骤2：输入密码（日志中隐藏密码）
         with allure.step("输入密码"):
             self.logger.info("输入密码: ******")
-            self.fill_input(self.password_input, password)
+            self.fill_element(self.password_input, password)
         
         # 步骤3：处理"记住我"复选框
         if remember_me:
@@ -250,7 +250,7 @@ class LoginPage(BasePage):
         Returns:
             返回 self 以支持链式调用
         """
-        self.fill_input(self.username_input, username)
+        self.fill_element(self.username_input, username)
         return self
     
     @allure.step("输入密码")
@@ -264,7 +264,7 @@ class LoginPage(BasePage):
         Returns:
             返回 self 以支持链式调用
         """
-        self.fill_input(self.password_input, password)
+        self.fill_element(self.password_input, password)
         return self
     
     @allure.step("点击登录按钮")

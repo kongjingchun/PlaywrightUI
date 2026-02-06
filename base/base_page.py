@@ -11,6 +11,7 @@
 # 4. 截图和调试支持
 # ========================================
 
+import re
 from playwright.sync_api import Page, Locator, expect
 from typing import Optional, List, Union
 import allure
@@ -37,7 +38,7 @@ class BasePage:
                 self.username_input = page.locator("#username")
             
             def login(self, username: str, password: str):
-                self.fill_input(self.username_input, username)
+                self.fill_element(self.username_input, username)
                 # ...
     """
     
@@ -118,9 +119,9 @@ class BasePage:
         locator: Union[Locator, str], 
         timeout: Optional[int] = None,
         force: bool = False
-    ) -> None:
+    ) -> "BasePage":
         """
-        点击元素（带有健壮的等待和错误处理）
+        点击元素（带有健壮的等待和错误处理，支持链式调用）
         
         该方法会：
         1. 等待元素可见
@@ -133,15 +134,15 @@ class BasePage:
             timeout: 超时时间（毫秒），不传则使用默认值
             force: 是否强制点击（跳过可操作性检查）
         
+        Returns:
+            self，支持链式调用
+        
         使用方法：
             # 使用 Locator 对象
             self.click_element(self.submit_button)
             
-            # 使用选择器字符串
-            self.click_element("#submit-btn")
-            
-            # 强制点击（元素可能被遮挡时使用）
-            self.click_element("#btn", force=True)
+            # 链式调用
+            self.hover_element(self.menu).click_element(self.sub_item)
         """
         # 如果传入的是字符串选择器，转换为 Locator
         element = self._get_locator(locator)
@@ -150,89 +151,110 @@ class BasePage:
             # 等待元素可见（确保元素已加载到DOM并显示）
             element.wait_for(state="visible", timeout=timeout)
             
-            self.logger.info(f"点击元素: {locator}")
+            self.logger.info(f"点击元素: {self._locator_to_log_str(locator)}")
             
             # 执行点击操作
             element.click(timeout=timeout, force=force)
             
         except Exception as e:
-            self.logger.error(f"点击元素失败: {locator}, 错误: {str(e)}")
+            self.logger.error(f"点击元素失败: {self._locator_to_log_str(locator)}, 错误: {str(e)}")
             self.take_screenshot("click_failed")
             raise
+
+        return self
     
     @allure.step("双击元素")
-    def double_click_element(self, locator: Union[Locator, str], timeout: Optional[int] = None) -> None:
+    def double_click_element(self, locator: Union[Locator, str], timeout: Optional[int] = None) -> "BasePage":
         """
-        双击元素
+        双击元素（支持链式调用）
         
         Args:
             locator: 元素定位器
             timeout: 超时时间
+        
+        Returns:
+            self，支持链式调用
         """
         element = self._get_locator(locator)
         try:
             element.wait_for(state="visible", timeout=timeout)
-            self.logger.info(f"双击元素: {locator}")
+            self.logger.info(f"双击元素: {self._locator_to_log_str(locator)}")
             element.dblclick(timeout=timeout)
         except Exception as e:
-            self.logger.error(f"双击元素失败: {locator}, 错误: {str(e)}")
+            self.logger.error(f"双击元素失败: {self._locator_to_log_str(locator)}, 错误: {str(e)}")
             self.take_screenshot("double_click_failed")
             raise
+
+        return self
     
     @allure.step("在输入框中填入: {text}")
-    def fill_input(
+    def fill_element(
         self, 
         locator: Union[Locator, str], 
-        text: str, 
+        text: Union[str, int, float, None], 
         clear_first: bool = True,
         timeout: Optional[int] = None
-    ) -> None:
+    ) -> "BasePage":
         """
-        在输入框中填入文本
-        
+        在输入框中填入文本（支持链式调用）
+
         Args:
             locator: 输入框元素定位器
             text: 要输入的文本
             clear_first: 是否先清空输入框（默认True）
             timeout: 超时时间
-        
+
+        Returns:
+            self，支持链式调用
+
         使用方法：
             # 清空后输入
-            self.fill_input(self.username_input, "admin")
-            
+            self.fill_element(self.username_input, "admin")
+
             # 追加输入（不清空）
-            self.fill_input(self.search_input, "keyword", clear_first=False)
+            self.fill_element(self.search_input, "keyword", clear_first=False)
+
+            # 链式调用
+            self.fill_element(self.new_password_input, pwd).fill_element(self.confirm_password_input, pwd).click_element(self.submit_button)
         """
         element = self._get_locator(locator)
+        # Playwright fill() 要求字符串，兼容传入数字（如 API 返回的 user_id）
+        text_str = str(text) if text is not None else ""
         
         try:
             element.wait_for(state="visible", timeout=timeout)
             
             if clear_first:
                 # 使用 fill() 方法会自动清空再输入
-                self.logger.info(f"填入文本: {text}")
-                element.fill(text, timeout=timeout)
+                self.logger.info(f"填入文本: {text_str}")
+                element.fill(text_str, timeout=timeout)
             else:
                 # 使用 type() 方法追加输入
-                self.logger.info(f"追加输入文本: {text}")
-                element.type(text, timeout=timeout)
+                self.logger.info(f"追加输入文本: {text_str}")
+                element.type(text_str, timeout=timeout)
                 
         except Exception as e:
-            self.logger.error(f"输入文本失败: {text}, 错误: {str(e)}")
-            self.take_screenshot("fill_input_failed")
+            self.logger.error(f"输入文本失败: {text_str}, 错误: {str(e)}")
+            self.take_screenshot("fill_element_failed")
             raise
+
+        return self
     
     @allure.step("清空输入框")
-    def clear_input(self, locator: Union[Locator, str]) -> None:
+    def clear_input(self, locator: Union[Locator, str]) -> "BasePage":
         """
-        清空输入框内容
+        清空输入框内容（支持链式调用）
         
         Args:
             locator: 输入框元素定位器
+        
+        Returns:
+            self，支持链式调用
         """
         element = self._get_locator(locator)
-        self.logger.info(f"清空输入框: {locator}")
+        self.logger.info(f"清空输入框: {self._locator_to_log_str(locator)}")
         element.clear()
+        return self
     
     @allure.step("选择下拉选项: {value}")
     def select_option(
@@ -241,9 +263,9 @@ class BasePage:
         value: Optional[str] = None,
         label: Optional[str] = None,
         index: Optional[int] = None
-    ) -> None:
+    ) -> "BasePage":
         """
-        选择下拉框选项
+        选择下拉框选项（支持链式调用）
         
         可以通过 value、label 或 index 三种方式选择。
         
@@ -253,15 +275,15 @@ class BasePage:
             label: 按显示文本选择
             index: 按索引选择（从0开始）
         
+        Returns:
+            self，支持链式调用
+        
         使用方法：
             # 按 value 选择
             self.select_option(self.country_select, value="CN")
             
-            # 按显示文本选择
-            self.select_option(self.country_select, label="中国")
-            
-            # 按索引选择
-            self.select_option(self.country_select, index=0)
+            # 链式调用
+            self.fill_element(self.search_input, "keyword").select_option(self.type_select, label="类型A").click_element(self.search_btn)
         """
         element = self._get_locator(locator)
         
@@ -281,15 +303,20 @@ class BasePage:
             self.logger.error(f"选择下拉选项失败, 错误: {str(e)}")
             self.take_screenshot("select_option_failed")
             raise
+
+        return self
     
     @allure.step("勾选复选框")
-    def check_checkbox(self, locator: Union[Locator, str], check: bool = True) -> None:
+    def check_checkbox(self, locator: Union[Locator, str], check: bool = True) -> "BasePage":
         """
-        勾选或取消勾选复选框
+        勾选或取消勾选复选框（支持链式调用）
         
         Args:
             locator: 复选框元素定位器
             check: True=勾选，False=取消勾选
+        
+        Returns:
+            self，支持链式调用
         """
         element = self._get_locator(locator)
         self.logger.info(f"{'勾选' if check else '取消勾选'}复选框")
@@ -298,18 +325,28 @@ class BasePage:
             element.check()
         else:
             element.uncheck()
+
+        return self
     
     @allure.step("悬停在元素上")
-    def hover_element(self, locator: Union[Locator, str]) -> None:
+    def hover_element(self, locator: Union[Locator, str]) -> "BasePage":
         """
-        鼠标悬停在元素上
+        鼠标悬停在元素上（支持链式调用）
         
         Args:
             locator: 元素定位器
+        
+        Returns:
+            self，支持链式调用
+        
+        使用方法：
+            # 悬停后点击子菜单
+            self.hover_element(self.menu).click_element(self.sub_item)
         """
         element = self._get_locator(locator)
-        self.logger.info(f"悬停在元素: {locator}")
+        self.logger.info(f"悬停在元素: {self._locator_to_log_str(locator)}")
         element.hover()
+        return self
     
     # ==================== 获取元素信息 ====================
     
@@ -431,7 +468,7 @@ class BasePage:
             可见的元素 Locator
         """
         element = self._get_locator(locator)
-        self.logger.info(f"等待元素可见: {locator}")
+        self.logger.info(f"等待元素可见: {self._locator_to_log_str(locator)}")
         element.wait_for(state="visible", timeout=timeout)
         return element
     
@@ -449,7 +486,7 @@ class BasePage:
             timeout: 超时时间
         """
         element = self._get_locator(locator)
-        self.logger.info(f"等待元素隐藏: {locator}")
+        self.logger.info(f"等待元素隐藏: {self._locator_to_log_str(locator)}")
         element.wait_for(state="hidden", timeout=timeout)
     
     @allure.step("等待页面加载完成")
@@ -596,6 +633,16 @@ class BasePage:
             return self.page.locator(locator)
         return locator
 
+    def _locator_to_log_str(self, locator: Union[Locator, str]) -> str:
+        """
+        提取定位器的 selector 部分用于日志（不包含 frame 信息）
+        """
+        if isinstance(locator, str):
+            return locator
+        s = str(locator)
+        m = re.search(r'selector="([^"]*)"', s) or re.search(r"selector='([^']*)'", s)
+        return m.group(1) if m else s
+
 
 # ==================== 断言辅助类 ====================
 
@@ -653,7 +700,7 @@ class PageAssertions:
             locator: 元素定位器
         """
         element = locator if isinstance(locator, Locator) else self.page.locator(locator)
-        self.logger.info(f"断言元素可见: {locator}")
+        self.logger.info(f"断言元素可见: {self._locator_to_log_str(locator)}")
         expect(element).to_be_visible(timeout=Settings.EXPECT_TIMEOUT)
     
     @allure.step("断言：元素包含文本 '{expected}'")

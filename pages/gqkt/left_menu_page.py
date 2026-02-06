@@ -47,4 +47,5 @@ class LeftMenuPage(BasePage):
     def click_left_menu_item(self, menu_name: str) -> "LeftMenuPage":
         """点击左侧菜单项"""
         self.click_element(self._get_left_menu_item(menu_name))
+        self.wait_for_load_state("load")
         return self

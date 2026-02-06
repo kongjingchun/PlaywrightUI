@@ -100,7 +100,7 @@ class HomePage(BasePage):
         self.logger.info(f"搜索关键词: {keyword}")
         
         # 清空并输入搜索词
-        self.fill_input(self.search_input, keyword)
+        self.fill_element(self.search_input, keyword)
         
         if press_enter:
             # 按回车键提交搜索

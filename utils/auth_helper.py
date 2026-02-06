@@ -31,7 +31,7 @@ class AuthHelper:
     使用示例：
         # 方式1：在 TestContextHelper 中使用（推荐）
         helper = TestContextHelper()
-        helper.login_and_init(page, base_url, initial_admin, save_auth=True)
+        helper.login_and_init(page, base_url, "admin", "password123", save_auth=True)
 
         # 方式2：直接使用 AuthHelper
         auth = AuthHelper()

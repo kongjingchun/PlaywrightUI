@@ -70,7 +70,7 @@ auth = AuthHelper()
 
 # 完全手动控制
 helper.login_and_init(
-    page, base_url, initial_admin,
+    page, base_url, initial_admin["username"], initial_admin["password"],
     use_saved_auth=False,  # 不自动使用缓存
     save_auth=False        # 不自动保存
 )
@@ -117,7 +117,7 @@ auth.save_auth_state(page, "我的用户")
                 # 正常登录流程
                 with allure.step("执行正常登录"):
                     helper.login_and_init(
-                        page, base_url, initial_admin,
+                        page, base_url, initial_admin["username"], initial_admin["password"],
                         "智慧大学", "机构管理员",
                         use_saved_auth=False,  # 不自动尝试免登录（我们手动控制）
                         save_auth=False        # 不自动保存（我们手动保存）

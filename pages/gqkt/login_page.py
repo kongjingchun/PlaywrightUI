@@ -42,11 +42,19 @@ class GqktLoginPage(BasePage):
         self._base_url = base_url or EnvConfig().base_url or "https://www.gqkt.cn"
         self._login_url = self._base_url.rstrip("/") + self.LOGIN_PATH
 
-        # ========== 元素定位器 ==========
+        # ========== 登陆页面元素 ==========
         self.username_input = page.get_by_placeholder("请输入您的账户")
         self.password_input = page.get_by_placeholder("请输入您的密码")
         self.login_button = page.get_by_role("button", name="登录")
-
+        # ========== 重置密码页面元素 ==========
+        # 新密码输入框
+        self.new_password_input = page.get_by_role("textbox", name="新密码")
+        # 确认密码输入框
+        self.confirm_password_input = page.get_by_role("textbox", name="确认密码")
+        # 重置密码按钮
+        self.reset_password_button = page.get_by_role("button", name="确认修改")
+        # 密码修改成功提示框
+        self.reset_password_success_message = page.locator("xpath=//p[contains(text(),'密码修改成功')]")
     # ==================== 页面导航 ====================
 
     @allure.step("打开登录页面")
@@ -60,13 +68,13 @@ class GqktLoginPage(BasePage):
     @allure.step("输入账号: {username}")
     def enter_username(self, username: str) -> "GqktLoginPage":
         """输入账号"""
-        self.fill_input(self.username_input, username)
+        self.fill_element(self.username_input, username)
         return self
 
     @allure.step("输入密码")
     def enter_password(self, password: str) -> "GqktLoginPage":
         """输入密码"""
-        self.fill_input(self.password_input, password)
+        self.fill_element(self.password_input, password)
         return self
 
     @allure.step("点击登录按钮")
@@ -90,8 +98,16 @@ class GqktLoginPage(BasePage):
         self.enter_username(username)
         self.enter_password(password)
         self.click_login()
+        self.wait_for_load_state("load")
         return self
 
+    @allure.step("重置密码: {username}")
+    def reset_password(self, username: str, password: str) -> "GqktLoginPage":
+        """重置密码"""
+        self.fill_element(self.new_password_input, password)
+        self.fill_element(self.confirm_password_input, password)
+        self.click_element(self.reset_password_button)
+        return self
     # ==================== 断言方法 ====================
 
     def is_login_success(self) -> bool:
@@ -111,3 +127,13 @@ class GqktLoginPage(BasePage):
         if error_element.is_visible():
             return error_element.inner_text()
         return ""
+
+    def is_reset_password_success(self) -> bool:
+        """检查是否重置密码成功"""
+        try:
+            self.wait_for_element_visible(self.reset_password_success_message)
+            self.logger.info("✓ 重置密码成功")
+            return True
+        except Exception as e:
+            self.logger.error(f"✗ 重置密码失败: {e}")
+            return False

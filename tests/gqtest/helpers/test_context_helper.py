@@ -30,7 +30,7 @@ class TestContextHelper:
             helper = TestContextHelper()
 
             # 一键完成登录和初始化（自动尝试免登录）
-            helper.login_and_init(page, base_url, initial_admin, "智慧大学", "机构管理员")
+            helper.login_and_init(page, base_url, initial_admin["username"], initial_admin["password"], "智慧大学", "机构管理员")
 
             # 后续的测试步骤...
     """
@@ -43,7 +43,8 @@ class TestContextHelper:
         self,
         page: Page,
         base_url: str,
-        initial_admin: dict,
+        username: str,
+        password: str,
         school_name: str = "智慧大学",
         role_name: str = "机构管理员",
         use_saved_auth: bool = True,
@@ -58,7 +59,8 @@ class TestContextHelper:
         Args:
             page: Playwright 页面对象
             base_url: 基础URL
-            initial_admin: 管理员账号信息 {"username": "xxx", "password": "xxx"}
+            username: 登录用户名
+            password: 登录密码
             school_name: 学校名称，默认"智慧大学"
             role_name: 角色名称，默认"机构管理员"
             use_saved_auth: 是否尝试使用保存的认证状态（免登录），默认True
@@ -74,20 +76,20 @@ class TestContextHelper:
             helper = TestContextHelper()
 
             # 使用默认学校和角色（自动尝试免登录）
-            helper.login_and_init(page, base_url, initial_admin)
+            helper.login_and_init(page, base_url, "admin", "password123")
 
             # 指定学校和角色
-            helper.login_and_init(page, base_url, initial_admin, "测试学校", "教师")
+            helper.login_and_init(page, base_url, "admin", "password123", "测试学校", "教师")
 
             # 强制重新登录（不使用缓存）
-            helper.login_and_init(page, base_url, initial_admin, use_saved_auth=False)
+            helper.login_and_init(page, base_url, "admin", "password123", use_saved_auth=False)
         """
         # 生成认证状态的唯一标识（用户名 + 学校 + 角色）
-        user_key = f"{initial_admin['username']}_{school_name}"
+        user_key = f"{username}_{school_name}"
 
         # 尝试使用保存的认证状态（免登录）
         if use_saved_auth and self.auth_helper.is_auth_valid(user_key):
-            with allure.step(f"尝试免登录: {initial_admin['username']}"):
+            with allure.step(f"尝试免登录: {username}"):
                 if self._try_restore_auth(page, base_url, user_key):
                     login_page = GqktLoginPage(page, base_url)
                     # 免登录成功后也要切换学校和角色
@@ -98,8 +100,8 @@ class TestContextHelper:
                     return login_page, top_menu_page
 
         # 正常登录流程
-        with allure.step(f"登录用户: {initial_admin['username']}"):
-            login_page = self.do_login(page, base_url, initial_admin)
+        with allure.step(f"登录用户: {username}"):
+            login_page = self.do_login(page, base_url, username, password)
 
         with allure.step(f"切换学校: {school_name}"):
             top_menu_page = self.switch_school(page, school_name)
@@ -145,14 +147,15 @@ class TestContextHelper:
             allure.attach(str(e), "免登录失败", allure.attachment_type.TEXT)
             return False
 
-    def do_login(self, page: Page, base_url: str, admin: dict) -> GqktLoginPage:
+    def do_login(self, page: Page, base_url: str, username: str, password: str) -> GqktLoginPage:
         """
         执行登录操作
 
         Args:
             page: Playwright 页面对象
             base_url: 基础URL
-            admin: 管理员账号信息 {"username": "xxx", "password": "xxx"}
+            username: 登录用户名
+            password: 登录密码
 
         Returns:
             GqktLoginPage: 登录页对象
@@ -160,10 +163,8 @@ class TestContextHelper:
         Raises:
             AssertionError: 如果登录失败
         """
-        user_name = admin["username"]
-        user_password = admin["password"]
         login_page = GqktLoginPage(page, base_url)
-        login_page.goto().login(user_name, user_password)
+        login_page.goto().login(username, password)
         assert login_page.is_login_success(), "登录失败"
         return login_page
 
@@ -197,23 +198,10 @@ class TestContextHelper:
         menu_page.switch_role(role_name)
         return menu_page
 
-    def get_left_menu(self, page: Page, menu_name: str) -> LeftMenuPage:
+    def click_left_menu_item(self, page: Page, menu_name: str) -> LeftMenuPage:
         """
-        获取左侧菜单页对象
-
-        这是一个便捷方法，用于快速获取左侧菜单页对象。
-
-        Args:
-            page: Playwright 页面对象
-
-        Returns:
-            LeftMenuPage: 左侧菜单页对象
-
-        使用示例：
-            helper = TestContextHelper()
-            left_menu = helper.get_left_menu(page)
-            left_menu.click_menu("用户管理")
+        点击左侧菜单项
         """
         left_menu_page = LeftMenuPage(page)
         left_menu_page.click_left_menu_item(menu_name)
-        return left_menu_page
+        return page

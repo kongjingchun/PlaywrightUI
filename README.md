@@ -121,8 +121,8 @@ class LoginPage(BasePage):
     
     def login(self, username: str, password: str):
         """执行登录操作"""
-        self.fill_input(self.username_input, username)
-        self.fill_input(self.password_input, password)
+        self.fill_element(self.username_input, username)
+        self.fill_element(self.password_input, password)
         self.click_element(self.login_button)
 ```
 

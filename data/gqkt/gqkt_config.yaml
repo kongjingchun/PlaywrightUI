@@ -2,13 +2,12 @@
 # 全局变量配置（占位符，在下方使用 {变量名} 引用）
 # ========================================
 variables:
-  suffix: "007"           # 测试环境序号，用于院系/用户/专业等
+  # suffix: "016"           # 线上环境序列号
+  suffix: "003"           # 211环境序号
   year: "2024"           # 学年
   semester_value: "202401"  # 学期值
   school_name: "智慧大学"   # 学校名称
 
-# 兼容旧格式（可选，variables 优先）
-test_suffix: "001"
 
 # 部署环境配置（可使用 {school_name} 等占位符）
 school_name: "{school_name}"

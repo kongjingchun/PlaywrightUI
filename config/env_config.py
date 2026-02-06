@@ -15,6 +15,8 @@ import yaml
 from pathlib import Path
 from typing import Any, Optional
 
+from config.settings import DEFAULT_ENV
+
 
 class EnvConfig:
     """
@@ -54,8 +56,8 @@ class EnvConfig:
         Raises:
             FileNotFoundError: 配置文件不存在时抛出
         """
-        # 获取当前环境，优先使用传入的参数，其次使用环境变量
-        self.env = env or os.getenv("ENV", "test")
+        # 获取当前环境，优先使用传入的参数，其次使用环境变量（与 config.settings.DEFAULT_ENV 保持一致）
+        self.env = env or os.getenv("ENV", DEFAULT_ENV)
         
         # 配置文件路径
         self._config_file = self._CONFIG_DIR / f"{self.env}.yaml"

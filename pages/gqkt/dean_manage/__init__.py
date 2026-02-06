@@ -3,5 +3,6 @@
 # ========================================
 
 from pages.gqkt.dean_manage.user_manage_page import UserManagePage
+from pages.gqkt.dean_manage.role_manage_page import RoleManagePage
 
-__all__ = ['UserManagePage']
+__all__ = ['UserManagePage', 'RoleManagePage']
