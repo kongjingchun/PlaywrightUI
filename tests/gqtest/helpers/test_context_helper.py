@@ -129,8 +129,9 @@ class TestContextHelper:
             True 恢复成功且登录有效，False 恢复失败或登录已失效
         """
         try:
-            # 加载认证状态
-            if not self.auth_helper.load_auth_state(page, user_key, base_url):
+            # 免密登陆时进入 /console 页面
+            console_url = base_url.rstrip("/") + "/console"
+            if not self.auth_helper.load_auth_state(page, user_key, console_url):
                 return False
 
             # 验证登录是否真的有效（检查页面是否跳转到登录页）

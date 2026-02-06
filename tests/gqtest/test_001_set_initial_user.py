@@ -1,5 +1,5 @@
 # ========================================
-# 光穹课堂登录测试
+# 设置初始用户
 # ========================================
 # 符合 Page Object Model 设计模式
 # 断言在测试用例中，不在页面对象中
@@ -23,9 +23,9 @@ DATA = load_yaml("gqkt/gqkt_config.yaml")
 
 @allure.feature("光穹课堂")
 @allure.story("初始化用户数据")
-class TestGqktInitUser:
+class TestSetInitialUser:
     """
-    光穹课堂初始化用户数据测试类
+    设置初始用户测试类
     """
 
     @pytest.mark.run(order=100)
@@ -101,7 +101,7 @@ class TestGqktInitUser:
 
         with allure.step("登录用户"):
             helper.login_and_init(
-                page, base_url + "/console", initial_admin["username"], initial_admin["password"],
+                page, base_url, initial_admin["username"], initial_admin["password"],
                 "智慧大学", "机构管理员",
                 use_saved_auth=True,  # 自动尝试免登录（我们手动控制）
                 save_auth=True        # 自动保存（我们手动保存）
