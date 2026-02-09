@@ -11,9 +11,9 @@ from config.env_config import EnvConfig
 
 class DeptListManagePage(BasePage):
     """
-    部门列表管理页面
+    院系列表管理页面
 
-    提供部门列表管理相关的操作方法。
+    提供院系列表管理相关的操作方法。
     """
 
     def __init__(self, page: Page):
@@ -24,9 +24,9 @@ class DeptListManagePage(BasePage):
         # 新建院系按钮
         self.new_dept_button = self.iframe.get_by_role("button", name="新建院系")
 
-        # ========== 部门列表 ==========
+        # ========== 院系列表列表 ==========
 
-        # ========== 新增/编辑部门 ==========
+        # ========== 新增/编辑院系列表 ==========
         # 院系名称输入框
         self.dept_name_input = self.iframe.get_by_role("textbox", name="院系名称")
         # 院系代码输入框
