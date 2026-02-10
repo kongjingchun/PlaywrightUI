@@ -470,6 +470,20 @@ def initial_admin(env_config) -> dict:
     }
 
 
+@pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args, request):
+    """
+    覆盖浏览器启动参数：默认使用 config/settings.py 的 HEADLESS，
+    命令行 --headed 可覆盖为有头模式
+
+    优先级：命令行 --headed > Settings.HEADLESS
+    """
+    # 命令行 --headed 优先（pytest-playwright 提供）
+    if getattr(request.config.option, "headed", False):
+        return {**browser_type_launch_args, "headless": False}
+    return {**browser_type_launch_args, "headless": Settings.HEADLESS}
+
+
 @pytest.fixture(scope="function")
 def screenshot_helper(page: Page) -> ScreenshotHelper:
     """获取截图助手实例"""

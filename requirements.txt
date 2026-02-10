@@ -5,6 +5,7 @@
 # 核心测试框架
 pytest>=7.4.0                  # Python 测试框架
 pytest-playwright>=0.4.3       # Playwright pytest 插件
+pytest-xdist>=3.0.0            # 并行/分布式测试（-n 参数）
 playwright>=1.40.0             # Playwright 自动化测试库
 
 # 报告生成

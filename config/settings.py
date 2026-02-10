@@ -18,7 +18,7 @@ load_dotenv()
 
 # ==================== 默认环境（修改此处即可同步 conftest 和 env_config） ====================
 # 支持 local、dev、test、prod
-DEFAULT_ENV = "local"
+DEFAULT_ENV = "prod"
 
 
 class Settings:
@@ -39,6 +39,20 @@ class Settings:
         2. .env 文件
         3. 默认值（最低优先级）
     """
+    # ==================== 浏览器配置 ====================
+    # HEADLESS: 默认无头/有头模式（可被命令行 --headed 覆盖）
+    # True = 无界面运行（适合 CI/CD），False = 有界面运行（适合调试）
+    # 修改此处或 .env 的 HEADLESS 即可改默认；执行时加 --headed 可临时覆盖为有头
+    HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
+
+    # BROWSER_TYPE / SLOW_MO: 可由命令行 --browser、--slowmo 覆盖
+    BROWSER_TYPE = os.getenv("BROWSER", "chromium")
+    SLOW_MO = int(os.getenv("SLOW_MO", "0"))
+
+    # 视口（浏览器窗口）大小配置
+    VIEWPORT_WIDTH = int(os.getenv("VIEWPORT_WIDTH", "1920"))
+    VIEWPORT_HEIGHT = int(os.getenv("VIEWPORT_HEIGHT", "1080"))
+
     # ==================== 环境配置 ====================
     # ENV: 当前运行环境（从环境变量读取，未设置时使用 DEFAULT_ENV）
     ENV = os.getenv("ENV", DEFAULT_ENV)
@@ -69,31 +83,12 @@ class Settings:
     HAR_DIR = PROJECT_ROOT / "har"                  # HAR网络日志目录
     DATA_DIR = PROJECT_ROOT / "data"                # 测试数据目录
 
-    # ==================== 浏览器配置 ====================
-    # BROWSER_TYPE: 浏览器类型，支持 chromium/firefox/webkit
-    # 可通过环境变量 BROWSER 覆盖，默认使用 chromium
-    BROWSER_TYPE = os.getenv("BROWSER", "chromium")
-
-    # HEADLESS: 是否使用无头模式运行浏览器
-    # True = 无界面运行（适合CI/CD）
-    # False = 有界面运行（适合调试）
-    HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
-
-    # SLOW_MO: 操作之间的延迟时间（毫秒）
-    # 设置大于0的值可以放慢执行速度，便于观察和调试
-    SLOW_MO = int(os.getenv("SLOW_MO", "0"))
-
-    # 视口（浏览器窗口）大小配置
-    VIEWPORT_WIDTH = int(os.getenv("VIEWPORT_WIDTH", "1920"))
-    VIEWPORT_HEIGHT = int(os.getenv("VIEWPORT_HEIGHT", "1080"))
+    
 
     # ==================== 运行配置 ====================
-    # WORKERS: 并行执行的worker数量
-    # 设置为1表示串行执行，大于1表示并行执行
+    # 注意：实际由 pytest 命令行控制：-n 1（pytest-xdist）、--reruns 1（pytest-rerunfailures）
+    # 以下仅作参考，可在 .env 中设置后由脚本读取
     WORKERS = int(os.getenv("WORKERS", "1"))
-
-    # RETRIES: 失败用例重试次数
-    # 设置为0表示不重试
     RETRIES = int(os.getenv("RETRIES", "1"))
 
     # ==================== 录制配置 ====================
