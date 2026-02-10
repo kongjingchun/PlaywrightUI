@@ -3,5 +3,6 @@
 # ========================================
 
 from pages.gqkt.ai_major.major_manage_page import MajorManagePage
+from pages.gqkt.ai_major.training_program_manage_page import TrainingProgramManagePage
 
-__all__ = ['MajorManagePage']
+__all__ = ['MajorManagePage', 'TrainingProgramManagePage']
