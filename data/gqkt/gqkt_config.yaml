@@ -69,3 +69,13 @@ admin_class:
   专业: *major_name
   年级: "{year}"
   描述: 自动化测试创建行政班
+
+# 课程信息
+course:
+  课程代码: course{suffix}
+  课程名称: 自动化测试课程{suffix}
+  课程类型: 必修课
+  所属学院: *dept_name
+  课程描述: 自动化测试创建课程
+  课程负责人: *prof_name
+  是否一流课程: true

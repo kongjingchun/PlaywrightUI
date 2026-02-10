@@ -255,6 +255,30 @@ class BasePage:
         self.logger.info(f"清空输入框: {self._locator_to_log_str(locator)}")
         element.clear()
         return self
+
+    @allure.step("通过 FileChooser 上传文件")
+    def upload_file_via_chooser(
+        self,
+        upload_trigger: Union[Locator, str],
+        file_path: Union[str, List[str]],
+    ) -> "BasePage":
+        """
+        通过 FileChooser 上传文件。先监听 filechooser，再点击触发元素。
+        适用于 Element UI el-upload 等“点击区域”触发的上传（非直接 input[type=file]）。
+
+        Args:
+            upload_trigger: 上传触发元素定位器（可来自 page 或 frame）
+            file_path: 文件路径，或路径列表（多文件）
+
+        Returns:
+            self，支持链式调用
+        """
+        trigger = self._get_locator(upload_trigger)
+        with self.page.expect_file_chooser() as fc_info:
+            trigger.click()
+        fc_info.value.set_files(file_path)
+        self.logger.info(f"已通过 FileChooser 设置文件: {file_path}")
+        return self
     
     @allure.step("选择下拉选项: {value}")
     def select_option(
