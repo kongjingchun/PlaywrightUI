@@ -47,7 +47,8 @@ class Settings:
 
     # BROWSER_TYPE / SLOW_MO: 可由命令行 --browser、--slowmo 覆盖
     BROWSER_TYPE = os.getenv("BROWSER", "chromium")
-    SLOW_MO = int(os.getenv("SLOW_MO", "0"))
+    # 每个操作后的延迟（毫秒），0=不延迟；调大可放慢执行便于观察（如 100、300）（操作延迟）
+    SLOW_MO = int(os.getenv("SLOW_MO", "300"))
 
     # 视口（浏览器窗口）大小配置
     VIEWPORT_WIDTH = int(os.getenv("VIEWPORT_WIDTH", "1920"))

@@ -36,6 +36,8 @@ class MajorManagePage(BasePage):
         self.major_dept_select = self.iframe.get_by_text("请选择所属院系")
         # 专业负责人选择框
         self.major_prof_select = self.iframe.get_by_text("请选择专业负责人")
+        # 专业负责人关闭下拉框
+        self.major_prof_close_button = self.iframe.locator("xpath=(//label[text()='专业负责人']/following-sibling::div//i)[last()]")
         # 确定创建按钮
         self.confirm_create_button = self.iframe.get_by_role("button", name="确定")
         # 创建成功提示
@@ -103,6 +105,7 @@ class MajorManagePage(BasePage):
         self.click_element(self._get_major_dept_select_locator(major_dept))  # 选择所属院系
         self.click_element(self.major_prof_select)  # 点击专业负责人选择框
         self.click_element(self._get_major_prof_select_locator(major_prof))  # 选择专业负责人
+        self.click_element(self.major_prof_close_button)  # 关闭专业负责人下拉框
         self.click_element(self._get_major_building_level_radio_locator(major_level))  # 选择专业建设层次
         for feature in major_feature:
             self.click_element(self._get_major_feature_checkbox_locator(feature))  # 选择专业特色标签

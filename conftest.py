@@ -478,10 +478,11 @@ def browser_type_launch_args(browser_type_launch_args, request):
 
     优先级：命令行 --headed > Settings.HEADLESS
     """
-    # 命令行 --headed 优先（pytest-playwright 提供）
+    # 合并 Settings：headless、slow_mo（slow_mo 单位毫秒，>0 时每个操作后延迟，可观察执行）
+    base = {**browser_type_launch_args, "headless": Settings.HEADLESS, "slow_mo": Settings.SLOW_MO}
     if getattr(request.config.option, "headed", False):
-        return {**browser_type_launch_args, "headless": False}
-    return {**browser_type_launch_args, "headless": Settings.HEADLESS}
+        base["headless"] = False
+    return base
 
 
 @pytest.fixture(scope="function")
