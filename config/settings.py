@@ -18,7 +18,7 @@ load_dotenv()
 
 # ==================== 默认环境（修改此处即可同步 conftest 和 env_config） ====================
 # 支持 local、dev、test、prod
-DEFAULT_ENV = "prod"
+DEFAULT_ENV = "local"
 
 
 class Settings:
@@ -82,8 +82,6 @@ class Settings:
     VIDEOS_DIR = PROJECT_ROOT / "videos"            # 录屏文件目录
     HAR_DIR = PROJECT_ROOT / "har"                  # HAR网络日志目录
     DATA_DIR = PROJECT_ROOT / "data"                # 测试数据目录
-
-    
 
     # ==================== 运行配置 ====================
     # 注意：实际由 pytest 命令行控制：-n 1（pytest-xdist）、--reruns 1（pytest-rerunfailures）
