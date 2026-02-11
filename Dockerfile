@@ -1,5 +1,5 @@
 # 基于官方 Python 3.13.5 (Debian 11)
-FROM python:3.13.5-bullseye
+FROM xuetangx-registry.cn-beijing.cr.aliyuncs.com/xc-project/mirrors/docker.io/library/python:3.13.5-bullseye
 
 LABEL maintainer="hanyujian"
 LABEL description="Python 3.13.5 + Playwright UI (Debian 11)"
