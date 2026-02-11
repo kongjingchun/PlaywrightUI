@@ -66,7 +66,7 @@ class TestReviseTrainingProgram:
         with allure.step("修订培养方案：添加培养目标"):
             for desc in tp_info["培养目标"]["培养目标描述"]:
                 tp_manage_page.add_training_goal(desc)
-                screenshot_helper.capture_full_page("修订培养方案：添加培养目标成功")
+            screenshot_helper.capture_full_page("修订培养方案：添加培养目标成功")
 
         with allure.step("修订培养方案：毕业要求概述"):
             tp_manage_page.edit_training_program_major_graduation_requirement(tp_info["毕业要求"]["毕业要求概述"])
@@ -76,13 +76,16 @@ class TestReviseTrainingProgram:
         with allure.step("修订培养方案：添加指标点"):
             for indicator in tp_info["指标点"].values():
                 tp_manage_page.add_graduation_requirement(indicator["指标点名称"], indicator["指标点描述"], indicator["分解指标点名称"], indicator["分解指标点描述"])
-                screenshot_helper.capture_full_page("修订培养方案：添加指标点成功")
             screenshot_helper.capture_full_page("修订培养方案：添加指标点成功")
         with allure.step("修订培养方案：添加目标支撑"):
             tp_manage_page.add_target_support()
-            assert tp_manage_page.is_edit_training_program_success(), "修订培养方案：添加目标支撑失败"
+            assert tp_manage_page.is_add_target_support_success(), "修订培养方案：添加目标支撑失败"
             screenshot_helper.capture_full_page("修订培养方案：添加目标支撑成功")
         with allure.step("修订培养方案：添加课程"):
             tp_manage_page.add_course(course_info["课程名称"])
             assert tp_manage_page.is_add_course_success(), "修订培养方案：添加课程失败"
             screenshot_helper.capture_full_page("修订培养方案：添加课程成功")
+        with allure.step("修订培养方案：课程支撑"):
+            tp_manage_page.associate_course(course_info["课程名称"], "H")
+            assert tp_manage_page.is_edit_complete(), "修订培养方案：课程支撑失败"
+            screenshot_helper.capture_full_page("修订培养方案：课程支撑成功")
