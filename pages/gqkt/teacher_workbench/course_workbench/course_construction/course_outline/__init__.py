@@ -3,5 +3,6 @@
 # ========================================
 
 from .course_info_page import CourseInfoPage
+from .course_objective_page import CourseObjectivePage
 
-__all__ = ["CourseInfoPage"]
+__all__ = ["CourseInfoPage", "CourseObjectivePage"]

@@ -3,6 +3,6 @@
 # ========================================
 
 from .ai_vertical_model import KnowledgeGraphPage
-from .course_outline import CourseInfoPage
+from .course_outline import CourseInfoPage, CourseObjectivePage
 
-__all__ = ["KnowledgeGraphPage", "CourseInfoPage"]
+__all__ = ["KnowledgeGraphPage", "CourseInfoPage", "CourseObjectivePage"]

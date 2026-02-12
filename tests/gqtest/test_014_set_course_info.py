@@ -26,7 +26,7 @@ class TestSetCourseInfo:
     设置课程信息测试类
     """
 
-    @pytest.mark.run(order=245)
+    @pytest.mark.run(order=290)
     @allure.title("设置课程信息")
     def test_set_course_info(self, page: Page, screenshot_helper, base_url):
         """
@@ -36,8 +36,8 @@ class TestSetCourseInfo:
         teacher_cms = DATA["user"]["prof_cms"]
         # 课程名称（用于在我教的课中进入该课程）
         course_name = DATA["course"]["课程名称"]
-        # 课程大纲 - 课程详情介绍
-        course_outline = DATA["course_outline"]
+        # 课程大纲 - 课程信息
+        course_info = DATA["course_outline"]["课程信息"]
 
         helper = TestContextHelper()
 
@@ -62,6 +62,6 @@ class TestSetCourseInfo:
             course_info_page.click_left_menu_by_name("课程信息")
 
         with allure.step("编辑并保存课程信息"):
-            course_info_page.edit_course_detail_introduction(course_outline["课程详情介绍"])
+            course_info_page.edit_course_detail_introduction(course_info["课程详情介绍"])
             assert course_info_page.is_edit_course_info_success(), "设置课程信息失败"
             screenshot_helper.capture_full_page("课程信息设置完成")
