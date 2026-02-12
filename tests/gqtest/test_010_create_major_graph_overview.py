@@ -9,7 +9,7 @@ import pytest
 import allure
 from playwright.sync_api import Page
 
-from pages.gqkt.ai_major.major_ai_model import MajorGraphModelPage
+from pages.gqkt.ai_major import MajorGraphOverviewPage
 from tests.gqtest import TestContextHelper
 from utils.data_loader import load_yaml
 
@@ -49,7 +49,7 @@ class TestCreateMajorGraphOverview:
             helper.click_left_menu_item(page, "专业AI模型")
 
         with allure.step("点击图谱概览"):
-            graph_page = MajorGraphModelPage(page)
+            graph_page = MajorGraphOverviewPage(page)
             graph_page.click_menu_item("图谱概览")
 
         with allure.step("点击创建专业图谱"):

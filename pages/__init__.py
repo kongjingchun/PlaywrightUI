@@ -30,8 +30,8 @@
 
 from base.base_page import BasePage
 from base.base_api import BaseAPI
-from pages.demo.login_page import LoginPage
-from pages.demo.home_page import HomePage
-from pages.gqkt.login_page import GqktLoginPage
+from .demo.login_page import LoginPage
+from .demo.home_page import HomePage
+from .gqkt.login_page import GqktLoginPage
 
 __all__ = ['BasePage', 'BaseAPI', 'LoginPage', 'HomePage', 'GqktLoginPage']

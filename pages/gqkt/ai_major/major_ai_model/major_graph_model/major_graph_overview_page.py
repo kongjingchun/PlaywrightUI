@@ -1,16 +1,16 @@
 # ========================================
-# 专业知识图谱模型页面
+# 专业图谱概览页面
 # ========================================
 
 import re
 from playwright.sync_api import Page
 
-from pages.gqkt.ai_major.major_ai_model.major_ai_model_page import MajorAiModelPage
+from ..major_ai_model_page import MajorAiModelPage
 
 
-class MajorGraphModelPage(MajorAiModelPage):
+class MajorGraphOverviewPage(MajorAiModelPage):
     """
-    专业知识图谱模型页面
+    专业图谱概览页面
 
     提供专业知识图谱/模型相关操作方法。
     """
@@ -125,7 +125,7 @@ class MajorGraphModelPage(MajorAiModelPage):
         :param target_node_type: 被关联节点类型
         :param target_node_name: 被关联节点名称（右侧节点/被动方）
         """
-        # 1. 点击发起关联节点行的“关联”按钮
+        # 1. 点击发起关联节点行的"关联"按钮
         self.click_associate_button_by_node_name(associate_node_name)
         # 2. 在弹窗中选择被关联节点类型tab
         if "能力" in target_node_type:

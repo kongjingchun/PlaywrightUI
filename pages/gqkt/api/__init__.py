@@ -4,6 +4,6 @@
 # 封装各类 API 接口的 Page 类
 # ========================================
 
-from pages.gqkt.api.cms_api_page import CmsApiPage
+from .cms_api_page import CmsApiPage
 
 __all__ = ['CmsApiPage']
