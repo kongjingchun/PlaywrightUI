@@ -27,7 +27,7 @@ class TestSetCourseGroupGraph:
 
     @pytest.mark.run(order=250)
     @allure.title("设置专业课程群图谱")
-    def test_012_set_course_group_graph(self, page: Page, screenshot_helper, base_url):
+    def test_set_course_group_graph(self, page: Page, screenshot_helper, base_url):
         """
         设置专业课程群图谱：专业管理员登录 -> 专业AI模型 -> 专业课程群图谱 -> 关联图谱。
         """

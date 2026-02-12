@@ -30,7 +30,7 @@ class TestSetInitialUser:
 
     @pytest.mark.run(order=100)
     @allure.title("创建用户")
-    def test_001_create_user(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_create_user(self, page: Page, screenshot_helper, base_url, initial_admin):
         """
         创建用户
         """
@@ -72,7 +72,7 @@ class TestSetInitialUser:
     @pytest.mark.run(order=120)
     @pytest.mark.skip_local
     @allure.title("注册CMS账户并绑定用户")
-    def test_002_bind_user(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_bind_user(self, page: Page, screenshot_helper, base_url, initial_admin):
         """
         注册CMS账户并绑定用户
         """
@@ -123,7 +123,7 @@ class TestSetInitialUser:
     @pytest.mark.run(order=130)
     @pytest.mark.skip_prod
     @allure.title("重置密码")
-    def test_003_reset_password(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_reset_password(self, page: Page, screenshot_helper, base_url, initial_admin):
         """
         重置密码
         """
@@ -154,7 +154,7 @@ class TestSetInitialUser:
 
     @pytest.mark.run(order=140)
     @allure.title("分配角色")
-    def test_004_assign_role(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_assign_role(self, page: Page, screenshot_helper, base_url, initial_admin):
         """
         分配角色
         """

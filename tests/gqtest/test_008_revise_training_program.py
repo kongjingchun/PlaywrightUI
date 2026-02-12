@@ -27,7 +27,7 @@ class TestReviseTrainingProgram:
 
     @pytest.mark.run(order=210)
     @allure.title("修订培养方案")
-    def test_008_revise_training_program(self, page: Page, screenshot_helper, base_url):
+    def test_revise_training_program(self, page: Page, screenshot_helper, base_url):
         """
         修订培养方案
         """

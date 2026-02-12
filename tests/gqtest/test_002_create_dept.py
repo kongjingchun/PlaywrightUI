@@ -26,7 +26,7 @@ class TestCreateDept:
 
     @pytest.mark.run(order=150)
     @allure.title("创建院系")
-    def test_001_create_dept(self, page: Page, screenshot_helper, base_url):
+    def test_create_dept(self, page: Page, screenshot_helper, base_url):
         """
         创建部门
         """

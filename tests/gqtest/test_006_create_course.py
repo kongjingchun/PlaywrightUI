@@ -27,7 +27,7 @@ class TestCreateCourse:
 
     @pytest.mark.run(order=190)
     @allure.title("创建课程")
-    def test_006_create_course(self, page: Page, screenshot_helper, base_url):
+    def test_create_course(self, page: Page, screenshot_helper, base_url):
         """
         创建课程
         """

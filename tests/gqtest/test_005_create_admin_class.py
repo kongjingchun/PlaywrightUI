@@ -26,7 +26,7 @@ class TestCreateAdminClass:
 
     @pytest.mark.run(order=180)
     @allure.title("创建行政班")
-    def test_005_create_admin_class(self, page: Page, screenshot_helper, base_url):
+    def test_create_admin_class(self, page: Page, screenshot_helper, base_url):
         """
         创建行政班
         """

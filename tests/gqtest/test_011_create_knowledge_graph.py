@@ -27,7 +27,7 @@ class TestCreateKnowledgeGraph:
 
     @pytest.mark.run(order=240)
     @allure.title("新建知识图谱")
-    def test_011_create_knowledge_graph(self, page: Page, screenshot_helper, base_url):
+    def test_create_knowledge_graph(self, page: Page, screenshot_helper, base_url):
         """
         新建知识图谱：教师登录 -> 我教的课 -> 进入课程 -> 课程工作台知识图谱 -> 新建主图谱。
         """

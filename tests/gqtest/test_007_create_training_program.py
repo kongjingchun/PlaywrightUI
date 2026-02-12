@@ -26,7 +26,7 @@ class TestCreateTrainingProgram:
 
     @pytest.mark.run(order=200)
     @allure.title("创建培养方案")
-    def test_007_create_training_program(self, page: Page, screenshot_helper, base_url):
+    def test_create_training_program(self, page: Page, screenshot_helper, base_url):
         """
         创建培养方案
         """

@@ -26,7 +26,7 @@ class TestCreateMajor:
 
     @pytest.mark.run(order=170)
     @allure.title("创建专业")
-    def test_004_create_major(self, page: Page, screenshot_helper, base_url):
+    def test_create_major(self, page: Page, screenshot_helper, base_url):
         """
         创建专业
         """

@@ -38,6 +38,8 @@ class UserManagePage(BasePage):
         self.code_input = self.iframe.get_by_role("textbox", name="学号/工号")
         # 创建用户按钮
         self.create_user_button = self.iframe.get_by_role("button", name="创建用户")
+        # 所属院系选择框
+        self.create_user_major_dept_select = self.iframe.get_by_text("请选择学院").last
         # 创建成功提示
         self.create_success_message = self.iframe.locator("xpath=//p[contains(text(),'创建成功')]")
         # =========绑定页面=========
@@ -54,19 +56,37 @@ class UserManagePage(BasePage):
         menu_name = role_name if role_name.startswith("创建") else f"创建{role_name}"
         return self.iframe.get_by_role("menuitem", name=menu_name)
 
+    def _get_dept_select_locator(self, dept_name: str):
+        """
+        根据院系名称返回下拉框对应院系的定位器
+
+        Args:
+            dept_name: 院系名称
+
+        Returns:
+            Locator: 对应院系的下拉选项定位器
+        """
+        return self.iframe.get_by_role("option", name=dept_name)
+
     def _get_user_row_operation_locator(self, code: str):
         """根据工号获取用户行操作定位器"""
         return self.iframe.locator("tr", has_text=code).locator("i")
     # ==================== 页面操作 ====================
 
     # ==================== 业务方法 ====================
-    # 创建用户
-    def create_user(self, role_name: str, name: str, code: str):
+    def add_user_basic_info_input(self, name: str, code: str):
+        """添加用户基础信息输入（姓名、工号）"""
+        self.fill_element(self.name_input, name)  # 输入姓名
+        self.fill_element(self.code_input, code)  # 输入工号
+
+    def create_user(self, role_name: str, name: str, code: str, dept_name: str = None):
         """创建用户"""
         self.hover_element(self.create_button)  # hover到手动创建按钮
         self.click_element(self._get_add_user_role_select_locator(role_name))  # 点击角色选择框
-        self.fill_element(self.name_input, name)  # 输入姓名
-        self.fill_element(self.code_input, code)  # 输入工号
+        self.add_user_basic_info_input(name, code)  # 添加用户基础信息输入
+        if dept_name:  # 如果院系名称不为空，则选择所属院系
+            self.click_element(self.create_user_major_dept_select)  # 点击所属院系选择框
+            self.click_element(self._get_dept_select_locator(dept_name))  # 选择所属院系
         self.click_element(self.create_user_button)  # 点击创建用户按钮
 
     def bind_user(self, code: str, platform_user_id: str):

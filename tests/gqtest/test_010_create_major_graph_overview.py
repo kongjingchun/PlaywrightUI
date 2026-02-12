@@ -26,7 +26,7 @@ class TestCreateMajorGraphOverview:
 
     @pytest.mark.run(order=230)
     @allure.title("创建专业图谱概览")
-    def test_010_create_major_graph_overview(self, page: Page, screenshot_helper, base_url):
+    def test_create_major_graph_overview(self, page: Page, screenshot_helper, base_url):
         """
         创建专业图谱概览：进入专业知识图谱，点击创建专业图谱，添加若干节点构成概览。
         """

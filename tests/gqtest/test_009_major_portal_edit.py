@@ -26,7 +26,7 @@ class TestMajorPortalEdit:
 
     @pytest.mark.run(order=220)
     @allure.title("专业门户编辑")
-    def test_009_major_portal_edit(self, page: Page, screenshot_helper, base_url):
+    def test_major_portal_edit(self, page: Page, screenshot_helper, base_url):
         """
         专业门户编辑：进入专业门户管理，选择专业进入编辑页，修改标题并发布。
         """

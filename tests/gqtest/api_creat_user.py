@@ -27,7 +27,7 @@ class Test001ApiCreatUser:
     
     @pytest.mark.smoke
     @allure.title("API 注册用户")
-    def test_001_api_create_user_success(self, base_url):
+    def test_api_create_user_success(self, base_url):
         """
         测试通过 API 注册用户
         
