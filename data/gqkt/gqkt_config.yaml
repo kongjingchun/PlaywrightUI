@@ -137,6 +137,8 @@ course_outline:
     目标列表:
       - 标题: 自动化测试课程目标1{suffix}
         标签: 标签1
+  课程团队:
+    教师姓名: *teacher_name  # 用于添加/删除的教师（test_013 创建的教师）
 
 # 课程工作台 - 知识图谱（新建主图谱 + 添加节点）
 knowledge_graph:
