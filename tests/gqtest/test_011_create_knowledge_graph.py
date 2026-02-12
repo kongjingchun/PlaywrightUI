@@ -29,7 +29,7 @@ class TestCreateKnowledgeGraph:
     @allure.title("新建知识图谱")
     def test_create_knowledge_graph(self, page: Page, screenshot_helper, base_url):
         """
-        新建知识图谱：教师登录 -> 我教的课 -> 进入课程 -> 课程工作台知识图谱 -> 新建主图谱。
+        新建知识图谱
         """
         # 教师用户信息
         prof_cms = DATA["user"]["prof_cms"]
