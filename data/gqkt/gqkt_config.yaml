@@ -182,8 +182,9 @@ course_resource:
   链接:
     - https://www.baidu.com/
 
-# 课程工作台 - 题库（简答题）
+# 课程工作台 - 题库（简答题 + 导入）
 question_bank:
+  导入文件: file/gqkt/course_resource/question_bank/question.xlsx
   简答题:
     题目内容: 自动化测试简答题内容{suffix}
     参考答案: 自动化测试简答题参考答案{suffix}

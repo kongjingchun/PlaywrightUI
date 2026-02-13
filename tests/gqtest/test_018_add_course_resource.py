@@ -162,3 +162,12 @@ class TestAddCourseResource:
         #     )
         #     assert question_page.is_question_create_success(), "新建简答题失败"
         #     screenshot_helper.capture_full_page("简答题创建完成")
+
+        # with allure.step("导入题库"):
+        #     resource_page.click_left_menu_by_name("题库")
+        #     import_path = DATA["question_bank"]["导入文件"]
+        #     file_path = build_path(import_path)
+        #     assert file_path.exists(), f"导入文件不存在: {file_path}"
+        #     question_page.upload_question(str(file_path))
+        #     assert question_page.is_question_upload_success(), "导入题库失败"
+        #     screenshot_helper.capture_full_page("题库导入完成")

@@ -41,7 +41,14 @@ class QuestionBankPage(CourseResourcePage):
         self.create_button = self.iframe.get_by_role("button", name="创建")
         # 题目创建成功
         self.question_create_success_message = self.iframe.locator("xpath=//p[contains(text(),'题目创建成功')]")
-
+        # 导入题库按钮
+        self.import_question_bank_button = self.iframe.get_by_role("button", name="导入题库")
+        # 点击上传按钮
+        self.click_upload_button = self.iframe.get_by_text("点击上传")
+        # 确认导入按钮
+        self.confirm_import_button = self.iframe.get_by_role("button", name="确认导入")
+        # 成功导入
+        self.success_import_message = self.iframe.locator("xpath=//p[contains(text(),'成功导入')]")
     # ==================== 动态定位器生成方法 ====================
 
     def get_question_type_option_locator(self, question_type: str):
@@ -141,6 +148,20 @@ class QuestionBankPage(CourseResourcePage):
                         self.click_element(self.get_is_open_to_student_switch_locator(k["name"]))
         # 6. 点击创建按钮
         self.click_element(self.create_button)
+
+    def upload_question(self, file_path: str):
+        """
+        上传题目（题库页面-上传题目文件）
+
+        :param file_path: 题目文件路径
+        """
+        # 点击导入题库按钮
+        self.click_element(self.import_question_bank_button)
+        # 通过文件选择器上传文件
+        self.upload_file_via_chooser(self.click_upload_button, file_path)
+        # 点击确认导入按钮
+        self.click_element(self.confirm_import_button)
+
     # ==================== 断言方法 ====================
 
     def is_question_create_success(self) -> bool:
@@ -151,4 +172,14 @@ class QuestionBankPage(CourseResourcePage):
             return True
         except Exception as e:
             self.logger.error(f"✗ 创建题目失败: {e}")
+            return False
+
+    def is_question_upload_success(self) -> bool:
+        """检查是否上传题目成功"""
+        try:
+            self.wait_for_element_visible(self.success_import_message)
+            self.logger.info("✓ 上传题目成功")
+            return True
+        except Exception as e:
+            self.logger.error(f"✗ 上传题目失败: {e}")
             return False
