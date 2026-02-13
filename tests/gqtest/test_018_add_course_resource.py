@@ -13,7 +13,7 @@ from playwright.sync_api import Page
 from common.tools import build_path
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import CourseResourcePage
-from pages.gqkt.teacher_workbench.course_workbench.course_construction.course_resource import LinkPage, QuestionBankPage
+from pages.gqkt.teacher_workbench.course_workbench.course_construction.course_resource import HomeworkPage, LinkPage, QuestionBankPage
 from tests.gqtest import TestContextHelper
 from utils.data_loader import load_yaml
 
@@ -171,3 +171,11 @@ class TestAddCourseResource:
         #     question_page.upload_question(str(file_path))
         #     assert question_page.is_question_upload_success(), "导入题库失败"
         #     screenshot_helper.capture_full_page("题库导入完成")
+
+        with allure.step("添加作业"):
+            resource_page.click_left_menu_by_name("作业")
+            homework_page = HomeworkPage(page)
+            homework_title = DATA["homework"]["作业标题"]
+            homework_page.create_homework(homework_title)
+            assert homework_page.is_homework_save_success(), "添加作业失败"
+            screenshot_helper.capture_full_page("作业创建完成")

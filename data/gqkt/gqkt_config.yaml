@@ -182,6 +182,10 @@ course_resource:
   链接:
     - https://www.baidu.com/
 
+# 课程工作台 - 作业
+homework:
+  作业标题: 自动化测试作业{suffix}
+
 # 课程工作台 - 题库（简答题 + 导入）
 question_bank:
   导入文件: file/gqkt/course_resource/question_bank/question.xlsx

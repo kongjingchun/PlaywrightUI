@@ -13,7 +13,10 @@
 
 import re
 from playwright.sync_api import Page, Locator, expect
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Literal
+
+# 多元素索引类型：None 不处理；"first"/"last" 或 int 取第 n 个
+MultiIndex = Optional[Union[Literal["first", "last"], int]]
 import allure
 from utils.logger import Logger
 from config.settings import Settings
@@ -115,38 +118,37 @@ class BasePage:
     
     @allure.step("点击元素")
     def click_element(
-        self, 
-        locator: Union[Locator, str], 
+        self,
+        locator: Union[Locator, str],
         timeout: Optional[int] = None,
-        force: bool = False
+        force: bool = False,
+        multi: MultiIndex = None
     ) -> "BasePage":
         """
         点击元素（带有健壮的等待和错误处理，支持链式调用）
-        
+
         该方法会：
         1. 等待元素可见
         2. 等待元素可点击
         3. 执行点击操作
         4. 如果失败，记录错误并截图
-        
+
         Args:
             locator: 元素定位器（Locator 对象或选择器字符串）
             timeout: 超时时间（毫秒），不传则使用默认值
             force: 是否强制点击（跳过可操作性检查）
-        
+            multi: 多元素时取哪个，默认 None 不处理；"first" 取第一个；"last" 取最后一个；数字取第几个（从 0 开始）
+
         Returns:
             self，支持链式调用
-        
+
         使用方法：
-            # 使用 Locator 对象
             self.click_element(self.submit_button)
-            
-            # 链式调用
-            self.hover_element(self.menu).click_element(self.sub_item)
+            self.click_element(btn_locator, multi="last")
+            self.click_element(btn_locator, multi=2)  # 取第 3 个
         """
-        # 如果传入的是字符串选择器，转换为 Locator
-        element = self._get_locator(locator)
-        
+        element = self._resolve_locator(locator, multi)
+
         try:
             # 等待元素可见（确保元素已加载到DOM并显示）
             element.wait_for(state="visible", timeout=timeout)
@@ -164,18 +166,21 @@ class BasePage:
         return self
     
     @allure.step("双击元素")
-    def double_click_element(self, locator: Union[Locator, str], timeout: Optional[int] = None) -> "BasePage":
+    def double_click_element(
+        self,
+        locator: Union[Locator, str],
+        timeout: Optional[int] = None,
+        multi: MultiIndex = None
+    ) -> "BasePage":
         """
         双击元素（支持链式调用）
-        
+
         Args:
             locator: 元素定位器
             timeout: 超时时间
-        
-        Returns:
-            self，支持链式调用
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         try:
             element.wait_for(state="visible", timeout=timeout)
             self.logger.info(f"双击元素: {self._locator_to_log_str(locator)}")
@@ -189,11 +194,12 @@ class BasePage:
     
     @allure.step("在输入框中填入: {text}")
     def fill_element(
-        self, 
-        locator: Union[Locator, str], 
-        text: Union[str, int, float, None], 
+        self,
+        locator: Union[Locator, str],
+        text: Union[str, int, float, None],
         clear_first: bool = True,
-        timeout: Optional[int] = None
+        timeout: Optional[int] = None,
+        multi: MultiIndex = None
     ) -> "BasePage":
         """
         在输入框中填入文本（支持链式调用）
@@ -203,21 +209,9 @@ class BasePage:
             text: 要输入的文本
             clear_first: 是否先清空输入框（默认True）
             timeout: 超时时间
-
-        Returns:
-            self，支持链式调用
-
-        使用方法：
-            # 清空后输入
-            self.fill_element(self.username_input, "admin")
-
-            # 追加输入（不清空）
-            self.fill_element(self.search_input, "keyword", clear_first=False)
-
-            # 链式调用
-            self.fill_element(self.new_password_input, pwd).fill_element(self.confirm_password_input, pwd).click_element(self.submit_button)
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         # Playwright fill() 要求字符串，兼容传入数字（如 API 返回的 user_id）
         text_str = str(text) if text is not None else ""
         
@@ -241,17 +235,15 @@ class BasePage:
         return self
     
     @allure.step("清空输入框")
-    def clear_input(self, locator: Union[Locator, str]) -> "BasePage":
+    def clear_input(self, locator: Union[Locator, str], multi: MultiIndex = None) -> "BasePage":
         """
         清空输入框内容（支持链式调用）
-        
+
         Args:
             locator: 输入框元素定位器
-        
-        Returns:
-            self，支持链式调用
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         self.logger.info(f"清空输入框: {self._locator_to_log_str(locator)}")
         element.clear()
         return self
@@ -261,6 +253,7 @@ class BasePage:
         self,
         upload_trigger: Union[Locator, str],
         file_path: Union[str, List[str]],
+        multi: MultiIndex = None
     ) -> "BasePage":
         """
         通过 FileChooser 上传文件。先监听 filechooser，再点击触发元素。
@@ -273,7 +266,7 @@ class BasePage:
         Returns:
             self，支持链式调用
         """
-        trigger = self._get_locator(upload_trigger)
+        trigger = self._resolve_locator(upload_trigger, multi)
         with self.page.expect_file_chooser() as fc_info:
             trigger.click()
         fc_info.value.set_files(file_path)
@@ -282,34 +275,24 @@ class BasePage:
     
     @allure.step("选择下拉选项: {value}")
     def select_option(
-        self, 
-        locator: Union[Locator, str], 
+        self,
+        locator: Union[Locator, str],
         value: Optional[str] = None,
         label: Optional[str] = None,
-        index: Optional[int] = None
+        index: Optional[int] = None,
+        multi: MultiIndex = None
     ) -> "BasePage":
         """
         选择下拉框选项（支持链式调用）
-        
-        可以通过 value、label 或 index 三种方式选择。
-        
+
         Args:
             locator: 下拉框元素定位器
             value: 按 value 属性选择
             label: 按显示文本选择
             index: 按索引选择（从0开始）
-        
-        Returns:
-            self，支持链式调用
-        
-        使用方法：
-            # 按 value 选择
-            self.select_option(self.country_select, value="CN")
-            
-            # 链式调用
-            self.fill_element(self.search_input, "keyword").select_option(self.type_select, label="类型A").click_element(self.search_btn)
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         
         try:
             if value is not None:
@@ -331,18 +314,21 @@ class BasePage:
         return self
     
     @allure.step("勾选复选框")
-    def check_checkbox(self, locator: Union[Locator, str], check: bool = True) -> "BasePage":
+    def check_checkbox(
+        self,
+        locator: Union[Locator, str],
+        check: bool = True,
+        multi: MultiIndex = None
+    ) -> "BasePage":
         """
         勾选或取消勾选复选框（支持链式调用）
-        
+
         Args:
             locator: 复选框元素定位器
             check: True=勾选，False=取消勾选
-        
-        Returns:
-            self，支持链式调用
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         self.logger.info(f"{'勾选' if check else '取消勾选'}复选框")
         
         if check:
@@ -353,65 +339,58 @@ class BasePage:
         return self
     
     @allure.step("悬停在元素上")
-    def hover_element(self, locator: Union[Locator, str]) -> "BasePage":
+    def hover_element(self, locator: Union[Locator, str], multi: MultiIndex = None) -> "BasePage":
         """
         鼠标悬停在元素上（支持链式调用）
-        
+
         Args:
             locator: 元素定位器
-        
-        Returns:
-            self，支持链式调用
-        
-        使用方法：
-            # 悬停后点击子菜单
-            self.hover_element(self.menu).click_element(self.sub_item)
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         self.logger.info(f"悬停在元素: {self._locator_to_log_str(locator)}")
         element.hover()
         return self
     
     # ==================== 获取元素信息 ====================
     
-    def get_text(self, locator: Union[Locator, str]) -> str:
+    def get_text(self, locator: Union[Locator, str], multi: MultiIndex = None) -> str:
         """
         获取元素的文本内容
-        
+
         Args:
             locator: 元素定位器
-        
-        Returns:
-            元素的文本内容
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         return element.inner_text()
     
-    def get_input_value(self, locator: Union[Locator, str]) -> str:
+    def get_input_value(self, locator: Union[Locator, str], multi: MultiIndex = None) -> str:
         """
         获取输入框的值
-        
+
         Args:
             locator: 输入框元素定位器
-        
-        Returns:
-            输入框当前的值
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         return element.input_value()
     
-    def get_attribute(self, locator: Union[Locator, str], attribute: str) -> Optional[str]:
+    def get_attribute(
+        self,
+        locator: Union[Locator, str],
+        attribute: str,
+        multi: MultiIndex = None
+    ) -> Optional[str]:
         """
         获取元素的属性值
-        
+
         Args:
             locator: 元素定位器
             attribute: 属性名称
-        
-        Returns:
-            属性值，如果属性不存在则返回 None
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         return element.get_attribute(attribute)
     
     def get_element_count(self, locator: Union[Locator, str]) -> int:
@@ -429,87 +408,87 @@ class BasePage:
     
     # ==================== 元素状态检查 ====================
     
-    def is_visible(self, locator: Union[Locator, str], timeout: Optional[int] = None) -> bool:
+    def is_visible(
+        self,
+        locator: Union[Locator, str],
+        timeout: Optional[int] = None,
+        multi: MultiIndex = None
+    ) -> bool:
         """
         检查元素是否可见
-        
+
         Args:
             locator: 元素定位器
             timeout: 超时时间
-        
-        Returns:
-            True 如果元素可见，否则 False
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         try:
             element.wait_for(state="visible", timeout=timeout or 5000)
             return True
         except:
             return False
     
-    def is_enabled(self, locator: Union[Locator, str]) -> bool:
+    def is_enabled(self, locator: Union[Locator, str], multi: MultiIndex = None) -> bool:
         """
         检查元素是否启用（非禁用状态）
-        
+
         Args:
             locator: 元素定位器
-        
-        Returns:
-            True 如果元素启用，否则 False
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         return element.is_enabled()
     
-    def is_checked(self, locator: Union[Locator, str]) -> bool:
+    def is_checked(self, locator: Union[Locator, str], multi: MultiIndex = None) -> bool:
         """
         检查复选框/单选框是否被选中
-        
+
         Args:
             locator: 元素定位器
-        
-        Returns:
-            True 如果被选中，否则 False
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         return element.is_checked()
     
     # ==================== 等待方法 ====================
     
     @allure.step("等待元素可见")
     def wait_for_element_visible(
-        self, 
-        locator: Union[Locator, str], 
-        timeout: Optional[int] = None
+        self,
+        locator: Union[Locator, str],
+        timeout: Optional[int] = None,
+        multi: MultiIndex = None
     ) -> Locator:
         """
         等待元素变为可见状态
-        
+
         Args:
             locator: 元素定位器
             timeout: 超时时间
-        
-        Returns:
-            可见的元素 Locator
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         self.logger.info(f"等待元素可见: {self._locator_to_log_str(locator)}")
         element.wait_for(state="visible", timeout=timeout)
         return element
     
     @allure.step("等待元素隐藏")
     def wait_for_element_hidden(
-        self, 
-        locator: Union[Locator, str], 
-        timeout: Optional[int] = None
+        self,
+        locator: Union[Locator, str],
+        timeout: Optional[int] = None,
+        multi: MultiIndex = None
     ) -> None:
         """
         等待元素隐藏或从DOM中移除
-        
+
         Args:
             locator: 元素定位器
             timeout: 超时时间
+            multi: 多元素时取哪个，None/"first"/"last"/int
         """
-        element = self._get_locator(locator)
+        element = self._resolve_locator(locator, multi)
         self.logger.info(f"等待元素隐藏: {self._locator_to_log_str(locator)}")
         element.wait_for(state="hidden", timeout=timeout)
     
@@ -656,6 +635,32 @@ class BasePage:
         if isinstance(locator, str):
             return self.page.locator(locator)
         return locator
+
+    def _resolve_locator(
+        self,
+        locator: Union[Locator, str],
+        multi: MultiIndex
+    ) -> Locator:
+        """
+        根据 multi 参数缩小多元素定位器
+
+        Args:
+            locator: 元素定位器
+            multi: None 不处理；"first" 取第一个；"last" 取最后一个；int 取第 n 个（从 0 开始）
+
+        Returns:
+            Locator
+        """
+        element = self._get_locator(locator)
+        if multi is None:
+            return element
+        if multi == "first":
+            return element.first
+        if multi == "last":
+            return element.last
+        if isinstance(multi, int):
+            return element.nth(multi)
+        return element
 
     def _locator_to_log_str(self, locator: Union[Locator, str]) -> str:
         """
