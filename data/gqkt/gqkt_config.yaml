@@ -139,6 +139,11 @@ course_outline:
         标签: 标签1
   课程团队:
     教师姓名: *teacher_name  # 用于添加/删除的教师（test_013 创建的教师）
+  建设历程:
+    建设时间: "{year}-01-01"
+    建设内容: 自动化测试建设历程内容{suffix}
+    获得荣誉: 自动化测试获得荣誉{suffix}
+    建设团队: *prof_name
 
 # 课程工作台 - 知识图谱（新建主图谱 + 添加节点）
 knowledge_graph:

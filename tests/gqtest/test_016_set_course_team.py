@@ -26,7 +26,7 @@ class TestSetCourseTeam:
     设置课程团队测试类
     """
 
-    @pytest.mark.run(order=295)
+    @pytest.mark.run(order=300)
     @allure.title("设置课程团队")
     def test_set_course_team(self, page: Page, screenshot_helper, base_url):
         """
