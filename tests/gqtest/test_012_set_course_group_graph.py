@@ -29,7 +29,7 @@ class TestSetCourseGroupGraph:
     @allure.title("设置专业课程群图谱")
     def test_set_course_group_graph(self, page: Page, screenshot_helper, base_url):
         """
-        设置专业课程群图谱：专业管理员登录 -> 专业AI模型 -> 专业课程群图谱 -> 关联图谱。
+        设置专业课程群图谱：
         """
         # 专业管理员用户信息
         cms_prof_info = DATA["user"]["prof_cms"]

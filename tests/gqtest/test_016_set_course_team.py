@@ -30,7 +30,7 @@ class TestSetCourseTeam:
     @allure.title("设置课程团队")
     def test_set_course_team(self, page: Page, screenshot_helper, base_url):
         """
-        设置课程团队：教师登录 -> 我教的课 -> 进入课程 -> 课程大纲 -> 课程团队 ->
+        设置课程团队：
         1. 添加教师为课程负责人
         2. 删除教师从课程负责人
         3. 添加教师到课程教师

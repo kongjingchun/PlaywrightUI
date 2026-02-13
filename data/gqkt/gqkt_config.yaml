@@ -150,13 +150,46 @@ knowledge_graph:
   图谱名称: 自动化测试知识图谱{suffix}
   图谱描述: 自动化测试知识图谱描述{suffix}
   节点列表:
-    - 标题: 自动化测试-知识节点1{suffix}
+    - 标题: &knowledge_node1_name 自动化测试-知识节点1{suffix}
       描述: 知识节点1描述
       子节点:
         - 标题: 子节点1.1{suffix}
           描述: 子节点1.1描述
-    - 标题: 自动化测试-知识节点2{suffix}
+    - 标题: &knowledge_node2_name 自动化测试-知识节点2{suffix}
       描述: 知识节点2描述
       子节点:
         - 标题: 子节点2.1{suffix}
           描述: 子节点2.1描述
+
+# 课程工作台 - 课程资源（上传文件）
+course_resource:
+  教材:
+    - file/gqkt/course_resource/teaching_material/test.docx
+  课件:
+    - file/gqkt/course_resource/courseware/test.pptx
+  视频:
+    - file/gqkt/course_resource/video/test.mp4
+  音频:
+    - file/gqkt/course_resource/audio/test.mp3
+  论文:
+    - file/gqkt/course_resource/paper/test.doc
+  案例:
+    - file/gqkt/course_resource/case/test.doc
+  图片:
+    - file/gqkt/course_resource/image/test.jpg
+  其他资料:
+    - file/gqkt/course_resource/other/test.pdf
+  链接:
+    - https://www.baidu.com/
+
+# 课程工作台 - 题库（简答题）
+question_bank:
+  简答题:
+    题目内容: 自动化测试简答题内容{suffix}
+    参考答案: 自动化测试简答题参考答案{suffix}
+    题目解析: 自动化测试简答题解析{suffix}
+    知识点:
+      - 名称: *knowledge_node1_name
+        开放给学生: true
+      - 名称: *knowledge_node2_name
+        开放给学生: false

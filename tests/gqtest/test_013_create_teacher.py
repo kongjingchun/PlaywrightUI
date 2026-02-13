@@ -31,7 +31,7 @@ class TestCreateTeacher:
     @allure.title("创建教师")
     def test_create_teacher(self, page: Page, screenshot_helper, base_url, initial_admin):
         """
-        创建教师：机构管理员登录 -> 用户管理 -> 手动创建 -> 创建教师。
+        创建教师：
         """
         # 教师用户信息
         teacher_info = DATA["user"]["teacher"]

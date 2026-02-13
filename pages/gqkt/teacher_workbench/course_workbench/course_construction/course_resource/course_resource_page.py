@@ -17,11 +17,25 @@ class CourseResourcePage(CourseWorkbenchPage):
     def __init__(self, page: Page):
         super().__init__(page)
 
-        # ========== iframe ==========
         self.iframe = self.base_iframe.frame_locator("iframe#course-workspace-iframe")
 
-        # ========== 头部按钮 / 搜索 ==========
+        # 上传文件按钮
+        self.upload_file_button = self.iframe.get_by_role("button", name="上传文件").first
+        # 上传成功提示
+        self.upload_success_message = self.iframe.locator("xpath=//p[contains(text(),'上传成功')]").last
+    # ==================== 业务方法 ====================
 
-        # ========== 列表区域 ==========
+    def upload_file(self, file_path: str):
+        """上传文件"""
+        self.upload_file_via_chooser(self.upload_file_button, file_path)
+    # ==================== 断言方法 ====================
 
-        # ========== 弹窗 / 表单 ==========
+    def is_upload_file_success(self) -> bool:
+        """检查是否上传文件成功"""
+        try:
+            self.wait_for_element_visible(self.upload_success_message)
+            self.logger.info("✓ 上传文件成功")
+            return True
+        except Exception as e:
+            self.logger.error(f"✗ 上传文件失败: {e}")
+            return False

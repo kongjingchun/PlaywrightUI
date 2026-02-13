@@ -30,7 +30,7 @@ class TestSetConstructionHistory:
     @allure.title("设置建设历程")
     def test_set_construction_history(self, page: Page, screenshot_helper, base_url):
         """
-        设置建设历程：教师登录 -> 我教的课 -> 进入课程 -> 课程大纲 -> 建设历程 -> 编辑并保存。
+        设置建设历程：
         """
         # 教师用户信息（有课程权限的专业负责人）
         teacher_cms = DATA["user"]["prof_cms"]
@@ -60,7 +60,6 @@ class TestSetConstructionHistory:
             history_page = ConstructionHistoryPage(page)
             history_page.click_left_menu_by_name("课程大纲")
             history_page.click_left_menu_by_name("建设历程")
-            screenshot_helper.capture_full_page("进入建设历程")
 
         with allure.step("设置建设历程并保存"):
             history_page.set_construction_history(

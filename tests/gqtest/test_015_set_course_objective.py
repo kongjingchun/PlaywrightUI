@@ -30,7 +30,7 @@ class TestSetCourseObjective:
     @allure.title("设置课程目标")
     def test_set_course_objective(self, page: Page, screenshot_helper, base_url):
         """
-        设置课程目标：教师登录 -> 我教的课 -> 进入课程 -> 课程大纲 -> 课程目标 -> 编辑描述并添加目标。
+        设置课程目标：
         """
         # 教师用户信息（与 test_011 一致，使用有课程权限的教师/专业负责人）
         teacher_cms = DATA["user"]["prof_cms"]
