@@ -3,5 +3,6 @@
 # ========================================
 
 from .my_taught_courses_page import MyTaughtCoursesPage
+from .my_taught_class import MyTaughtClassPage, CourseGuidePage
 
-__all__ = ["MyTaughtCoursesPage"]
+__all__ = ["MyTaughtCoursesPage", "MyTaughtClassPage", "CourseGuidePage"]
