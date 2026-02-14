@@ -15,7 +15,7 @@ from config.settings import Settings
 from utils.logger import Logger
 import allure
 import re
-from playwright.sync_api import Page, Locator, expect
+from playwright.sync_api import Page, Locator, FrameLocator, expect
 from typing import Optional, List, Union, Literal
 
 # 多元素索引类型：None 不处理；"first"/"last" 或 int 取第 n 个
@@ -407,6 +407,31 @@ class BasePage:
         """
         element = self._get_locator(locator)
         return element.count()
+
+    def has_text(
+        self,
+        text: str,
+        scope: Optional[Union[Page, FrameLocator]] = None,
+        exact: bool = False
+    ) -> bool:
+        """
+        判断页面（或指定 iframe）是否包含某段文字
+
+        Args:
+            text: 要查找的文字
+            scope: 查找范围，默认整页（self.page）；可传 FrameLocator（如 self.iframe）以在 iframe 内查找
+            exact: 是否精确匹配，默认 False 表示包含即可
+
+        Returns:
+            True 表示存在，False 表示不存在
+
+        示例:
+            self.has_text("创建成功")
+            self.has_text("保存成功", scope=self.iframe)
+        """
+        target = scope if scope is not None else self.page
+        count = target.get_by_text(text, exact=exact).count()
+        return count > 0
 
     # ==================== 元素状态检查 ====================
 

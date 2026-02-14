@@ -203,3 +203,15 @@ question_bank:
         开放给学生: true
       - 名称: *knowledge_node2_name
         开放给学生: false
+
+# 课程工作台 - 教学班管理
+teaching_class:
+  教学班名称: 自动化测试教学班{suffix}
+  教学班编号: teaching_class{suffix}
+  开课时间: "{year}-02-01 00:00:00"
+  结课时间: "{year}-06-30 23:59:59"
+  班级人数: 100
+  是否允许学生自选: false
+  是否允许学生自主退课: false
+  班级人数无限制: false
+  主讲教师: *prof_code  
