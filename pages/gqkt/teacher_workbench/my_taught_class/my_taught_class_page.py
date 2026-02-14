@@ -38,7 +38,16 @@ class MyTaughtClassPage(BasePage):
         """
         return self.iframe.get_by_text(class_name, exact=True)
 
+    # ==================== 操作方法 ====================
+    def click_tab_by_name(self, tab_name: str):
+        """
+        根据TAB名称点击TAB
+
+        :param tab_name: TAB的显示名称
+        """
+        self.click_element(self.iframe.get_by_role("tab", name=tab_name))
     # ==================== 业务方法 ====================
+
     def click_class_card_by_name(self, class_name: str):
         """
         根据班级名称点击班级卡片

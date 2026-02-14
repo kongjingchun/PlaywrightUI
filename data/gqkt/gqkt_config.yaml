@@ -3,7 +3,7 @@
 # ========================================
 variables:
   # suffix: "021"           # 线上环境序列号
-  suffix: "009"           # 211环境序号
+  suffix: "010"           # 211环境序号
   year: "2024"           # 学年
   semester_value: "202401"  # 学期值
   school_name: "智慧大学"   # 学校名称
@@ -206,7 +206,7 @@ question_bank:
 
 # 课程工作台 - 教学班管理
 teaching_class:
-  教学班名称: 自动化测试教学班{suffix}
+  教学班名称: &teaching_class_name 自动化测试教学班{suffix}
   教学班编号: teaching_class{suffix}
   开课时间: "{year}-02-01 00:00:00"
   结课时间: "{year}-06-30 23:59:59"
@@ -254,4 +254,14 @@ chapter:
   子章节名称: 自动化测试子章节{suffix}
   子章节描述: 自动化测试子章节描述{suffix}
   知识点章节名称: *knowledge_node1_name
-  版本名称: 自动化测试版本{suffix}
+  版本名称: &version_name 自动化测试版本{suffix}
+
+# 我教的班 - 设置我的班级
+my_class:
+  班级名称: *teaching_class_name
+  引用版本名称: *version_name
+  章名称: 自动化测试章{suffix}
+  章描述: 自动化测试章描述{suffix}
+  子章节名称: 自动化测试子章节{suffix}
+  子章节描述: 自动化测试子章节描述{suffix}
+  知识点章节名称: *knowledge_node1_name
