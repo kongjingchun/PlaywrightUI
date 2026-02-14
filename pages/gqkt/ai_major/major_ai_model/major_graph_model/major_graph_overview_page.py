@@ -21,6 +21,10 @@ class MajorGraphOverviewPage(MajorAiModelPage):
         # ========== 头部按钮 / 搜索 ==========
         # 创建专业图谱按钮
         self.create_major_graph_button = self.iframe.get_by_role("button", name="创建专业图谱")
+        # 名称输入框
+        self.name_input = self.iframe.get_by_role("textbox", name="名称")
+        # 创建按钮
+        self.create_button = self.iframe.get_by_role("button", name="创建", exact=True)
         # 专业能力节点新增按钮
         self.add_major_ability_node_button = self.iframe.get_by_text(re.compile(r"专业能力节点\d+个节点")).get_by_role("button")
         # 专业知识节点新增按钮
@@ -40,7 +44,7 @@ class MajorGraphOverviewPage(MajorAiModelPage):
         # 确定按钮
         self.confirm_button = self.iframe.get_by_role("button", name="确定")
         # 关系设置成功提示
-        self.success_associate_message = self.iframe.locator("xpath=//p[contains(text(),'关系设置成功')]")
+        self.success_associate_message = self.iframe.locator("xpath=//p[contains(text(),'关系设置成功')]").last
         # ========== 列表 / 图谱区域 ==========
 
         # ========== 弹窗 / 表单 ==========
@@ -98,6 +102,12 @@ class MajorGraphOverviewPage(MajorAiModelPage):
         self.hover_element(associate_button)
         self.click_element(associate_button)
     # ==================== 业务方法 ====================
+
+    def create_major_graph(self, name: str):
+        """创建专业图谱"""
+        self.click_create_major_graph_button()  # 点击创建专业图谱按钮
+        self.fill_element(self.name_input, name)  # 填写名称
+        self.click_element(self.create_button)  # 点击创建按钮
 
     def add_major_node(self, node_type: str, node_name: str):
         """根据节点类型和名称添加节点"""

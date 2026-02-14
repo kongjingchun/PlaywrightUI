@@ -34,6 +34,8 @@ class TestCreateMajorGraphOverview:
         cms_prof_info = DATA["user"]["prof_cms"]
         # 专业图谱节点列表（类型 + 名称）
         node_list = DATA["major_graph"]["节点列表"]
+        # 专业图谱名称
+        graph_name = DATA["major_graph"]["图谱名称"]
 
         helper = TestContextHelper()
 
@@ -52,9 +54,8 @@ class TestCreateMajorGraphOverview:
             graph_page = MajorGraphOverviewPage(page)
             graph_page.click_menu_item("图谱概览")
 
-        with allure.step("点击创建专业图谱"):
-            graph_page.click_create_major_graph_button()
-            screenshot_helper.capture_full_page("进入创建专业图谱")
+        with allure.step("创建专业图谱"):
+            graph_page.create_major_graph(graph_name)
 
         with allure.step("添加节点"):
             for node in node_list:

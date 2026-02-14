@@ -3,7 +3,7 @@
 # ========================================
 variables:
   # suffix: "021"           # 线上环境序列号
-  suffix: "007"           # 211环境序号
+  suffix: "009"           # 211环境序号
   year: "2024"           # 学年
   semester_value: "202401"  # 学期值
   school_name: "智慧大学"   # 学校名称
@@ -114,6 +114,7 @@ training_program:
 
 # 专业图谱概览（创建专业图谱并添加节点）
 major_graph:
+  图谱名称: 自动化测试专业图谱{suffix}
   节点列表:
     - 类型: 专业能力
       名称: 自动化测试-能力节点
@@ -185,6 +186,10 @@ course_resource:
 # 课程工作台 - 作业
 homework:
   作业标题: 自动化测试作业{suffix}
+
+# 课程工作台 - 试卷
+exam:
+  试卷标题: 自动化测试试卷{suffix}
 
 # 课程工作台 - 题库（简答题 + 导入）
 question_bank:
