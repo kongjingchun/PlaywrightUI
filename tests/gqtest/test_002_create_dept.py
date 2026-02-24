@@ -18,7 +18,7 @@ DATA = load_yaml("gqkt/gqkt_config.yaml")
 
 
 @allure.feature("光穹课堂")
-@allure.story("创建部门")
+@allure.story("创建院系")
 class TestCreateDept:
     """
     创建部门测试类
@@ -28,7 +28,7 @@ class TestCreateDept:
     @allure.title("创建院系")
     def test_create_dept(self, page: Page, screenshot_helper, base_url):
         """
-        创建部门
+        创建院系
         """
         # CMS 教务管理员用户信息
         cms_dean_info = DATA["user"]["dean_cms"]

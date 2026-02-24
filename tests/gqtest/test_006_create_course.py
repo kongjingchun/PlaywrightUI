@@ -51,7 +51,7 @@ class TestCreateCourse:
 
         with allure.step("创建课程"):
             course_manage_page = CourseManagePage(page)
-            image_path = str(build_path("file", "gqkt", "course_manage", "course_cover_1.jpg"))
+            image_path = str(build_path("file", "gqkt", "course_manage", course_info["课程封面"]))
             course_manage_page.create_course(
                 course_code=course_info["课程代码"],
                 course_name=course_info["课程名称"],

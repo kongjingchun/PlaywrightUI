@@ -5,7 +5,6 @@
 # 断言在测试用例中，不在页面对象中
 # ========================================
 
-from tkinter import W
 import pytest
 import allure
 from playwright.sync_api import Page
@@ -74,12 +73,16 @@ class TestReviseTrainingProgram:
             screenshot_helper.capture_full_page("修订培养方案：毕业要求概述成功")
 
         with allure.step("修订培养方案：添加指标点"):
-            for indicator in tp_info["指标点"].values():
-                tp_manage_page.add_graduation_requirement(indicator["指标点名称"], indicator["指标点描述"], indicator["分解指标点名称"], indicator["分解指标点描述"])
+            for indicator in tp_info["指标点"]:
+                tp_manage_page.add_graduation_requirement(
+                    indicator["指标点名称"],
+                    indicator["指标点描述"],
+                    indicator["分解指标点"]
+                )
             screenshot_helper.capture_full_page("修订培养方案：添加指标点成功")
 
         with allure.step("修订培养方案：添加目标支撑"):
-            tp_manage_page.add_target_support()
+            tp_manage_page.add_target_support(target_support="依次", interval=3)
             assert tp_manage_page.is_add_target_support_success(), "修订培养方案：添加目标支撑失败"
             screenshot_helper.capture_full_page("修订培养方案：添加目标支撑成功")
 
@@ -89,6 +92,6 @@ class TestReviseTrainingProgram:
             screenshot_helper.capture_full_page("修订培养方案：添加课程成功")
 
         with allure.step("修订培养方案：课程支撑"):
-            tp_manage_page.associate_course(course_info["课程名称"], "H")
+            tp_manage_page.associate_course(course_info["课程名称"], support_level="依次")
             assert tp_manage_page.is_edit_complete(), "修订培养方案：课程支撑失败"
             screenshot_helper.capture_full_page("修订培养方案：课程支撑成功")

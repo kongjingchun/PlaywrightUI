@@ -2,11 +2,18 @@
 # 培养方案管理页面
 # ========================================
 
+import random
 from playwright.sync_api import Page
 from typing import Optional
 
 from base.base_page import BasePage
 from config.env_config import EnvConfig
+
+
+# 目标支撑可选值
+SUPPORT_LEVELS = ("高支撑", "中支撑", "低支撑")
+# 课程支撑等级（H/M/L 对应高/中/低支撑）
+ASSOCIATE_SUPPORT_LEVELS = ("H", "M", "L")
 
 
 class TrainingProgramManagePage(BasePage):
@@ -190,6 +197,13 @@ class TrainingProgramManagePage(BasePage):
         根据传入的index和支撑等级，获取设置支撑等级的定位器
         """
         return self.iframe.get_by_role("button", name=support_level).nth(index)
+
+    def get_support_level_option_locator_by_name(self, support_level: str):
+        """
+        根据支撑等级名称获取对应按钮定位器（匹配所有该名称的按钮）
+        """
+        return self.iframe.get_by_role("button", name=support_level)
+
     # ==================== 页面操作 ====================
 
     def click_edit_training_program_menu(self, training_program_name: str):
@@ -248,25 +262,59 @@ class TrainingProgramManagePage(BasePage):
         self.fill_element(self.training_program_major_graduation_requirement_input, major_graduation_requirement)  # 输入毕业要求概述
         self.click_element(self.confirm_edit_button)  # 点击保存按钮
 
-    def add_graduation_requirement(self, graduation_requirement_name: str, graduation_requirement_description: str, indicator_name: str, indicator_description: str):
-        """添加指标点"""
+    def add_graduation_requirement(self, graduation_requirement_name: str, graduation_requirement_description: str, decomposition_indicators: list):
+        """
+        添加指标点（支持多个分解指标点，分解指标点名称可选）
+
+        :param graduation_requirement_name: 指标点名称
+        :param graduation_requirement_description: 指标点描述
+        :param decomposition_indicators: 分解指标点列表，每项含 分解指标点描述（必填）、分解指标点名称（可选）
+        """
         self.click_menu("毕业要求")  # 点击毕业要求菜单
         self.click_element(self.add_graduation_requirement_button)  # 点击添加指标点按钮
         self.fill_element(self.graduation_requirement_name_input, graduation_requirement_name)  # 输入指标点名称
         self.fill_element(self.graduation_requirement_description_input, graduation_requirement_description)  # 输入指标点描述
         self.click_element(self.graduation_requirement_expand_button)  # 点击指标点展开按钮
-        self.click_element(self.add_decomposition_graduation_requirement_button)  # 点击添加分解指标点按钮
-        self.fill_element(self.decomposition_graduation_requirement_name_input, indicator_name)  # 输入分解指标点名称
-        self.fill_element(self.decomposition_graduation_requirement_description_input, indicator_description)  # 输入分解指标点描述
+        for decomp in decomposition_indicators:
+            self.click_element(self.add_decomposition_graduation_requirement_button)  # 点击添加分解指标点按钮
+            if decomp.get("分解指标点名称"):
+                self.fill_element(self.decomposition_graduation_requirement_name_input, decomp["分解指标点名称"])  # 输入分解指标点名称（可选）
+            # 分解指标点描述必填，缺失时用分解指标点名称兜底
+            description = decomp.get("分解指标点描述") or decomp.get("分解指标点名称") or ""
+            self.fill_element(self.decomposition_graduation_requirement_description_input, description)  # 输入分解指标点描述
         self.click_element(self.confirm_edit_button)  # 点击保存按钮
 
-    def add_target_support(self, target_support="高支撑"):
-        """添加目标支撑"""
+    def add_target_support(self, target_support="高支撑", interval: int = None):
+        """
+        添加目标支撑
+
+        :param target_support: 支撑选择方式
+            - 高支撑/中支撑/低支撑：全部选择对应等级
+            - 依次：按序选择 高支撑、中支撑、低支撑（循环）
+            - 随机：每个随机选择 高支撑、中支撑、低支撑
+        :param interval: 间隔数，不传则挨个选择；传入则按间隔选择（如 2 表示选第 0、2、4... 个），
+                        因选择后 num 会变化，故从最大索引开始执行
+        """
         self.click_menu("目标支撑")  # 点击目标支撑菜单
         num = self.target_support_select.count()
-        for i in range(num):
-            self.click_element(self.target_support_select.first)  # 点击目标支撑选择下拉框
-            self.click_element(self.get_target_support_option_locator(target_support))  # 选择目标支撑
+        if interval is None:
+            indices = list(range(num))  # 挨个选择
+        else:
+            indices = sorted(range(0, num, interval), reverse=True)  # 按间隔选择，从大到小
+
+        # 确定每个待选项对应的支撑等级
+        if target_support in SUPPORT_LEVELS:
+            support_list = [target_support] * len(indices)
+        elif target_support == "依次":
+            support_list = [SUPPORT_LEVELS[i % len(SUPPORT_LEVELS)] for i in range(len(indices))]
+        elif target_support == "随机":
+            support_list = [random.choice(SUPPORT_LEVELS) for _ in indices]
+        else:
+            support_list = ["高支撑"] * len(indices)  # 无效值默认高支撑
+
+        for i, support in zip(indices, support_list):
+            self.click_element(self.target_support_select.nth(i))  # 点击目标支撑选择下拉框
+            self.click_element(self.get_target_support_option_locator(support))  # 选择目标支撑
             self.wait_for_timeout(500)
         self.click_element(self.confirm_edit_button)  # 点击保存按钮
 
@@ -279,15 +327,31 @@ class TrainingProgramManagePage(BasePage):
         self.click_element(self.confirm_add_course_button)  # 点击确认添加课程按钮
 
     def associate_course(self, course_name: str, support_level: str = "H"):
-        """关联课程"""
+        """
+        关联课程（从最后一个关联课程按钮依次点击到第一个）
+
+        :param course_name: 课程名称
+        :param support_level: 支撑等级选择方式 H/M/L（固定）、依次、随机
+        """
         self.click_menu("课程支撑")  # 点击课程支撑菜单
         num = self.associate_course_button.count()
-        for i in range(num):
-            self.click_element(self.associate_course_button.first)  # 点击关联课程按钮
+        indices = sorted(range(num), reverse=True)  # 从最后一个到第一个
+
+        if support_level in ASSOCIATE_SUPPORT_LEVELS:
+            support_list = [support_level] * len(indices)
+        elif support_level == "依次":
+            support_list = [ASSOCIATE_SUPPORT_LEVELS[idx % 3] for idx in indices]
+        elif support_level == "随机":
+            support_list = [random.choice(ASSOCIATE_SUPPORT_LEVELS) for _ in indices]
+        else:
+            support_list = ["H"] * len(indices)
+
+        for idx, support in zip(indices, support_list):
+            self.click_element(self.associate_course_button.nth(idx))  # 点击关联课程按钮
             self.fill_element(self.associate_course_search_input, course_name)  # 输入课程名称或代码
             self.click_element(self.get_associate_course_checkbox_locator(course_name))  # 点击课程复选框
             self.click_element(self.confirm_associate_course_button)  # 点击确认关联课程按钮
-            self.click_element(self.get_support_level_option_locator(i, support_level))  # 点击支撑等级
+            self.click_element(self.get_support_level_option_locator_by_name(support).first)  # 点击支撑等级
             self.click_element(self.complete_edit_button)  # 点击完成编辑按钮
         self.click_element(self.confirm_edit_button)  # 点击保存按钮
     # ==================== 断言方法 ====================

@@ -76,8 +76,9 @@ class TestSetCourseObjective:
             screenshot_helper.capture_full_page("课程目标设置完成")
 
         with allure.step("关联课程目标与指标"):
-            # 使用培养方案中的分解指标点名称
-            indicator_name = DATA["training_program"]["指标点"]["指标点1"]["分解指标点名称"]
+            # 使用培养方案中第一个有名称的分解指标点
+            decomp_list = DATA["training_program"]["指标点"][0]["分解指标点"]
+            indicator_name = next((d["分解指标点名称"] for d in decomp_list if d.get("分解指标点名称")), None)
             objective_page.associate_goal_with_indicator(goal["标题"], indicator_name)
             assert objective_page.is_associate_goal_with_indicator_success(), f"关联课程目标与指标失败: {goal['标题']}"
             screenshot_helper.capture_full_page("课程目标与指标关联完成")
