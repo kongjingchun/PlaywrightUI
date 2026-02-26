@@ -61,13 +61,18 @@ class TestCreateKnowledgeGraph:
             kg_page.click_left_menu_by_name("知识图谱")
 
         with allure.step("新建知识图谱"):
-            kg_page.create_knowledge_graph(kg["图谱名称"], kg["图谱描述"])
+            kg_page.create_knowledge_graph(kg["图谱名称"], kg["图谱描述"], kg["背景图片"])
             assert kg_page.is_create_knowledge_graph_success(), "新建知识图谱失败"
             screenshot_helper.capture_full_page("新建知识图谱完成")
 
         with allure.step("点击编辑数据按钮"):
             kg_page.click_edit_data_button()
             screenshot_helper.capture_full_page("进入编辑数据页")
+
+        with allure.step("导入知识图谱"):
+            kg_page.import_knowledge_graph(kg["导入文件"])
+            assert kg_page.is_import_knowledge_graph_success(), "导入知识图谱失败"
+            screenshot_helper.capture_full_page("导入知识图谱完成")
 
         with allure.step("添加节点"):
             for node in kg["节点列表"]:

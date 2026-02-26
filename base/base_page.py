@@ -488,16 +488,19 @@ class BasePage:
         multi: MultiIndex = None
     ) -> Locator:
         """
-        等待元素变为可见状态
+        等待元素变为可见状态。
+        若定位器匹配到多个元素，只要至少有一个可见即视为成功（返回多个也算成功）。
 
         Args:
             locator: 元素定位器
             timeout: 超时时间
-            multi: 多元素时取哪个，None/"first"/"last"/int
+            multi: 多元素时取哪个，None/"first"/"last"/int；为 None 时等待最后一个匹配可见即可
         """
         element = self._resolve_locator(locator, multi)
         self.logger.info(f"等待元素可见: {self._locator_to_log_str(locator)}")
-        element.wait_for(state="visible", timeout=timeout)
+        # 未指定 multi 时用 last：多个匹配时等待最后一个可见即成功
+        to_wait = element.last if multi is None else element
+        to_wait.wait_for(state="visible", timeout=timeout)
         return element
 
     @allure.step("等待元素隐藏")

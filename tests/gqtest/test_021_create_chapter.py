@@ -66,6 +66,14 @@ class TestCreateChapter:
             assert content_page.is_create_chapter_success(), "创建章失败"
             screenshot_helper.capture_full_page("章创建完成")
 
+        with allure.step("在主章下添加关联学习单元"):
+            content_page.add_all_learning_units_to_chapter(
+                chapter_name=ch_config["章名称"],
+                select_only=ch_config.get("主章关联学习单元")
+            )
+            assert content_page.is_add_learning_units_to_chapter_success(), "主章添加学习单元失败"
+            screenshot_helper.capture_full_page("主章学习单元添加完成")
+
         with allure.step("在该章下创建子章节"):
             content_page.add_subsection_to_chapter(
                 chapter_name=ch_config["章名称"],
@@ -75,12 +83,13 @@ class TestCreateChapter:
             assert content_page.is_create_chapter_success(), "创建子章节失败"
             screenshot_helper.capture_full_page("子章节创建完成")
 
-        with allure.step("在该章下添加全部学习单元"):
+        with allure.step("在子章节下添加关联学习单元"):
             content_page.add_all_learning_units_to_chapter(
-                chapter_name=ch_config["子章节名称"]
+                chapter_name=ch_config["子章节名称"],
+                select_only=ch_config.get("子章节关联学习单元")
             )
-            assert content_page.is_add_learning_units_to_chapter_success(), "添加学习单元失败"
-            screenshot_helper.capture_full_page("添加学习单元完成")
+            assert content_page.is_add_learning_units_to_chapter_success(), "子章节添加学习单元失败"
+            screenshot_helper.capture_full_page("子章节学习单元添加完成")
 
         with allure.step("在该章下关联知识点章节"):
             content_page.associate_first_level_knowledge_graph_by_chapter(

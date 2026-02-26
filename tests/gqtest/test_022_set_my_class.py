@@ -33,7 +33,6 @@ class TestSetMyClass:
         """
         teacher_cms = DATA["user"]["prof_cms"]
         mc_config = DATA["my_class"]
-        ch_config = DATA["chapter"]
 
         helper = TestContextHelper()
 
@@ -66,30 +65,41 @@ class TestSetMyClass:
 
         with allure.step("添加一个章"):
             teaching_content_page.add_chapter(
-                chapter_name=ch_config["章名称"],
-                chapter_description=ch_config.get("章描述", "")
+                chapter_name=mc_config["章名称"],
+                chapter_description=mc_config.get("章描述", "")
             )
             assert teaching_content_page.is_create_chapter_success(), "添加章失败"
             screenshot_helper.capture_full_page("添加章完成")
 
+        with allure.step("章下添加关联学习单元"):
+            teaching_content_page.add_learning_units_to_chapter(
+                chapter_name=mc_config["章名称"],
+                select_only=mc_config.get("主章关联学习单元")
+            )
+            assert teaching_content_page.is_add_learning_units_to_chapter_success(), "章添加学习单元失败"
+            screenshot_helper.capture_full_page("章添加学习单元完成")
+
         with allure.step("章下添加一个节"):
             teaching_content_page.add_section_to_chapter(
-                chapter_name=ch_config["章名称"],
-                section_name=ch_config["子章节名称"],
-                section_description=ch_config.get("子章节描述", "")
+                chapter_name=mc_config["章名称"],
+                section_name=mc_config["子章节名称"],
+                section_description=mc_config.get("子章节描述", "")
             )
             assert teaching_content_page.is_create_chapter_success(), "添加节失败"
             screenshot_helper.capture_full_page("添加节完成")
 
-        with allure.step("章添加全部学习单元"):
-            teaching_content_page.add_learning_units_to_chapter(chapter_name=ch_config["章名称"])
-            assert teaching_content_page.is_add_learning_units_to_chapter_success(), "添加学习单元失败"
-            screenshot_helper.capture_full_page("添加学习单元完成")
+        with allure.step("节下添加关联学习单元"):
+            teaching_content_page.add_learning_units_to_chapter(
+                chapter_name=mc_config["子章节名称"],
+                select_only=mc_config.get("子章节关联学习单元")
+            )
+            assert teaching_content_page.is_add_learning_units_to_chapter_success(), "节添加学习单元失败"
+            screenshot_helper.capture_full_page("节添加学习单元完成")
 
         with allure.step("章下添加一个知识图谱"):
             teaching_content_page.add_knowledge_graph_to_chapter(
-                chapter_name=ch_config["章名称"],
-                knowledge_graph_name=ch_config["知识点章节名称"]
+                chapter_name=mc_config["章名称"],
+                knowledge_graph_name=mc_config["知识点章节名称"]
             )
             assert teaching_content_page.is_add_knowledge_graph_to_chapter_success(), "添加知识图谱失败"
             screenshot_helper.capture_full_page("添加知识图谱完成")

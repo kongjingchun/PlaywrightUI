@@ -109,8 +109,14 @@ class MajorGraphOverviewPage(MajorAiModelPage):
         self.fill_element(self.name_input, name)  # 填写名称
         self.click_element(self.create_button)  # 点击创建按钮
 
-    def add_major_node(self, node_type: str, node_name: str):
-        """根据节点类型和名称添加节点"""
+    def add_major_node(self, node_type: str, node_name: str, node_description: str = ""):
+        """
+        根据节点类型和名称添加节点
+
+        :param node_type: 节点类型（专业能力/专业知识/专业素质/专业问题）
+        :param node_name: 节点名称
+        :param node_description: 节点描述，可选
+        """
         if "能力" in node_type:
             self.click_element(self.add_major_ability_node_button)
         elif "知识" in node_type:
@@ -120,6 +126,8 @@ class MajorGraphOverviewPage(MajorAiModelPage):
         elif "问题" in node_type:
             self.click_element(self.add_major_problem_node_button)
         self.fill_element(self.title_input, node_name)
+        if node_description:
+            self.fill_element(self.description_input, node_description)
         self.click_element(self.add_button)
 
     def associate_node_by_names(

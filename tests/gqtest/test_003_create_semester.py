@@ -24,7 +24,7 @@ class TestCreateSemester:
     创建学期测试类
     """
 
-    @pytest.mark.skip(reason="临时跳过创建学期用例")
+    # @pytest.mark.skip(reason="临时跳过创建学期用例")
     @pytest.mark.run(order=160)
     @allure.title("创建学期")
     def test_create_semester(self, page: Page, screenshot_helper, base_url):

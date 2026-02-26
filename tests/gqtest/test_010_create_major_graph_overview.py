@@ -59,13 +59,30 @@ class TestCreateMajorGraphOverview:
 
         with allure.step("添加节点"):
             for node in node_list:
-                graph_page.add_major_node(node["类型"], node["名称"])
+                graph_page.add_major_node(
+                    node["类型"],
+                    node["名称"],
+                    node.get("描述", "")
+                )
                 assert graph_page.is_add_node_success(), f"添加节点失败: {node['类型']} - {node['名称']}"
-            screenshot_helper.capture_full_page("专业图谱概览创建完成")
+        screenshot_helper.capture_full_page("专业图谱概览创建完成")
 
         with allure.step("关联节点"):
-            graph_page.associate_node_by_names(node_list[0]["名称"], node_list[1]["类型"], node_list[1]["名称"])
-            assert graph_page.is_associate_node_success(), f"关联节点失败"
-            graph_page.associate_node_by_names(node_list[2]["名称"], node_list[3]["类型"], node_list[3]["名称"])
-            assert graph_page.is_associate_node_success(), f"关联节点失败:"
+            # (源节点索引, 目标节点索引) 跨类型关联形成更丰富的图谱
+            # (源节点索引, 目标节点索引)，仅跨类型关联（同类型不关联）
+            associate_pairs = [
+                (1, 10),  # 责任心 -> 爱国敬业精神 (能力->素质)
+                (3, 5),   # 逻辑思维 -> 操作系统引论 (能力->知识)
+                (5, 15),  # 操作系统引论 -> 软件工程的核心定义... (知识->问题)
+                (4, 19),  # 性能调优 -> 软件测试的核心目的... (能力->问题)
+                (8, 17),  # 软件测试 -> 常见的软件开发模型... (知识->问题)
+                (0, 12),  # 跨部门沟通 -> 良好的职业道德 (能力->素质)
+                (2, 7),   # 系统架构设计 -> 进程的描述与控制 (能力->知识)
+                (11, 16),  # 社会责任感 -> 软件工程生命周期... (素质->问题)
+                (9, 13),  # 项目计划 -> 健康的身心 (知识->素质)
+            ]
+            for src_idx, tgt_idx in associate_pairs:
+                src, tgt = node_list[src_idx], node_list[tgt_idx]
+                graph_page.associate_node_by_names(src["名称"], tgt["类型"], tgt["名称"])
+                assert graph_page.is_associate_node_success(), f"关联节点失败: {src['名称']} -> {tgt['名称']}"
             screenshot_helper.capture_full_page("专业图谱概览关联完成")

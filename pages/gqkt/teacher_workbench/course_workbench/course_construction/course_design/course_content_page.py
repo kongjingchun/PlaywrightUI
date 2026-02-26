@@ -2,6 +2,8 @@
 # 课程内容页面（课程建设 - 课程设计 - 课程内容）
 # ========================================
 
+from typing import List, Optional, Union
+
 from playwright.sync_api import Page
 
 from ... import CourseWorkbenchPage
@@ -38,7 +40,7 @@ class CourseContentPage(CourseWorkbenchPage):
         # 确定按钮
         self.confirm_button = self.iframe.get_by_role("button", name="确定")
         # 成功添加提示框
-        self.success_add_learning_unit_message = self.iframe.locator("xpath=//p[contains(text(),'成功添加')]").last
+        self.success_add_learning_unit_message = self.iframe.locator("xpath=//p[contains(text(),'成功添加') or contains(text(),'添加成功')]").last
         # 成功为章节添加知识点章节提示框
         self.success_add_knowledge_graph_message = self.iframe.locator("xpath=//p[contains(text(),'成功为章节') and contains(text(),'添加知识点章节')]").last
         # ============================版本管理页面===============================
@@ -172,6 +174,15 @@ class CourseContentPage(CourseWorkbenchPage):
         :return: 对应图谱节点的勾选框定位器
         """
         return self.iframe.get_by_text(knowledge_graph_name)
+
+    def get_learning_unit_checkbox_by_name(self, learning_unit_name: str):
+        """
+        根据学习单元名称返回对应勾选的定位器
+
+        :param learning_unit_name: 学习单元名称
+        :return: 对应学习单元的勾选框定位器
+        """
+        return self.iframe.get_by_role("row", name=learning_unit_name).locator("label span").nth(1)
     # ==================== 操作方法 ====================
 
     def set_allow_comment_switch(self, allow: bool):
@@ -368,15 +379,32 @@ class CourseContentPage(CourseWorkbenchPage):
         self.fill_element(self.chapter_description_input, subsection_description)  # 填写子章节描述
         self.click_element(self.create_button)  # 点击创建按钮
 
-    def add_all_learning_units_to_chapter(self, chapter_name: str):
+    def add_all_learning_units_to_chapter(
+        self,
+        chapter_name: str,
+        select_only: Optional[Union[str, List[str]]] = None,
+        unselect: Optional[Union[str, List[str]]] = None
+    ):
         """
-        给指定章节添加全部学习单元操作
+        给指定章节添加学习单元操作
 
         :param chapter_name: 章节名称
+        :param select_only: 勾选的学习单元名称（可多个），传入则仅勾选这些，不执行全选
+        :param unselect: 不勾选的学习单元名称（可多个），传入则全选后再取消勾选这些
         """
-        self.click_element(self.get_create_learning_unit_button_by_chapter_name(chapter_name))  # 点击创建学习单元按钮
-        self.click_element(self.associate_learning_unit_all_select_button)  # 全选关联学习单元
-        self.click_element(self.confirm_button)  # 点击确定按钮进行添加
+        self.click_element(self.get_create_learning_unit_button_by_chapter_name(chapter_name))
+        select_names = [select_only] if isinstance(select_only, str) else (select_only or [])
+        unselect_names = [unselect] if isinstance(unselect, str) else (unselect or [])
+
+        if select_names:
+            for name in select_names:
+                self.click_element(self.get_learning_unit_checkbox_by_name(name))
+        else:
+            self.click_element(self.associate_learning_unit_all_select_button)
+            for name in unselect_names:
+                self.click_element(self.get_learning_unit_checkbox_by_name(name))
+
+        self.click_element(self.confirm_button)
 
     def add_knowledge_graph_to_chapter(self, chapter_name: str, knowledge_graph_name: str):
         """

@@ -43,12 +43,16 @@ class CourseObjectivePage(CourseWorkbenchPage):
         # 创建课程目标成功提示
         self.create_goal_success_message = self.iframe.locator("xpath=//p[contains(.,'创建课程目标成功')]")
         # ========== 关联毕业要求==========
+        # 关联毕业要求按钮
+        self.associate_graduate_requirement_button = self.iframe.get_by_role("button", name="关联毕业要求")
         # 添加毕业要求
         self.add_graduate_requirement_button = self.iframe.get_by_role("button", name="添加毕业要求")
         # 确定按钮
         self.confirm_button = self.iframe.get_by_role("button", name="确定")
         # 添加毕业要求关联成功
         self.add_graduate_requirement_success_message = self.iframe.locator("xpath=//p[contains(.,'添加毕业要求关联成功')]")
+        # 关闭此对话框按钮
+        self.close_dialog_button = self.iframe.get_by_role("button", name="关闭此对话框")
     # ==================== 动态定位器生成方法 ====================
 
     def get_associate_graduate_requirement_button_by_goal_title(self, goal_title: str):
@@ -85,8 +89,9 @@ class CourseObjectivePage(CourseWorkbenchPage):
         """
         self.click_element(self.add_goal_button)  # 点击添加目标按钮
         self.fill_element(self.goal_title_input, goal_title)  # 填写目标标题
-        self.click_element(self.add_tag_button)  # 点击添加标签按钮
-        self.fill_element(self.tag_input, goal_tags)  # 填写标签
+        if goal_tags:  # 标签可能为空，为空则不添加标签
+            self.click_element(self.add_tag_button)  # 点击添加标签按钮
+            self.fill_element(self.tag_input, goal_tags)  # 填写标签
         self.click_element(self.create_button)  # 点击创建按钮
 
     def associate_goal_with_indicator(self, goal_title: str, indicator_name: str):
@@ -101,6 +106,7 @@ class CourseObjectivePage(CourseWorkbenchPage):
         self.click_element(self.add_graduate_requirement_button)  # 点击添加毕业要求按钮
         self.click_element(self.get_indicator_locator_by_name(indicator_name))  # 点击弹窗里的对应指标进行关联
         self.click_element(self.confirm_button)  # 点击确定按钮
+        self.click_element(self.close_dialog_button.first)  # 点击关闭此对话框按钮
     # ==================== 断言方法 ====================
 
     def is_edit_description_success(self) -> bool:
@@ -116,7 +122,7 @@ class CourseObjectivePage(CourseWorkbenchPage):
     def is_create_goal_success(self) -> bool:
         """检查是否创建课程目标成功"""
         try:
-            self.wait_for_element_visible(self.create_goal_success_message)
+            self.wait_for_element_visible(self.create_goal_success_message.last)
             self.logger.info("✓ 创建课程目标成功")
             return True
         except Exception as e:

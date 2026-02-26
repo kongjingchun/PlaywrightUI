@@ -66,19 +66,15 @@ class TestSetCourseObjective:
             assert objective_page.is_edit_description_success(), "编辑课程目标描述失败"
             screenshot_helper.capture_full_page("课程目标描述设置完成")
 
-        with allure.step("添加课程目标"):
+        with allure.step("添加课程目标并关联毕业要求"):
             for goal in course_objective["目标列表"]:
-                objective_page.create_goal(
-                    goal["标题"],
-                    [goal["标签"]] if isinstance(goal["标签"], str) else goal["标签"]
-                )
+                tags = goal.get("标签")
+                if isinstance(tags, str):
+                    goal_tags = [tags] if tags else []
+                else:
+                    goal_tags = [t for t in (tags or []) if t]  # 过滤空字符串
+                objective_page.create_goal(goal["标题"], goal_tags)
                 assert objective_page.is_create_goal_success(), f"添加课程目标失败: {goal['标题']}"
+                objective_page.associate_goal_with_indicator(goal["标题"], goal["关联毕业要求"])
+                assert objective_page.is_associate_goal_with_indicator_success(), f"关联毕业要求失败: {goal['标题']} -> {goal['关联毕业要求']}"
             screenshot_helper.capture_full_page("课程目标设置完成")
-
-        with allure.step("关联课程目标与指标"):
-            # 使用培养方案中第一个有名称的分解指标点
-            decomp_list = DATA["training_program"]["指标点"][0]["分解指标点"]
-            indicator_name = next((d["分解指标点名称"] for d in decomp_list if d.get("分解指标点名称")), None)
-            objective_page.associate_goal_with_indicator(goal["标题"], indicator_name)
-            assert objective_page.is_associate_goal_with_indicator_success(), f"关联课程目标与指标失败: {goal['标题']}"
-            screenshot_helper.capture_full_page("课程目标与指标关联完成")
