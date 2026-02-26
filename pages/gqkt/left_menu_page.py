@@ -31,7 +31,7 @@ class LeftMenuPage(BasePage):
         """
         获取左侧菜单项定位器
         """
-        return self.page.get_by_text(menu_name)
+        return self.page.get_by_text(menu_name, exact=True)
 
     # ==================== 页面导航 ====================
 

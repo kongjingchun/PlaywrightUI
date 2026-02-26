@@ -18,7 +18,7 @@ initial_admin:
   username: "superadmin"
   password: "gqkt111!"
 
-# API 配置
+# API 配置  
 api:
   base_url: "https://api.example.com"
   timeout: 60000  # 生产环境超时时间更长
