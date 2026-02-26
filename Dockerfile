@@ -26,5 +26,5 @@ COPY . .
 # 安装依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 安装 Playwright 浏览器
-RUN playwright install-deps && playwright install chromium 
+# 安装 Playwright 的chromium浏览器和依赖
+RUN playwright install-deps chromium && playwright install chromium 
