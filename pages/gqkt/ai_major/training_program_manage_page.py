@@ -50,7 +50,7 @@ class TrainingProgramManagePage(BasePage):
         # 版本年份
         self.training_program_version_year_input = self.iframe.get_by_role("spinbutton", name="* 版本年份")
         # 创建提交按钮
-        self.confirm_create_button = self.iframe.get_by_role("button", name="创建")
+        self.confirm_create_button = self.iframe.get_by_role("button", name="创建", exact=True)
         # 创建培养方案成功提示
         self.create_training_program_success_message = self.iframe.locator("xpath=//p[contains(text(),'创建培养方案成功')]")
 
