@@ -37,6 +37,7 @@ from common.process_file import ProcessFile
 logger = Logger("conftest")
 process = ProcessFile()
 _report_printed = False  # 防止报告重复打印
+_viewport_logged = False  # 视口是否已打印（仅首次测试前打印一次）
 
 
 # ==================== pytest 钩子函数 ====================
@@ -485,6 +486,15 @@ def browser_type_launch_args(browser_type_launch_args, request):
     return base
 
 
+@pytest.fixture(scope="session")
+def browser_context_args():
+    """
+    浏览器上下文参数：视口由 config/settings.py 的 VIEWPORT_WIDTH/VIEWPORT_HEIGHT 控制。
+    pytest-playwright 会将该返回值传给 browser.new_context(**browser_context_args)。
+    """
+    return Settings.get_context_args()
+
+
 @pytest.fixture(scope="function")
 def screenshot_helper(page: Page) -> ScreenshotHelper:
     """获取截图助手实例"""
@@ -587,7 +597,23 @@ def test_setup_teardown(request, page, screenshot_helper):
     1. 测试前：设置超时
     2. 测试后：失败时自动截图
     """
+    global _viewport_logged
     test_name = request.node.name
+
+    # 首次进入时打印实际视口，确认与 config/settings.py 一致
+    if not _viewport_logged:
+        try:
+            size = page.evaluate("() => ({ width: window.innerWidth, height: window.innerHeight })")
+            expected = f"{Settings.VIEWPORT_WIDTH}x{Settings.VIEWPORT_HEIGHT}"
+            actual = f"{size['width']}x{size['height']}"
+            match = actual == expected
+            logger.info(
+                f"视口（viewport）: 实际={actual}, 配置(Settings)={expected}"
+                + (" ✓ 一致" if match else " ⚠ 不一致")
+            )
+        except Exception as e:
+            logger.warning(f"读取视口失败: {e}")
+        _viewport_logged = True
 
     # 设置页面默认超时
     page.set_default_timeout(Settings.DEFAULT_TIMEOUT)

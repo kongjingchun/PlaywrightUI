@@ -58,12 +58,15 @@ class TestAddCourseResource:
             my_courses_page = MyTaughtCoursesPage(page)
             my_courses_page.click_course_card_by_name(course_name)
 
-        with allure.step("进入课程资源"):
+        with allure.step("点击课程资源"):
             resource_page = CourseResourcePage(page)
             resource_page.click_left_menu_by_name("课程资源")
+        
+        with allure.step("点击目录"):
+            resource_page.click_left_menu_by_name("目录")
 
         with allure.step("上传教材"):
-            resource_page.click_left_menu_by_name("教材")
+            resource_page.click_directory_type_by_name("教材")
             for path_str in course_resource["教材"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -72,7 +75,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("教材上传完成")
 
         with allure.step("上传课件"):
-            resource_page.click_left_menu_by_name("课件")
+            resource_page.click_directory_type_by_name("课件")
             for path_str in course_resource["课件"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -81,7 +84,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("课件上传完成")
 
         with allure.step("上传视频"):
-            resource_page.click_left_menu_by_name("视频")
+            resource_page.click_directory_type_by_name("视频")
             for path_str in course_resource["视频"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -90,7 +93,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("视频上传完成")
 
         with allure.step("上传音频"):
-            resource_page.click_left_menu_by_name("音频")
+            resource_page.click_directory_type_by_name("音频")
             for path_str in course_resource["音频"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -99,7 +102,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("音频上传完成")
 
         with allure.step("上传论文"):
-            resource_page.click_left_menu_by_name("论文")
+            resource_page.click_directory_type_by_name("论文")
             for path_str in course_resource["论文"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -108,7 +111,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("论文上传完成")
 
         with allure.step("上传案例"):
-            resource_page.click_left_menu_by_name("案例")
+            resource_page.click_directory_type_by_name("案例")
             for path_str in course_resource["案例"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -117,7 +120,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("案例上传完成")
 
         with allure.step("上传图片"):
-            resource_page.click_left_menu_by_name("图片")
+            resource_page.click_directory_type_by_name("图片")
             for path_str in course_resource["图片"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
@@ -125,9 +128,9 @@ class TestAddCourseResource:
                 assert resource_page.is_upload_file_success(), f"上传图片失败: {path_str}"
             screenshot_helper.capture_full_page("图片上传完成")
 
-        with allure.step("上传其他资料"):
-            resource_page.click_left_menu_by_name("其他资料")
-            for path_str in course_resource["其他资料"]:
+        with allure.step("上传其他材料"):
+            resource_page.click_directory_type_by_name("其他材料")
+            for path_str in course_resource["其他材料"]:
                 file_path = build_path(path_str)
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
                 resource_page.upload_file(str(file_path))
@@ -136,14 +139,14 @@ class TestAddCourseResource:
 
         with allure.step("新建链接"):
             link_page = LinkPage(page)
-            link_page.click_left_menu_by_name("链接")
+            link_page.click_directory_type_by_name("链接")
             for path_str in course_resource["链接"]:
                 link_page.create_link(path_str)
                 assert link_page.is_link_create_success(), f"创建链接失败: {path_str}"
             screenshot_helper.capture_full_page("链接创建完成")
 
         with allure.step("新建简答题"):
-            resource_page.click_left_menu_by_name("题库")
+            resource_page.click_directory_type_by_name("题库")
             qb_config = DATA["question_bank"]["简答题"]
             question_page = QuestionBankPage(page)
             knowledge_info = None
@@ -164,7 +167,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("简答题创建完成")
 
         with allure.step("导入题库"):
-            resource_page.click_left_menu_by_name("题库")
+            resource_page.click_directory_type_by_name("题库")
             import_path = DATA["question_bank"]["导入文件"]
             file_path = build_path(import_path)
             assert file_path.exists(), f"导入文件不存在: {file_path}"
@@ -173,7 +176,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("题库导入完成")
 
         with allure.step("添加作业"):
-            resource_page.click_left_menu_by_name("作业")
+            resource_page.click_directory_type_by_name("作业")
             homework_page = HomeworkPage(page)
             homework_title = DATA["homework"]["作业标题"]
             homework_page.create_homework(homework_title)
@@ -181,7 +184,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("作业创建完成")
 
         with allure.step("添加试卷"):
-            resource_page.click_left_menu_by_name("试卷")
+            resource_page.click_directory_type_by_name("试卷")
             exam_page = ExamPage(page)
             exam_title = DATA["exam"]["试卷标题"]
             exam_page.create_exam(exam_title)

@@ -251,10 +251,10 @@ course_resource:
     - file/gqkt/course_resource/case/C语言程序设计教学案例-数组的使用.pdf
   图片:
     - file/gqkt/course_resource/image/思维导图OIP.jpg
-  其他资料:
+  其他材料:
     - file/gqkt/course_resource/other/test.pdf
   链接:
-    - https://www.baidu.com/
+    - file/gqkt/course_resource/link/test.pdf
 
 # 课程工作台 - 作业
 homework:
