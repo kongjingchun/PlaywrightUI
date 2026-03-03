@@ -26,18 +26,24 @@ class CourseManagePage(BasePage):
         # ========== 课程列表 ==========
 
         # ========== 新增/编辑课程 ==========
+        # 新增课程头
+        self.new_course_header = self.iframe.get_by_role("heading", name="新建课程")
         # 课程代码输入框
         self.course_code_input = self.iframe.get_by_role("textbox", name="课程代码")
         # 课程名称输入框
         self.course_name_input = self.iframe.get_by_role("textbox", name="课程名称")
         # 课程封面图片输入框
         self.course_cover_input = self.iframe.get_by_label("新建课程").locator(".el-upload, [class*='upload']").first
+        # 点击上传按钮
+        self.course_cover_upload_button = self.iframe.get_by_label("新建课程").get_by_text("点击上传")
         # 选择学院下拉框
         self.course_dept_select = self.iframe.get_by_label("新建课程").get_by_text("请选择学院")
         # 课程描述输入框
         self.course_description_input = self.iframe.get_by_role("textbox", name="课程描述")
         # 是否一流课程开关（el-switch 的 input 被隐藏，点可见的 .el-switch）
         self.is_first_class_course_switch = self.iframe.get_by_label("新建课程").locator(".el-switch")
+        # 课程负责人搜索输入框
+        self.course_prof_search_input = self.iframe.get_by_role("combobox", name="课程负责人")
         # 课程负责人下拉框
         self.course_prof_select = self.iframe.get_by_label("新建课程").get_by_role("combobox", name="课程负责人")
         # 创建提交按钮
@@ -71,17 +77,18 @@ class CourseManagePage(BasePage):
     def create_course(self, course_code: str, course_name: str, image_path: str, dept_name: str, course_description: str, prof_name: str, is_first_class_course: bool = False):
         """新建课程"""
         self.click_element(self.new_course_button)  # 点击新建课程按钮
-        self.fill_element(self.course_code_input, course_code)  # 输入课程代码
-        self.fill_element(self.course_name_input, course_name)  # 输入课程名称
-        self.upload_file_via_chooser(self.course_cover_input, image_path)  # 上传课程封面图片
-        self.click_element(self.course_dept_select)  # 点击选择学院下拉框
-        self.click_element(self.get_dept_option_locator(dept_name))  # 选择学院
-        self.fill_element(self.course_description_input, course_description)  # 输入课程描述
+        self.fill_element(self.course_prof_search_input, prof_name) # 输入课程负责人名称
+        self.click_element(self.get_prof_option_locator(prof_name))  # 选择课程负责人
+        self.click_element(self.new_course_header)  # 点击新建课程头
         if is_first_class_course:  # 如果是一流课程，则勾选是否一流课程开关
             self.click_element(self.is_first_class_course_switch)
-        self.click_element(self.course_prof_select)  # 点击选择课程负责人下拉框
-        self.click_element(self.get_prof_option_locator(prof_name))  # 选择课程负责人
-        self.click_element(self.course_prof_select)  # 关闭下拉框
+        self.fill_element(self.course_description_input, course_description)  # 输入课程描述
+        self.click_element(self.course_dept_select)  # 点击选择学院下拉框
+        self.click_element(self.get_dept_option_locator(dept_name))  # 选择学院       
+        self.upload_file_via_chooser(self.course_cover_input, image_path)  # 上传课程封面图片
+        self.wait_for_element_hidden(self.course_cover_upload_button)  # 等待上传按钮隐藏
+        self.fill_element(self.course_name_input, course_name)  # 输入课程名称
+        self.fill_element(self.course_code_input, course_code)  # 输入课程代码
         self.click_element(self.confirm_create_button)  # 点击确定创建按钮
 
     # ==================== 断言方法 ====================
