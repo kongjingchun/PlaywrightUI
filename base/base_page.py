@@ -198,6 +198,7 @@ class BasePage:
         locator: Union[Locator, str],
         text: Union[str, int, float, None],
         clear_first: bool = True,
+        press_enter: bool = False,
         timeout: Optional[int] = None,
         multi: MultiIndex = None
     ) -> "BasePage":
@@ -208,6 +209,7 @@ class BasePage:
             locator: 输入框元素定位器
             text: 要输入的文本
             clear_first: 是否先清空输入框（默认True）
+            press_enter: 输入后是否按回车键（默认False）
             timeout: 超时时间
             multi: 多元素时取哪个，None/"first"/"last"/int
         """
@@ -226,6 +228,11 @@ class BasePage:
                 # 使用 type() 方法追加输入
                 self.logger.info(f"追加输入文本: {text_str}")
                 element.type(text_str, timeout=timeout)
+
+            if press_enter:
+                self.logger.info("输入后按回车")
+                # 使用 page.keyboard 避免 fill 后 DOM 更新导致原元素消失（如标签输入变 chip）
+                self.page.keyboard.press("Enter")
 
         except Exception as e:
             self.logger.error(f"输入文本失败: {text_str}, 错误: {str(e)}")

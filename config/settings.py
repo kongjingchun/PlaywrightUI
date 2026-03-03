@@ -18,7 +18,7 @@ load_dotenv()
 
 # ==================== 默认环境（修改此处即可同步 conftest 和 env_config） ====================
 # 支持 local、dev、test、prod
-DEFAULT_ENV = "local"
+DEFAULT_ENV = "prod"
 
 
 class Settings:

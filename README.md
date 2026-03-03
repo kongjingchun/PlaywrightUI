@@ -6,39 +6,57 @@
 
 ```
 Playwright_Ui/
-├── config/                          # 配置管理模块
-│   ├── __init__.py                 # 模块初始化
+├── base/                           # 基础层（POM/API 基类）
+│   ├── __init__.py
+│   ├── base_page.py                # 基础页面类（所有页面的父类）
+│   └── base_api.py                 # 基础 API 类
+│
+├── config/                         # 配置管理模块
+│   ├── __init__.py
 │   ├── settings.py                 # 全局配置（浏览器、超时、路径等）
 │   ├── env_config.py               # 环境配置加载器
 │   └── environments/               # 环境配置文件目录
+│       ├── local.yaml              # 本地环境配置
 │       ├── dev.yaml                # 开发环境配置
 │       ├── test.yaml               # 测试环境配置
 │       └── prod.yaml               # 生产环境配置
 │
 ├── pages/                          # Page Object Model (POM)
-│   ├── __init__.py                 # 模块初始化
-│   ├── base_page.py                # 基础页面类（所有页面的父类）
-│   ├── login_page.py               # 登录页面
-│   └── home_page.py                # 首页
+│   ├── __init__.py
+│   ├── demo/                       # 演示用页面（login_page, home_page）
+│   └── gqkt/                       # 业务页面（登录、工作台、课程、院系等）
+│
+├── common/                         # 公共工具
+│   ├── __init__.py
+│   ├── tools.py
+│   └── process_file.py
 │
 ├── utils/                          # 工具类模块
-│   ├── __init__.py                 # 模块初始化
-│   ├── logger.py                   # 日志管理（分级日志、彩色输出）
+│   ├── __init__.py
+│   ├── logger.py                   # 日志管理
 │   ├── data_loader.py              # 数据加载（YAML、JSON）
-│   ├── wait_helper.py              # 等待助手（自定义等待、重试机制）
-│   ├── screenshot_helper.py        # 截图助手（失败截图、元素截图）
-│   └── allure_helper.py            # Allure 报告增强
+│   ├── wait_helper.py              # 等待助手
+│   ├── screenshot_helper.py       # 截图助手
+│   ├── allure_helper.py            # Allure 报告增强
+│   ├── auth_helper.py              # 认证状态管理
+│   ├── dingtalk_notification.py    # 钉钉通知
+│   └── ...
 │
 ├── data/                           # 测试数据目录
-│   ├── login_data.yaml             # 登录测试数据
-│   ├── search_data.yaml            # 搜索测试数据
-│   └── common_data.yaml            # 通用测试数据
+│   └── gqkt/
+│       └── gqkt_config.yaml        # GQKT 业务测试配置与数据
+│
+├── file/                           # 测试用文件（上传等）
+│   └── gqkt/
 │
 ├── tests/                          # 测试用例目录
-│   ├── __init__.py                 # 模块初始化
-│   ├── test_demo.py                # 演示测试（框架功能展示）
-│   ├── test_login.py               # 登录功能测试
-│   └── test_search.py              # 搜索功能测试
+│   ├── demo/                       # 框架演示测试（test_demo, test_login, test_search）
+│   └── gqtest/                     # GQKT 业务测试（test_001_* ~ test_022_* 等）
+│
+├── docs/                           # 项目文档
+│   ├── auth_helper.md
+│   ├── dingtalk_notification.md
+│   └── image_recognition.md
 │
 ├── UIreport/                       # Allure 报告目录（自动创建）
 ├── logs/                           # 日志文件目录（自动创建）
@@ -49,8 +67,8 @@ Playwright_Ui/
 ├── conftest.py                     # pytest 全局配置和 fixtures
 ├── pytest.ini                      # pytest 配置文件
 ├── .env                            # 环境变量配置
-├── requirements.txt                # 项目依赖
-└── README.md                       # 项目说明文档
+├── requirements.txt               # 项目依赖
+└── README.md                      # 项目说明文档
 ```
 
 ## 🚀 快速开始
@@ -78,6 +96,7 @@ pytest
 
 # 运行特定测试文件
 pytest tests/test_demo.py -v
+pytest tests/gqtest/test_018_add_course_resource.py --env=prod -v
 
 # 运行冒烟测试
 pytest -m smoke -v
@@ -109,8 +128,8 @@ allure generate UIreport -o allure-report --clean
 框架采用 POM 设计模式，将页面元素和操作封装在独立的类中：
 
 ```python
-# pages/login_page.py
-from pages.base_page import BasePage
+# pages/demo/login_page.py
+from base.base_page import BasePage
 
 class LoginPage(BasePage):
     def __init__(self, page):
@@ -157,10 +176,12 @@ screenshots_dir = Settings.SCREENSHOTS_DIR
 
 #### 环境配置 (config/env_config.py)
 
+支持环境：`local`、`dev`、`test`、`prod`，对应 `config/environments/*.yaml`。
+
 ```python
 from config.env_config import EnvConfig
 
-# 加载当前环境配置（默认 test）
+# 加载当前环境配置（默认由 --env 或 Settings.DEFAULT_ENV 决定）
 config = EnvConfig()
 
 # 获取配置项
@@ -175,7 +196,7 @@ prod_config = EnvConfig("prod")
 #### 环境变量 (.env)
 
 ```bash
-# 切换环境
+# 切换环境（local / dev / test / prod）
 ENV=test
 
 # 浏览器配置
@@ -191,26 +212,17 @@ DEFAULT_TIMEOUT=30000
 
 #### 从 YAML 加载数据
 
-```yaml
-# data/login_data.yaml
-login_cases:
-  - id: "valid_login"
-    username: "admin"
-    password: "admin123"
-    expected: "success"
-  - id: "invalid_password"
-    username: "admin"
-    password: "wrong"
-    expected: "error"
-```
+业务测试主要使用 `data/gqkt/gqkt_config.yaml`：
 
 ```python
 from utils.data_loader import DataLoader
 
 loader = DataLoader()
-login_data = loader.load_yaml("login_data.yaml")
-cases = loader.get_parametrize_data("login_data.yaml", "login_cases")
+data = loader.load_yaml("gqkt/gqkt_config.yaml")
+# 或使用 get / get_parametrize_data 按路径读取
 ```
+
+演示用例（如 `tests/demo`）可依赖 `login_data.yaml`、`search_data.yaml`、`common_data.yaml`，需在 `data/` 下自建或从模板恢复相应文件。
 
 #### 参数化测试
 
@@ -331,7 +343,7 @@ helper.attach_text("SQL查询", query)
 
 ## 🏷️ 测试标记
 
-框架预定义了以下测试标记：
+框架预定义了以下测试标记（部分在 `pytest.ini` / `conftest.py` 中注册）：
 
 | 标记 | 说明 | 运行命令 |
 |------|------|----------|
@@ -341,6 +353,10 @@ helper.attach_text("SQL查询", query)
 | `@pytest.mark.wip` | 开发中 | `pytest -m wip` |
 | `@pytest.mark.login` | 登录相关 | `pytest -m login` |
 | `@pytest.mark.search` | 搜索相关 | `pytest -m search` |
+| `@pytest.mark.api` | API 相关 | `pytest -m api` |
+| `@pytest.mark.ui` | UI 相关 | `pytest -m ui` |
+| `@pytest.mark.skip_local` | 本地环境跳过 | - |
+| `@pytest.mark.skip_prod` | 生产环境跳过 | - |
 
 **组合使用：**
 
@@ -361,8 +377,8 @@ pytest -m "smoke and login"
 |------|------|------|
 | `--browser` | 浏览器类型 | `--browser=firefox` |
 | `--headed` | 有头模式 | `--headed` |
-| `--env` | 测试环境 | `--env=prod` |
-| `--base-url` | 基础URL | `--base-url=https://example.com` |
+| `--env` | 测试环境（local/dev/test/prod） | `--env=prod` |
+| `--base-url-override` | 覆盖环境中的基础 URL | `--base-url-override=https://example.com` |
 | `--slow-mo` | 慢动作延迟 | `--slow-mo=1000` |
 
 **示例：**
@@ -387,12 +403,15 @@ pytest --base-url=https://staging.example.com
 | `page` | function | 干净的页面实例 |
 | `context` | function | 浏览器上下文 |
 | `browser` | session | 浏览器实例 |
-| `base_url` | session | 基础URL |
+| `base_url` | session | 基础 URL（来自当前环境配置） |
 | `env_config` | session | 环境配置 |
 | `data_loader` | session | 数据加载器 |
 | `screenshot_helper` | function | 截图助手 |
-| `login_data` | session | 登录测试数据 |
-| `search_data` | session | 搜索测试数据 |
+| `login_data` | session | 登录测试数据（依赖 `data/login_data.yaml`，演示用） |
+| `search_data` | session | 搜索测试数据（依赖 `data/search_data.yaml`，演示用） |
+| `common_data` | session | 通用测试数据（依赖 `data/common_data.yaml`，演示用） |
+
+业务测试（`tests/gqtest`）通常直接使用 `DataLoader` 加载 `data/gqkt/gqkt_config.yaml`，不依赖上述三个 data fixture。
 
 **使用示例：**
 
@@ -401,7 +420,7 @@ def test_login(page, base_url, login_data):
     """
     page: 自动创建的页面实例
     base_url: 从环境配置获取的基础URL
-    login_data: 从 YAML 加载的登录数据
+    login_data: 从 YAML 加载的登录数据（需存在 data/login_data.yaml）
     """
     page.goto(f"{base_url}/login")
     username = login_data["valid_credentials"]["username"]
@@ -448,15 +467,15 @@ allure generate UIreport -o allure-report --clean
 
 ### Q: 如何添加新的测试页面？
 
-1. 在 `pages/` 目录创建新的页面类，继承 `BasePage`
+1. 在 `pages/`（或 `pages/demo/`、`pages/gqkt/` 等）下创建新的页面类，继承 `base.base_page.BasePage`
 2. 定义页面元素和操作方法
 3. 在测试中导入使用
 
 ### Q: 如何添加新的测试数据？
 
-1. 在 `data/` 目录创建 YAML 或 JSON 文件
-2. 使用 `DataLoader` 加载数据
-3. 或在 `conftest.py` 中添加新的 fixture
+1. 业务数据可放在 `data/gqkt/gqkt_config.yaml` 或新建 `data/xxx/` 下 YAML/JSON
+2. 使用 `DataLoader` 加载（如 `loader.load_yaml("gqkt/gqkt_config.yaml")`）
+3. 演示用通用数据可在 `conftest.py` 中增加 fixture，并保证 `data/` 下对应文件存在
 
 ## 📝 开发规范
 

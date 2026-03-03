@@ -26,7 +26,7 @@ class TestCreateChapter:
     创建章节测试类
     """
 
-    @pytest.mark.run(order=341)
+    @pytest.mark.run(order=350)
     @allure.title("创建课程内容版本")
     def test_create_chapter(self, page: Page, screenshot_helper, base_url):
         """

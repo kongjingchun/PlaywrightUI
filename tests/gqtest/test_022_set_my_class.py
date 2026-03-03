@@ -25,7 +25,7 @@ class TestSetMyClass:
     设置我的班级测试类
     """
 
-    @pytest.mark.run(order=342)
+    @pytest.mark.run(order=360)
     @allure.title("设置我的班级")
     def test_set_my_class(self, page: Page, screenshot_helper, base_url):
         """
