@@ -25,7 +25,7 @@ class TestCreateCapabilityGroupGraph:
     创建能力 group graph 测试类
     """
 
-    @pytest.mark.run(order=370)
+    @pytest.mark.run(order=380)
     @allure.title("创建能力图谱并添加一级能力及子能力")
     def test_create_capability_group_graph(self, page: Page, screenshot_helper, base_url):
         """
@@ -61,12 +61,13 @@ class TestCreateCapabilityGroupGraph:
             cap_group_graph_page.click_left_menu_by_name("AI垂直模型")
             cap_group_graph_page.click_left_menu_by_name("能力图谱")
 
-        # with allure.step("创建能力图谱"):
-        #     cap_group_graph_page.click_create_graph_button()
-        #     assert cap_group_graph_page.is_create_graph_success(), "创建能力图谱失败"
-        #     screenshot_helper.capture_full_page("创建能力图谱完成")
-        with allure.step("编辑能力图谱"):
-            cap_group_graph_page.click_edit_button()
+        with allure.step("创建能力图谱"):
+            cap_group_graph_page.click_create_graph_button()
+            assert cap_group_graph_page.is_create_graph_success(), "创建能力图谱失败"
+            screenshot_helper.capture_full_page("创建能力图谱完成")
+            
+        # with allure.step("编辑能力图谱"):
+        #     cap_group_graph_page.click_edit_button()
 
         cg = capability_graph
         level1 = cg.get("一级能力", [])

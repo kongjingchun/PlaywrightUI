@@ -28,7 +28,7 @@ class TestAddAgentCenter:
     添加智能体中心测试类
     """
 
-    @pytest.mark.run(order=380)
+    @pytest.mark.run(order=370)
     @allure.title("添加智能体中心")
     def test_add_agent_center(self, page: Page, screenshot_helper, base_url):
         """
