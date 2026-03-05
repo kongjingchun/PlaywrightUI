@@ -359,6 +359,48 @@ class BasePage:
         element.hover()
         return self
 
+    @allure.step("拖拽元素到目标")
+    def drag_element_to(
+        self,
+        source: Union[Locator, str],
+        target: Union[Locator, str],
+        timeout: Optional[int] = None,
+        source_multi: MultiIndex = None,
+        target_multi: MultiIndex = None
+    ) -> "BasePage":
+        """
+        左键拖拽：将源元素拖拽到目标元素位置（支持链式调用）
+
+        使用 Playwright 的 drag_to，会先等待源、目标可见，再执行拖放。
+
+        Args:
+            source: 被拖拽的源元素定位器
+            target: 拖拽目标元素定位器
+            timeout: 超时时间（毫秒）
+            source_multi: 源多元素时取哪个，None/"first"/"last"/int
+            target_multi: 目标多元素时取哪个，None/"first"/"last"/int
+
+        Returns:
+            self，支持链式调用
+
+        示例:
+            self.drag_element_to(self.draggable_item, self.drop_zone)
+        """
+        source_el = self._resolve_locator(source, source_multi)
+        target_el = self._resolve_locator(target, target_multi)
+        try:
+            source_el.wait_for(state="visible", timeout=timeout)
+            target_el.wait_for(state="visible", timeout=timeout)
+            self.logger.info(
+                f"拖拽: {self._locator_to_log_str(source)} -> {self._locator_to_log_str(target)}"
+            )
+            source_el.drag_to(target_el, timeout=timeout)
+        except Exception as e:
+            self.logger.error(f"拖拽失败: {str(e)}")
+            self.take_screenshot("drag_failed")
+            raise
+        return self
+
     # ==================== 获取元素信息 ====================
 
     def get_text(self, locator: Union[Locator, str], multi: MultiIndex = None) -> str:
