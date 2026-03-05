@@ -49,17 +49,10 @@ def pytest_addoption(parser):
     注意：--browser, --headed, --slowmo 由 pytest-playwright 提供
 
     使用方法：
-        pytest --env=prod
+        ENV=local pytest tests/
         pytest --base-url-override=https://example.com
     """
-    # 环境选择（默认值与 Settings.DEFAULT_ENV 保持一致）
-    parser.addoption(
-        "--env",
-        action="store",
-        default=DEFAULT_ENV,
-        choices=["local", "dev", "test", "prod"],
-        help="选择测试环境: local, dev, test, prod"
-    )
+    # 环境由环境变量 ENV 决定（与 Settings.ENV 一致），不再提供 --env 参数
 
     # 基础URL覆盖
     parser.addoption(
@@ -125,7 +118,7 @@ def pytest_collection_modifyitems(session, config, items):
     1. 按 order 全局排序
     2. 根据环境标记跳过测试（skip_local、skip_remote）
     """
-    env_name = config.getoption("--env", default="prod")
+    env_name = os.getenv("ENV", DEFAULT_ENV)
 
     # 根据环境标记跳过测试
     for item in items:
@@ -383,7 +376,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 
     # 发送钉钉通知（如果配置启用）
     try:
-        env_name_value = config.getoption("--env")
+        env_name_value = os.getenv("ENV", DEFAULT_ENV)
         env_cfg = EnvConfig(env_name_value)
 
         # 获取钉钉配置
@@ -424,9 +417,9 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 # ==================== 自定义 Fixtures ====================
 
 @pytest.fixture(scope="session")
-def env_name(request) -> str:
-    """获取环境名称"""
-    return request.config.getoption("--env")
+def env_name() -> str:
+    """获取环境名称（来自环境变量 ENV，与 Settings.ENV 一致）"""
+    return os.getenv("ENV", DEFAULT_ENV)
 
 
 @pytest.fixture(scope="session")
