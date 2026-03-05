@@ -11,7 +11,7 @@ variables:
 
 
 # 部署环境配置（可使用 {school_name} 等占位符）
-school_name: "{scool_name}"
+school_name: "{school_name}"
 
 # 院系信息（需要在使用之前定义，因为user部分会引用dept_name）
 department:

@@ -49,6 +49,21 @@ class DataLoader:
         
         # 数据缓存，避免重复读取文件
         self._cache: Dict[str, Any] = {}
+
+    def _resolve_gqkt_config_filename(self, filename: str) -> str:
+        """
+        根据运行环境解析 gqkt 配置文件名。
+        - 请求 gqkt/gqkt_config.yaml 时：prod 使用 gqkt/prod_config.yaml，local 使用 gqkt/local_config.yaml
+        - 若环境对应文件不存在则回退到 gqkt/gqkt_config.yaml
+        """
+        if filename != "gqkt/gqkt_config.yaml":
+            return filename
+        env = getattr(Settings, "ENV", "prod")
+        env_filename = f"gqkt/{env}_config.yaml"
+        if (self.data_dir / env_filename).exists():
+            self.logger.debug(f"按环境 {env} 加载: {env_filename}")
+            return env_filename
+        return filename
     
     def load_yaml(self, filename: str, use_cache: bool = True) -> Dict[str, Any]:
         """
@@ -74,6 +89,8 @@ class DataLoader:
             # 访问数据
             username = data["users"][0]["username"]
         """
+        # 按运行环境解析 gqkt 配置（prod -> gqkt_prod_config.yaml, local -> gqkt_local_config.yaml）
+        filename = self._resolve_gqkt_config_filename(filename)
         # 检查缓存
         cache_key = f"yaml:{filename}"
         if use_cache and cache_key in self._cache:
