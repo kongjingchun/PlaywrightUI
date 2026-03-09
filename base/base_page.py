@@ -16,7 +16,7 @@ from utils.logger import Logger
 import allure
 import re
 from playwright.sync_api import Page, Locator, FrameLocator, expect
-from typing import Optional, List, Union, Literal
+from typing import Optional, List, Union, Literal, Dict
 
 # 多元素索引类型：None 不处理；"first"/"last" 或 int 取第 n 个
 MultiIndex = Optional[Union[Literal["first", "last"], int]]
@@ -150,9 +150,6 @@ class BasePage:
         element = self._resolve_locator(locator, multi)
 
         try:
-            # 等待元素可见（确保元素已加载到DOM并显示）
-            element.wait_for(state="visible", timeout=timeout)
-
             self.logger.info(f"点击元素: {self._locator_to_log_str(locator)}")
 
             # 执行点击操作
@@ -182,7 +179,6 @@ class BasePage:
         """
         element = self._resolve_locator(locator, multi)
         try:
-            element.wait_for(state="visible", timeout=timeout)
             self.logger.info(f"双击元素: {self._locator_to_log_str(locator)}")
             element.dblclick(timeout=timeout)
         except Exception as e:
@@ -218,8 +214,6 @@ class BasePage:
         text_str = str(text) if text is not None else ""
 
         try:
-            element.wait_for(state="visible", timeout=timeout)
-
             if clear_first:
                 # 使用 fill() 方法会自动清空再输入
                 self.logger.info(f"填入文本: {text_str}")
@@ -364,42 +358,147 @@ class BasePage:
         self,
         source: Union[Locator, str],
         target: Union[Locator, str],
-        timeout: Optional[int] = None,
+        timeout: Optional[float] = None,
         source_multi: MultiIndex = None,
-        target_multi: MultiIndex = None
+        target_multi: MultiIndex = None,
+        source_position: Optional[Dict[str, float]] = None,
+        target_position: Optional[Dict[str, float]] = None,
+        force: Optional[bool] = None,
+        no_wait_after: Optional[bool] = None,
+        trial: Optional[bool] = None,
+        steps: Optional[int] = None,
     ) -> "BasePage":
         """
         左键拖拽：将源元素拖拽到目标元素位置（支持链式调用）
 
-        使用 Playwright 的 drag_to，会先等待源、目标可见，再执行拖放。
+        底层使用 Playwright 的 Locator.drag_to()，会先等待源、目标可见，再执行拖放。
+        支持 Playwright drag_to 的全部参数，用于精细控制拖拽行为。
 
         Args:
-            source: 被拖拽的源元素定位器
-            target: 拖拽目标元素定位器
-            timeout: 超时时间（毫秒）
+            source: 被拖拽的源元素定位器（Locator 或选择器字符串）
+            target: 拖拽目标元素定位器（Locator 或选择器字符串）
+            timeout: 超时时间（毫秒），默认使用页面设置的 default_timeout。
+                    传 0 可禁用超时。
             source_multi: 源多元素时取哪个，None/"first"/"last"/int
             target_multi: 目标多元素时取哪个，None/"first"/"last"/int
+
+            # --- Playwright drag_to 原生参数 ---
+            source_position: 源元素上的拖拽起始点，相对于元素 padding box 左上角。
+                            格式 {"x": float, "y": float}，单位像素。
+                            不指定时使用元素可见区域内的某点。
+            target_position: 目标元素上的落点位置，相对于元素 padding box 左上角。
+                            格式 {"x": float, "y": float}，单位像素。
+                            不指定时使用元素可见区域内的某点。
+            force: 是否跳过可操作性检查（如可见、启用、稳定等）。
+                   True 时强制执行拖拽，适用于被遮挡或动画中的元素。
+            no_wait_after: 是否在拖拽完成后不等待后续动作（如导航、网络请求）。
+                          默认会等待，设为 True 可立即返回。
+            trial: 是否仅执行可操作性检查而不实际拖拽。
+                   True 时只做检查，不执行拖拽，常用于等待元素就绪。
+            steps: 拖拽过程中的中间步骤数（插值点数）。
+                  大于 1 时模拟更平滑的拖拽轨迹；1 时直接拖到目标。
 
         Returns:
             self，支持链式调用
 
         示例:
-            self.drag_element_to(self.draggable_item, self.drop_zone)
+            # 基础用法
+            self.drag_element_to("#draggable", "#drop-zone")
+
+            # 指定拖拽起止点（用于精确控制）
+            self.drag_element_to(
+                source="#item",
+                target="#target",
+                source_position={"x": 34, "y": 7},
+                target_position={"x": 10, "y": 20}
+            )
+
+            # 强制拖拽（跳过可操作性检查）
+            self.drag_element_to("#item", "#target", force=True)
+
+            # 仅检查元素是否可拖拽（不实际执行）
+            self.drag_element_to("#item", "#target", trial=True)
         """
         source_el = self._resolve_locator(source, source_multi)
         target_el = self._resolve_locator(target, target_multi)
+
+        # 构建传给 Playwright drag_to 的参数字典，仅传入非 None 参数
+        drag_options: Dict = {}
+        if timeout is not None:
+            drag_options["timeout"] = timeout
+        if source_position is not None:
+            drag_options["source_position"] = source_position
+        if target_position is not None:
+            drag_options["target_position"] = target_position
+        if force is not None:
+            drag_options["force"] = force
+        if no_wait_after is not None:
+            drag_options["no_wait_after"] = no_wait_after
+        if trial is not None:
+            drag_options["trial"] = trial
+        if steps is not None:
+            drag_options["steps"] = steps
+
         try:
-            source_el.wait_for(state="visible", timeout=timeout)
-            target_el.wait_for(state="visible", timeout=timeout)
             self.logger.info(
                 f"拖拽: {self._locator_to_log_str(source)} -> {self._locator_to_log_str(target)}"
             )
-            source_el.drag_to(target_el, timeout=timeout)
+            source_el.drag_to(target_el, **drag_options)
         except Exception as e:
             self.logger.error(f"拖拽失败: {str(e)}")
             self.take_screenshot("drag_failed")
             raise
         return self
+
+    def get_position_in_element(
+        self,
+        locator: Union[Locator, str],
+        x_ratio: float = 0.5,
+        y_ratio: float = 0.5,
+        multi: MultiIndex = None,
+        timeout: Optional[int] = None,
+    ) -> Dict[str, float]:
+        """
+        获取元素内某相对位置的坐标，用于 drag_element_to 的 source_position / target_position。
+
+        坐标相对于元素 padding box 左上角，单位像素。
+        x_ratio、y_ratio 为 0~1 的比例：0 表示左/上边缘，0.5 表示中心，1 表示右/下边缘。
+
+        Args:
+            locator: 元素定位器（Locator 或选择器字符串）
+            x_ratio: 水平比例，0=左边缘，0.5=水平中心，1=右边缘。默认 0.5
+            y_ratio: 垂直比例，0=上边缘，0.5=垂直中心，1=下边缘。默认 0.5
+            multi: 多元素时取哪个，None/"first"/"last"/int
+            timeout: 获取边界框的超时时间（毫秒）
+
+        Returns:
+            {"x": float, "y": float}，可直接传给 source_position 或 target_position
+
+        Raises:
+            ValueError: 元素不可见或无法获取边界框时
+
+        示例:
+            # 拖到目标元素下半部分（水平居中，垂直 75% 处）
+            pos = self.get_position_in_element("#drop-zone", x_ratio=0.5, y_ratio=0.75)
+            self.drag_element_to("#draggable", "#drop-zone", target_position=pos)
+
+            # 拖到目标元素中心
+            pos = self.get_position_in_element("#drop-zone")
+            self.drag_element_to("#draggable", "#drop-zone", target_position=pos)
+
+            # 常用比例参考：左上(0,0)、中心(0.5,0.5)、下半(0.5,0.75)、右下(1,1)
+        """
+        element = self._resolve_locator(locator, multi)
+        box = element.bounding_box(timeout=timeout)
+        if not box:
+            raise ValueError(
+                f"无法获取元素边界框: {self._locator_to_log_str(locator)}，"
+                "请确认元素可见且已加载完成"
+            )
+        return {
+            "x": box["width"] * x_ratio,
+            "y": box["height"] * y_ratio,
+        }
 
     # ==================== 获取元素信息 ====================
 
@@ -635,16 +734,17 @@ class BasePage:
         filename = f"{name}_{timestamp}.png"
         filepath = Settings.SCREENSHOTS_DIR / filename
 
-        # 截图
-        self.page.screenshot(path=str(filepath), full_page=True)
-        self.logger.info(f"截图已保存: {filepath}")
-
-        # 附加到 Allure 报告
-        allure.attach.file(
-            str(filepath),
-            name=name,
-            attachment_type=allure.attachment_type.PNG
-        )
+        # 截图（失败时不抛出，避免掩盖调用方的原始错误）
+        try:
+            self.page.screenshot(path=str(filepath), full_page=True, timeout=5000)
+            self.logger.info(f"截图已保存: {filepath}")
+            allure.attach.file(
+                str(filepath),
+                name=name,
+                attachment_type=allure.attachment_type.PNG
+            )
+        except Exception as screenshot_err:
+            self.logger.warning(f"截图失败（不影响原始错误）: {screenshot_err}")
 
         return str(filepath)
 

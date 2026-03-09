@@ -31,7 +31,7 @@ class TestSetMyClass:
         """
         设置我的班级
         """
-        teacher_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_code"]
         mc_config = DATA["my_class"]
 
         helper = TestContextHelper()

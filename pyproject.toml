@@ -1,0 +1,8 @@
+[tool.black]
+line-length = 999
+
+[tool.ruff]
+line-length = 999
+
+[tool.ruff.format]
+line-length = 999

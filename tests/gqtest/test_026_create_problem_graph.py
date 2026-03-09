@@ -25,7 +25,7 @@ class TestCreateProblemGraph:
     创建问题图谱测试类
     """
 
-    @pytest.mark.run(order=395)
+    @pytest.mark.run(order=400)
     @allure.title("创建问题图谱并添加层级与问题")
     def test_create_problem_graph(self, page: Page, screenshot_helper, base_url):
         """
