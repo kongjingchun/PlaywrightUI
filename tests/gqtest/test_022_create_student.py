@@ -27,7 +27,7 @@ class TestCreateStudent:
     创建学生测试类
     """
 
-    @pytest.mark.run(order=265)
+    @pytest.mark.run(order=353)
     @allure.title("创建学生")
     def test_create_student(self, page: Page, screenshot_helper, base_url, initial_admin):
         """
@@ -65,7 +65,7 @@ class TestCreateStudent:
             screenshot_helper.capture_full_page("创建学生成功")
 
     # TODO: 可能注册失败
-    @pytest.mark.run(order=275)
+    @pytest.mark.run(order=355)
     @pytest.mark.skip_local
     @allure.title("注册CMS账户并绑定学生")
     def test_bind_student(self, page: Page, screenshot_helper, base_url, initial_admin):
@@ -99,7 +99,7 @@ class TestCreateStudent:
             assert user_manage_page.is_bind_user_success(), "绑定学生失败"
             screenshot_helper.capture_full_page("绑定学生成功")
 
-    @pytest.mark.run(order=285)
+    @pytest.mark.run(order=357)
     @pytest.mark.skip_prod
     @allure.title("重置学生密码")
     def test_reset_student_password(self, page: Page, screenshot_helper, base_url):

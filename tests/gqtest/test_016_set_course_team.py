@@ -31,10 +31,6 @@ class TestSetCourseTeam:
     def test_set_course_team(self, page: Page, screenshot_helper, base_url):
         """
         设置课程团队：
-        1. 添加教师为课程负责人
-        2. 删除教师从课程负责人
-        3. 添加教师到课程教师
-        4. 删除教师从课程教师
         """
         # 教师用户信息（有课程权限的专业负责人）
         teacher_cms = DATA["user"]["prof_cms"]

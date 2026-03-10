@@ -10,7 +10,7 @@ import pytest
 import allure
 from playwright.sync_api import Page
 
-from pages.gqkt.teacher_workbench import MyTaughtCoursesPage, CourseGuidePage, TeachingContentPage
+from pages.gqkt.teacher_workbench import MemberManagementPage, MyTaughtCoursesPage, CourseGuidePage, TeachingContentPage
 from tests.gqtest import TestContextHelper
 from utils.data_loader import load_yaml
 
@@ -31,8 +31,9 @@ class TestSetMyClass:
         """
         设置我的班级
         """
-        teacher_cms = DATA["user"]["teacher_code"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         mc_config = DATA["my_class"]
+        student = DATA["user"]["student"]
 
         helper = TestContextHelper()
 
@@ -56,6 +57,7 @@ class TestSetMyClass:
             course_guide_page.click_save_button()
             assert course_guide_page.is_save_course_guide_success(), "设置课程导读失败"
             screenshot_helper.capture_full_page("课程导读设置完成")
+
         with allure.step("教学内容设置-引用课程内容"):
             teaching_content_page = TeachingContentPage(page)
             teaching_content_page.click_tab_by_name("教学内容")
@@ -103,3 +105,10 @@ class TestSetMyClass:
             )
             assert teaching_content_page.is_add_knowledge_graph_to_chapter_success(), "添加知识图谱失败"
             screenshot_helper.capture_full_page("添加知识图谱完成")
+
+        with allure.step("成员管理-添加学生"):
+            member_management_page = MemberManagementPage(page)
+            member_management_page.click_tab_by_name("成员管理")
+            member_management_page.add_student(student["姓名"])
+            assert member_management_page.is_add_student_success(), "添加学生失败"
+            screenshot_helper.capture_full_page("添加学生完成")

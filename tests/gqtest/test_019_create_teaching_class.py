@@ -32,7 +32,7 @@ class TestCreateTeachingClass:
         """
         创建教学班并给教学班设置主讲教师
         """
-        teacher_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
         tc_config = DATA["teaching_class"]
 

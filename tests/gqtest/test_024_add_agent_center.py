@@ -34,14 +34,14 @@ class TestAddAgentCenter:
         """
         进入智能体中心，点击智能体广场，依次添加智能教案、教学案例、伴学书童、智能出题、课程设计师
         """
-        prof_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
-                page, base_url, prof_cms["username"], prof_cms["password"],
+                page, base_url, teacher_cms["username"], teacher_cms["password"],
                 DATA["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True

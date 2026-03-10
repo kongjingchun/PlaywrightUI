@@ -32,7 +32,7 @@ class TestCreateChapter:
         """
         创建课程内容版
         """
-        teacher_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
         ch_config = DATA["chapter"]
 
@@ -86,7 +86,7 @@ class TestCreateChapter:
         with allure.step("在子章节下添加关联学习单元"):
             content_page.add_all_learning_units_to_chapter(
                 chapter_name=ch_config["子章节名称"],
-                select_only=ch_config.get("子章节关联学习单元")
+                unselect=ch_config.get("子章节关联学习单元")
             )
             assert content_page.is_add_learning_units_to_chapter_success(), "子章节添加学习单元失败"
             screenshot_helper.capture_full_page("子章节学习单元添加完成")

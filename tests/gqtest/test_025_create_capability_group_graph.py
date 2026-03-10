@@ -33,7 +33,7 @@ class TestCreateCapabilityGroupGraph:
         再递归添加其子能力（如计算思维、分解和抽象等）
         """
         # 教师用户信息
-        prof_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         # 课程名称（用于在我教的课中进入该课程）
         course_name = DATA["course"]["课程名称"]
 
@@ -43,7 +43,7 @@ class TestCreateCapabilityGroupGraph:
 
         with allure.step("登录教师"):
             helper.login_and_init(
-                page, base_url, prof_cms["username"], prof_cms["password"],
+                page, base_url, teacher_cms["username"], teacher_cms["password"],
                 DATA["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True

@@ -32,7 +32,7 @@ class TestCreateCourseContent:
         """
         根据 yaml 配置创建课程内容（视频/资料/课件/讨论/作业/考试/链接/音频/课堂）
         """
-        teacher_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
 
         helper = TestContextHelper()

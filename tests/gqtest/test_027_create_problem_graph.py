@@ -32,7 +32,7 @@ class TestCreateProblemGraph:
         创建问题图谱，按配置添加层级（高级思维、中级思维、初级思维），
         在各层级下添加问题（标题、答案、标签、关联知识点、关联问题）。
         """
-        prof_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
 
         helper = TestContextHelper()
@@ -40,7 +40,7 @@ class TestCreateProblemGraph:
 
         with allure.step("登录教师"):
             helper.login_and_init(
-                page, base_url, prof_cms["username"], prof_cms["password"],
+                page, base_url, teacher_cms["username"], teacher_cms["password"],
                 DATA["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True

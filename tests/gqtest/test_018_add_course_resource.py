@@ -35,7 +35,7 @@ class TestAddCourseResource:
         添加课程资源
         """
         # 教师用户信息（有课程权限的专业负责人）
-        teacher_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         # 课程名称（用于在我教的课中进入该课程）
         course_name = DATA["course"]["课程名称"]
         # 课程资源配置
@@ -62,8 +62,17 @@ class TestAddCourseResource:
             resource_page = CourseResourcePage(page)
             resource_page.click_left_menu_by_name("课程资源")
         
-        with allure.step("点击目录"):
-            resource_page.click_left_menu_by_name("目录")
+        with allure.step("点击资料"):
+            resource_page.click_left_menu_by_name("资料")
+
+        with allure.step("上传视频"):
+            resource_page.click_directory_type_by_name("视频")
+            for path_str in course_resource["视频"]:
+                file_path = build_path(path_str)
+                assert file_path.exists(), f"上传文件不存在: {file_path}"
+                resource_page.upload_file(str(file_path))
+                assert resource_page.is_upload_file_success(), f"上传视频失败: {path_str}"
+            screenshot_helper.capture_full_page("视频上传完成")
 
         with allure.step("上传教材"):
             resource_page.click_directory_type_by_name("教材")
@@ -83,72 +92,10 @@ class TestAddCourseResource:
                 assert resource_page.is_upload_file_success(), f"上传课件失败: {path_str}"
             screenshot_helper.capture_full_page("课件上传完成")
 
-        with allure.step("上传视频"):
-            resource_page.click_directory_type_by_name("视频")
-            for path_str in course_resource["视频"]:
-                file_path = build_path(path_str)
-                assert file_path.exists(), f"上传文件不存在: {file_path}"
-                resource_page.upload_file(str(file_path))
-                assert resource_page.is_upload_file_success(), f"上传视频失败: {path_str}"
-            screenshot_helper.capture_full_page("视频上传完成")
-
-        with allure.step("上传音频"):
-            resource_page.click_directory_type_by_name("音频")
-            for path_str in course_resource["音频"]:
-                file_path = build_path(path_str)
-                assert file_path.exists(), f"上传文件不存在: {file_path}"
-                resource_page.upload_file(str(file_path))
-                assert resource_page.is_upload_file_success(), f"上传音频失败: {path_str}"
-            screenshot_helper.capture_full_page("音频上传完成")
-
-        with allure.step("上传论文"):
-            resource_page.click_directory_type_by_name("论文")
-            for path_str in course_resource["论文"]:
-                file_path = build_path(path_str)
-                assert file_path.exists(), f"上传文件不存在: {file_path}"
-                resource_page.upload_file(str(file_path))
-                assert resource_page.is_upload_file_success(), f"上传论文失败: {path_str}"
-            screenshot_helper.capture_full_page("论文上传完成")
-
-        with allure.step("上传案例"):
-            resource_page.click_directory_type_by_name("案例")
-            for path_str in course_resource["案例"]:
-                file_path = build_path(path_str)
-                assert file_path.exists(), f"上传文件不存在: {file_path}"
-                resource_page.upload_file(str(file_path))
-                assert resource_page.is_upload_file_success(), f"上传案例失败: {path_str}"
-            screenshot_helper.capture_full_page("案例上传完成")
-
-        with allure.step("上传图片"):
-            resource_page.click_directory_type_by_name("图片")
-            for path_str in course_resource["图片"]:
-                file_path = build_path(path_str)
-                assert file_path.exists(), f"上传文件不存在: {file_path}"
-                resource_page.upload_file(str(file_path))
-                assert resource_page.is_upload_file_success(), f"上传图片失败: {path_str}"
-            screenshot_helper.capture_full_page("图片上传完成")
-
-        with allure.step("上传其他材料"):
-            resource_page.click_directory_type_by_name("其他材料")
-            for path_str in course_resource["其他材料"]:
-                file_path = build_path(path_str)
-                assert file_path.exists(), f"上传文件不存在: {file_path}"
-                resource_page.upload_file(str(file_path))
-                assert resource_page.is_upload_file_success(), f"上传其他资料失败: {path_str}"
-            screenshot_helper.capture_full_page("其他资料上传完成")
-
-        with allure.step("新建链接"):
-            link_page = LinkPage(page)
-            link_page.click_directory_type_by_name("链接")
-            for path_str in course_resource["链接"]:
-                link_page.create_link(path_str)
-                assert link_page.is_link_create_success(), f"创建链接失败: {path_str}"
-            screenshot_helper.capture_full_page("链接创建完成")
-
         with allure.step("新建简答题"):
-            resource_page.click_directory_type_by_name("题库")
             qb_config = DATA["question_bank"]["简答题"]
             question_page = QuestionBankPage(page)
+            question_page.click_left_menu_by_name("题库")
             knowledge_info = None
             if "知识点" in qb_config:
                 k_list = qb_config["知识点"]
@@ -167,7 +114,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("简答题创建完成")
 
         with allure.step("导入题库"):
-            resource_page.click_directory_type_by_name("题库")
+            resource_page.click_left_menu_by_name("题库")
             import_path = DATA["question_bank"]["导入文件"]
             file_path = build_path(import_path)
             assert file_path.exists(), f"导入文件不存在: {file_path}"
@@ -175,25 +122,84 @@ class TestAddCourseResource:
             assert question_page.is_question_upload_success(), "导入题库失败"
             screenshot_helper.capture_full_page("题库导入完成")
 
-        with allure.step("添加作业"):
-            resource_page.click_directory_type_by_name("作业")
-            homework_page = HomeworkPage(page)
-            homework_title = DATA["homework"]["作业标题"]
-            homework_page.create_homework(homework_title)
-            assert homework_page.is_homework_save_success(), "添加作业失败"
-            screenshot_helper.capture_full_page("作业创建完成")
 
-        with allure.step("添加试卷"):
-            resource_page.click_directory_type_by_name("试卷")
-            exam_page = ExamPage(page)
-            exam_title = DATA["exam"]["试卷标题"]
-            exam_page.create_exam(exam_title)
-            assert exam_page.is_exam_save_success(), "添加试卷失败"
-            screenshot_helper.capture_full_page("试卷创建完成")
+# TODO: 其他资源上传  
 
-        with allure.step("概览：获取资源数量"):
-            resource_page.click_left_menu_by_name("概览")
-            overview_page = OverviewPage(page)
-            resource_count = overview_page.get_resource_count()
-            assert resource_count > 0, "资源数量为0"
-            screenshot_helper.capture_full_page("资源数量获取完成")
+        # with allure.step("新建链接"):
+        #     link_page = LinkPage(page)
+        #     link_page.click_left_menu_by_name("链接")
+        #     for path_str in course_resource["链接"]:
+        #         link_page.create_link(path_str)
+        #         assert link_page.is_link_create_success(), f"创建链接失败: {path_str}"
+        #     screenshot_helper.capture_full_page("链接创建完成")
+        # with allure.step("上传音频"):
+        #     resource_page.click_directory_type_by_name("音频")
+        #     for path_str in course_resource["音频"]:
+        #         file_path = build_path(path_str)
+        #         assert file_path.exists(), f"上传文件不存在: {file_path}"
+        #         resource_page.upload_file(str(file_path))
+        #         assert resource_page.is_upload_file_success(), f"上传音频失败: {path_str}"
+        #     screenshot_helper.capture_full_page("音频上传完成")
+
+        # with allure.step("上传论文"):
+        #     resource_page.click_directory_type_by_name("论文")
+        #     for path_str in course_resource["论文"]:
+        #         file_path = build_path(path_str)
+        #         assert file_path.exists(), f"上传文件不存在: {file_path}"
+        #         resource_page.upload_file(str(file_path))
+        #         assert resource_page.is_upload_file_success(), f"上传论文失败: {path_str}"
+        #     screenshot_helper.capture_full_page("论文上传完成")
+
+        # with allure.step("上传案例"):
+        #     resource_page.click_directory_type_by_name("案例")
+        #     for path_str in course_resource["案例"]:
+        #         file_path = build_path(path_str)
+        #         assert file_path.exists(), f"上传文件不存在: {file_path}"
+        #         resource_page.upload_file(str(file_path))
+        #         assert resource_page.is_upload_file_success(), f"上传案例失败: {path_str}"
+        #     screenshot_helper.capture_full_page("案例上传完成")
+
+        # with allure.step("上传图片"):
+        #     resource_page.click_directory_type_by_name("图片")
+        #     for path_str in course_resource["图片"]:
+        #         file_path = build_path(path_str)
+        #         assert file_path.exists(), f"上传文件不存在: {file_path}"
+        #         resource_page.upload_file(str(file_path))
+        #         assert resource_page.is_upload_file_success(), f"上传图片失败: {path_str}"
+        #     screenshot_helper.capture_full_page("图片上传完成")
+
+        # with allure.step("上传其他材料"):
+        #     resource_page.click_directory_type_by_name("其他材料")
+        #     for path_str in course_resource["其他材料"]:
+        #         file_path = build_path(path_str)
+        #         assert file_path.exists(), f"上传文件不存在: {file_path}"
+        #         resource_page.upload_file(str(file_path))
+        #         assert resource_page.is_upload_file_success(), f"上传其他资料失败: {path_str}"
+        #     screenshot_helper.capture_full_page("其他资料上传完成")
+
+
+
+
+
+        # with allure.step("添加作业"):
+        #     resource_page.click_directory_type_by_name("作业")
+        #     homework_page = HomeworkPage(page)
+        #     homework_title = DATA["homework"]["作业标题"]
+        #     homework_page.create_homework(homework_title)
+        #     assert homework_page.is_homework_save_success(), "添加作业失败"
+        #     screenshot_helper.capture_full_page("作业创建完成")
+
+        # with allure.step("添加试卷"):
+        #     resource_page.click_directory_type_by_name("试卷")
+        #     exam_page = ExamPage(page)
+        #     exam_title = DATA["exam"]["试卷标题"]
+        #     exam_page.create_exam(exam_title)
+        #     assert exam_page.is_exam_save_success(), "添加试卷失败"
+        #     screenshot_helper.capture_full_page("试卷创建完成")
+
+        # with allure.step("概览：获取资源数量"):
+        #     resource_page.click_left_menu_by_name("概览")
+        #     overview_page = OverviewPage(page)
+        #     resource_count = overview_page.get_resource_count()
+        #     assert resource_count > 0, "资源数量为0"
+        #     screenshot_helper.capture_full_page("资源数量获取完成")

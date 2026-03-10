@@ -2,7 +2,7 @@
 # 全局变量配置（占位符，在下方使用 {变量名} 引用）
 # ========================================
 variables:
-  suffix: "031"           # 线上环境序列号
+  suffix: "033"           # 线上环境序列号
   year: "2025"           # 学年
   semester_value: "202401"  # 学期值
   school_name: "智慧大学"   # 学校名称
@@ -52,6 +52,10 @@ user:
     专业: "{major_name}"
     年级: "{year}"
     行政班: "{admin_class_name}"
+  # CMS 学生
+  student_cms:
+    username: *student_code
+    password: student_code
 
 semester:
   学年: "{year}"
@@ -295,7 +299,7 @@ teaching_class:
   是否允许学生自选: false
   是否允许学生自主退课: false
   班级人数无限制: false
-  主讲教师: *prof_code  
+  主讲教师: *teacher_code  
 
 
 # 课程工作台 - 课程设计 - 课程内容（按类型分组，每个类型可配置多个学习单元）
@@ -312,18 +316,18 @@ course_content:
   讨论:
     - 学习单元标题: &learning_unit_discussion 指针与数组的区别与联系
       学习单元正文: 请结合代码示例说明二者在内存与语法上的异同。
-  作业:
-    - 学习单元标题: &learning_unit_homework 循环结构编程练习
-      学习单元正文: 完成阶乘、素数判断、九九乘法表三道题。
-  考试:
-    - 学习单元标题: &learning_unit_exam 期中综合测验
-      学习单元正文: 考查前六章语法与编程能力，限时90分钟。
-  链接:
-    - 学习单元标题: &learning_unit_link 在线编译环境
-      学习单元正文: 提供可在线运行C代码的参考网站链接。
-  音频:
-    - 学习单元标题: &learning_unit_audio 指针概念讲解
-      学习单元正文: 语音说明指针、地址与取址符的关系。
+  # 作业:
+  #   - 学习单元标题: &learning_unit_homework 循环结构编程练习
+  #     学习单元正文: 完成阶乘、素数判断、九九乘法表三道题。
+  # 考试:
+  #   - 学习单元标题: &learning_unit_exam 期中综合测验
+  #     学习单元正文: 考查前六章语法与编程能力，限时90分钟。
+  # 链接:
+  #   - 学习单元标题: &learning_unit_link 在线编译环境
+  #     学习单元正文: 提供可在线运行C代码的参考网站链接。
+  # 音频:
+  #   - 学习单元标题: &learning_unit_audio 指针概念讲解
+  #     学习单元正文: 语音说明指针、地址与取址符的关系。
   课堂:
     - 学习单元标题: &learning_unit1_name 第一次课：课程导学
       学习单元正文: 介绍课程安排、考核方式及开发环境搭建。 
@@ -336,10 +340,10 @@ chapter:
   子章节名称: C语言基础知识
   子章节描述: C语言基础知识学习的章节。
   子章节关联学习单元:   # 子章节关联以下学习单元（作业、考试、链接、音频各一）
-    - *learning_unit_homework
-    - *learning_unit_exam
-    - *learning_unit_link
-    - *learning_unit_audio
+    # - *learning_unit_homework
+    # - *learning_unit_exam
+    # - *learning_unit_link
+    # - *learning_unit_audio
     - *learning_unit_video
   知识点章节名称: *knowledge_node2_name
   版本名称: &version_name C语言程序设计版本

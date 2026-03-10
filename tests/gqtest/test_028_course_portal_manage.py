@@ -31,14 +31,14 @@ class TestCoursePortalManage:
         """
         登录教师账号，进入课程工作台，进入课程门户管理页面并执行编辑页面操作。
         """
-        prof_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
-                page, base_url, prof_cms["username"], prof_cms["password"],
+                page, base_url, teacher_cms["username"], teacher_cms["password"],
                 DATA["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
@@ -65,5 +65,3 @@ class TestCoursePortalManage:
         with allure.step("确认发布"):
             portal_page.confirm_publish()
             screenshot_helper.capture_full_page("发布课程门户")
-        # 断点
-        page.pause()

@@ -18,7 +18,6 @@ class MyTaughtClassPage(BasePage):
         super().__init__(page)
 
         # ========== iframe ==========
-        # 我教的班页内容在 iframe 内，选择器按实际页面 id 修改
         self.iframe = page.frame_locator("iframe#app-iframe-4009")
 
         # ========== 头部按钮 / 搜索 ==========

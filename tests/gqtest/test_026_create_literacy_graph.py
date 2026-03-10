@@ -31,7 +31,7 @@ class TestCreateLiteracyGraph:
         """
         创建素质图谱，添加一级素质节点，再递归添加二级、三级素质
         """
-        prof_cms = DATA["user"]["prof_cms"]
+        teacher_cms = DATA["user"]["teacher_cms"]
         course_name = DATA["course"]["课程名称"]
 
         helper = TestContextHelper()
@@ -39,7 +39,7 @@ class TestCreateLiteracyGraph:
 
         with allure.step("登录教师"):
             helper.login_and_init(
-                page, base_url, prof_cms["username"], prof_cms["password"],
+                page, base_url, teacher_cms["username"], teacher_cms["password"],
                 DATA["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
