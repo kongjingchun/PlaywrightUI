@@ -2,19 +2,21 @@
 # 全局变量配置（占位符，在下方使用 {变量名} 引用）
 # ========================================
 variables:
-  suffix: "002"           # 线上环境序列号
+  suffix: "201"           # 线上环境序列号
   year: "2024"           # 学年
   semester_value: "202401"  # 学期值
-  school_name: "智慧大学2"   # 学校名称
-
+  school_name: "演示大学"   # 学校名称
+  dept_name: "auto_dept{suffix}"
+  major_name: "计算机软件工程{suffix}"
+  admin_class_name: "计算机软件工程{suffix}班"
 
 # 部署环境配置（可使用 {school_name} 等占位符）
 school_name: "{school_name}"
 
-# 院系信息（需要在使用之前定义，因为user部分会引用dept_name）
+# 院系信息
 department:
-  院系名称: &dept_name auto_dept{suffix}
-  院系代码: Auto_dept{suffix}
+  院系名称: "{dept_name}"
+  院系代码: "Auto_dept{suffix}"
   
 user:
   # 教务管理员
@@ -37,11 +39,22 @@ user:
   teacher:
     姓名: &teacher_name 教师{suffix}
     工号: &teacher_code teacher_code{suffix}
-    学院: *dept_name
+    学院: "{dept_name}"
   # CMS 教师
   teacher_cms:
     username: *teacher_code
     password: teacher_code
+  # 学生（专业、行政班因 major/admin_class 定义在 user 之后，此处用字面值）
+  student:
+    姓名: &student_name 学生{suffix}
+    学号: &student_code student_code{suffix}
+    学院: "{dept_name}"
+    专业: "{major_name}"
+    年级: "{year}"
+    行政班: "{admin_class_name}"
+  student_cms:
+    username: *student_code
+    password: student_code
 
 semester:
   学年: "{year}"
@@ -50,10 +63,10 @@ semester:
   学期值: "{semester_value}"
 
 major:
-  专业名称: &major_name 计算机软件工程{suffix}
+  专业名称: "{major_name}"
   学校专业代码: "070102"
   国家专业代码: "070102"
-  所属院系: *dept_name
+  所属院系: "{dept_name}"
   专业负责人: *prof_name
   专业建设层次: 国家一流本科专业
   专业特色标签:
@@ -62,10 +75,10 @@ major:
 
 # 行政班信息
 admin_class:
-  行政班名称: 计算机软件工程{suffix}班
+  行政班名称: "{admin_class_name}"
   行政班编号: admin_class{suffix}
-  学院: *dept_name
-  专业: *major_name
+  学院: "{dept_name}"
+  专业: "{major_name}"
   年级: "{year}"
   描述: 计算机软件工程班，是一支朝气蓬勃、勤学善思的集体。同学们怀揣对软件开发与技术创新的热爱，深耕专业知识，锤炼实践能力，在代码世界中不断探索与成长。大家团结互助、积极进取，以严谨务实的态度对待学业，以开放创新的精神面向未来，立志用技术书写青春，用专业成就梦想
 
@@ -75,7 +88,7 @@ course:
   课程名称: C语言程序设计{suffix}
   课程封面: C_Language_Cover.jpg
   课程类型: 必修课
-  所属学院: *dept_name
+  所属学院: "{dept_name}"
   课程描述: 程序设计是信息类和其他理工科一门重要的基础性课程，使学生具备用C语言开发应用软件的基本能力，为今后的软件开发工作奠定坚实的基础。
   课程负责人: *prof_name
   是否一流课程: true
@@ -83,7 +96,7 @@ course:
 # 培养方案信息
 training_program:
   方案名称: 计算机软件工程人才培养方案{suffix}
-  关联专业: *major_name
+  关联专业: "{major_name}"
   培养类型: 主修
   培养层次: 本科
   学制: "4"
@@ -285,7 +298,7 @@ teaching_class:
   是否允许学生自选: false
   是否允许学生自主退课: false
   班级人数无限制: false
-  主讲教师: *teacher_code  
+  主讲教师: *prof_code  
 
 
 # 课程工作台 - 课程设计 - 课程内容（按类型分组，每个类型可配置多个学习单元）

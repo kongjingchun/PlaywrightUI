@@ -39,7 +39,7 @@ class TestSetMyClass:
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                "智慧大学", "教师",
+                DATA["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )

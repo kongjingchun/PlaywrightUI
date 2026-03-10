@@ -146,7 +146,25 @@ class DataLoader:
         if not placeholders:
             return data
         
+        # 解析占位符值中的嵌套引用（如 major_name: "计算机软件工程{suffix}" 中的 {suffix}）
+        placeholders = self._resolve_nested_placeholders(placeholders)
+        
         return self._replace_placeholders(data, placeholders)
+    
+    def _resolve_nested_placeholders(self, placeholders: Dict[str, str]) -> Dict[str, str]:
+        """解析 placeholders 中值之间的嵌套引用，循环直到无变化"""
+        resolved = dict(placeholders)
+        changed = True
+        while changed:
+            changed = False
+            for key, value in resolved.items():
+                new_value = value
+                for k, v in resolved.items():
+                    if "{" + k + "}" in new_value:
+                        new_value = new_value.replace("{" + k + "}", v)
+                        changed = True
+                resolved[key] = new_value
+        return resolved
     
     def _replace_placeholders(
         self, 

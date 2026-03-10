@@ -41,7 +41,7 @@ class TestCreateCourse:
         with allure.step("登录教务管理员"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],
-                "智慧大学", "教务管理员",
+                DATA["school_name"], "教务管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

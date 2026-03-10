@@ -39,7 +39,14 @@ class UserManagePage(BasePage):
         # 创建用户按钮
         self.create_user_button = self.iframe.get_by_role("button", name="创建用户")
         # 所属院系选择框
-        self.create_user_major_dept_select = self.iframe.get_by_text("请选择学院").last
+        self.create_user_dept_select = self.iframe.get_by_text("请选择学院").last
+        # 所属专业选择框
+        self.create_user_major_select = self.iframe.get_by_text("请选择专业").last
+        # 所属年级选择框
+        self.create_user_grade_select = self.iframe.get_by_text("请选择年级").last
+        # 所属行政班选择框
+        self.create_user_admin_class_select = self.iframe.get_by_text("请选择行政班").last
+
         # 创建成功提示
         self.create_success_message = self.iframe.locator("xpath=//p[contains(text(),'创建成功')]")
         # =========绑定页面=========
@@ -59,14 +66,29 @@ class UserManagePage(BasePage):
     def _get_dept_select_locator(self, dept_name: str):
         """
         根据院系名称返回下拉框对应院系的定位器
-
-        Args:
-            dept_name: 院系名称
-
-        Returns:
-            Locator: 对应院系的下拉选项定位器
         """
         return self.iframe.get_by_role("option", name=dept_name)
+
+    def _get_major_select_locator(self, major_name: str):
+        """
+        根据专业名称返回下拉框对应专业的定位器
+        """
+        return self.iframe.get_by_role("option", name=major_name)
+
+    def _get_grade_select_locator(self, grade_name: str):
+        """
+        根据年级名称返回下拉框对应年级的定位器
+        """
+        # 如果grade_name不以"级"结尾，则添加"级"
+        if not grade_name.endswith("级"):
+            grade_name = f"{grade_name}级"
+        return self.iframe.get_by_role("option", name=grade_name)
+
+    def _get_admin_class_select_locator(self, admin_class_name: str):
+        """
+        根据行政班名称返回下拉框对应行政班的定位器
+        """
+        return self.iframe.get_by_role("option", name=admin_class_name)
 
     def _get_user_row_operation_locator(self, code: str):
         """根据工号获取用户行操作定位器"""
@@ -79,14 +101,23 @@ class UserManagePage(BasePage):
         self.fill_element(self.name_input, name)  # 输入姓名
         self.fill_element(self.code_input, code)  # 输入工号
 
-    def create_user(self, role_name: str, name: str, code: str, dept_name: str = None):
+    def create_user(self, role_name: str, name: str, code: str, dept_name: str = None, major_name: str = None, grade_name: str = None, admin_class_name: str = None):
         """创建用户"""
         self.hover_element(self.create_button)  # hover到手动创建按钮
         self.click_element(self._get_add_user_role_select_locator(role_name))  # 点击角色选择框
         self.add_user_basic_info_input(name, code)  # 添加用户基础信息输入
         if dept_name:  # 如果院系名称不为空，则选择所属院系
-            self.click_element(self.create_user_major_dept_select)  # 点击所属院系选择框
+            self.click_element(self.create_user_dept_select)  # 点击所属院系选择框
             self.click_element(self._get_dept_select_locator(dept_name))  # 选择所属院系
+        if major_name:  # 如果专业名称不为空，则选择所属专业
+            self.click_element(self.create_user_major_select)  # 点击所属专业选择框
+            self.click_element(self._get_major_select_locator(major_name))  # 选择所属专业
+        if grade_name:  # 如果年级名称不为空，则选择所属年级
+            self.click_element(self.create_user_grade_select)  # 点击所属年级选择框
+            self.click_element(self._get_grade_select_locator(grade_name))  # 选择所属年级
+        if admin_class_name:  # 如果行政班名称不为空，则选择所属行政班
+            self.click_element(self.create_user_admin_class_select)  # 点击所属行政班选择框
+            self.click_element(self._get_admin_class_select_locator(admin_class_name))  # 选择所属行政班
         self.click_element(self.create_user_button)  # 点击创建用户按钮
 
     def bind_user(self, code: str, platform_user_id: str):

@@ -46,10 +46,11 @@ class TestSetInitialUser:
         helper = TestContextHelper()
 
         # ========== 手动控制免登录 ==========
+        school_name = DATA["school_name"]
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                "智慧大学", "机构管理员",
+                school_name, "机构管理员",
                 use_saved_auth=False,  # 不自动尝试免登录（我们手动控制）
                 save_auth=True        # 自动保存（我们手动保存）
             )
@@ -99,10 +100,11 @@ class TestSetInitialUser:
             print("user_id: " + str(prof_cms_id))
             assert prof_cms_id is not None, f"用户 {prof_cms_info['username']} 注册失败"
 
+        school_name = DATA["school_name"]
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                "智慧大学", "机构管理员",
+                school_name, "机构管理员",
                 use_saved_auth=True,  # 自动尝试免登录（我们手动控制）
                 save_auth=True        # 自动保存（我们手动保存）
             )
@@ -169,10 +171,11 @@ class TestSetInitialUser:
         # 测试上下文助手
         helper = TestContextHelper()
         # 登录CMS教务管理员
+        school_name = DATA["school_name"]
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],
-                "智慧大学", "教务管理员",
+                school_name, "教务管理员",
                 use_saved_auth=False,  # 不自动尝试免登录（我们手动控制）
                 save_auth=True        # 自动保存（我们手动保存）
             )

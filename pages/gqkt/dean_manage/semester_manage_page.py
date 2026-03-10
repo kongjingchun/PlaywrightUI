@@ -35,6 +35,10 @@ class SemesterManagePage(BasePage):
         self.confirm_new_semester_button = self.iframe.get_by_label("确认新增").get_by_role("button", name="确定")
         # 创建成功提示
         self.create_semester_success_message = self.iframe.locator("xpath=//p[contains(text(),'新增学期成功')]")
+        # 确认操作窗口的确定按钮
+        self.confirm_operation_window_confirm_button = self.iframe.get_by_label("确认操作").get_by_role("button", name="确定")
+        # 设为当前学期成功提示
+        self.set_current_semester_success_message = self.iframe.locator("xpath=//p[contains(text(),'设置成功')]")
         # ========== 学期详情 ==========
 
     # ==================== 动态定位器生成方法 ====================
@@ -49,18 +53,29 @@ class SemesterManagePage(BasePage):
             Locator: 所属学年下拉选项的 Playwright 定位器
         """
         return self.iframe.get_by_role("option", name=academic_year)
+    # 根据学期值返回对应设为当前学期按钮的定位器
+
+    def _get_set_current_semester_button_locator(self, semester_value: str):
+        """
+        根据学期值返回对应设为当前学期按钮的定位器
+        """
+        return self.iframe.locator("tr", has_text=semester_value).get_by_role("button", name="设为当前学期")
     # ==================== 页面操作 ====================
 
     # ==================== 业务方法 ====================
 
     def create_semester(self, academic_year: str):
         """新建学期"""
-        self.click_element(self.new_semester_button)
-        self.click_element(self.academic_year_expand_locator)
-        self.click_element(self._get_academic_year_option_locator(academic_year))
-        self.click_element(self.confirm_button)
-        self.click_element(self.confirm_new_semester_button)
+        self.click_element(self.new_semester_button)  # 点击新增学期按钮
+        self.click_element(self.academic_year_expand_locator)  # 点击所属学年展开定位器
+        self.click_element(self._get_academic_year_option_locator(academic_year))  # 选择所属学年
+        self.click_element(self.confirm_button)  # 点击确定按钮
+        self.click_element(self.confirm_new_semester_button)  # 点击确认新增按钮
 
+    def set_current_semester(self, semester_value: str):
+        """设为当前学期"""
+        self.click_element(self._get_set_current_semester_button_locator(semester_value))  # 点击设为当前学期按钮
+        self.click_element(self.confirm_operation_window_confirm_button)  # 点击确认操作窗口的确定按钮
     # ==================== 断言方法 ====================
 
     def is_create_semester_success(self) -> bool:
@@ -71,4 +86,14 @@ class SemesterManagePage(BasePage):
             return True
         except Exception as e:
             self.logger.error(f"✗ 创建学期失败: {e}")
+            return False
+
+    def is_set_current_semester_success(self) -> bool:
+        """检查是否设为当前学期成功"""
+        try:
+            self.wait_for_element_visible(self.set_current_semester_success_message)
+            self.logger.info("✓ 设为当前学期成功")
+            return True
+        except Exception as e:
+            self.logger.error(f"✗ 设为当前学期失败: {e}")
             return False

@@ -32,10 +32,10 @@ class MajorManagePage(BasePage):
         self.major_code_school_input = self.iframe.get_by_role("textbox", name="* 专业代码（学校）")
         # 专业代码（国家）输入框
         self.major_code_national_input = self.iframe.get_by_role("textbox", name="* 专业代码（国家）")
-        # 所属院系选择框
-        self.major_dept_select = self.iframe.get_by_text("请选择所属院系")
+        # 所属院系选择框（用 combobox 避免 el-select 内部 input 拦截点击）
+        self.major_dept_select = self.iframe.get_by_label("新建专业").get_by_text("请选择所属院系")
         # 专业负责人选择框
-        self.major_prof_select = self.iframe.get_by_text("请选择专业负责人")
+        self.major_prof_select = self.iframe.get_by_label("新建专业").get_by_text("请选择专业负责人")
         # 专业负责人关闭下拉框
         self.major_prof_close_button = self.iframe.locator("xpath=(//label[text()='专业负责人']/following-sibling::div//i)[last()]")
         # 确定创建按钮

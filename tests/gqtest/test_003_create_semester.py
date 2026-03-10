@@ -27,7 +27,7 @@ class TestCreateSemester:
     # @pytest.mark.skip(reason="临时跳过创建学期用例")
     @pytest.mark.run(order=160)
     @allure.title("创建学期")
-    def test_create_semester(self, page: Page, screenshot_helper, base_url):
+    def test_create_semester(self, page: Page, screenshot_helper, base_url, ):
         """
         创建学期
         """
@@ -41,17 +41,20 @@ class TestCreateSemester:
         with allure.step("登录教务管理员"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],
-                "智慧大学", "教务管理员",
+                DATA["school_name"], "教务管理员",
                 use_saved_auth=True,
                 save_auth=True
             )
-
         with allure.step("点击学期管理"):
             helper.click_left_menu_item(page, "学期管理")
 
         with allure.step("创建学期"):
             semester_manage_page = SemesterManagePage(page)
-            semester_manage_page.create_semester("2035")
+            semester_manage_page.create_semester(semester_info["学年"])
             assert semester_manage_page.is_create_semester_success(), "创建学期失败"
             screenshot_helper.capture_full_page("创建学期成功")
-            page.pause()
+
+        with allure.step("设为当前学期"):
+            semester_manage_page.set_current_semester(semester_info["学期值"])
+            assert semester_manage_page.is_set_current_semester_success(), "设为当前学期失败"
+            screenshot_helper.capture_full_page("设为当前学期成功")

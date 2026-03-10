@@ -41,7 +41,7 @@ class TestCreateTeacher:
         with allure.step("登录机构管理员"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                "智慧大学", "机构管理员",
+                DATA["school_name"], "机构管理员",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -55,6 +55,7 @@ class TestCreateTeacher:
             assert user_manage_page.is_create_user_success(), "创建教师失败"
             screenshot_helper.capture_full_page("创建教师成功")
 
+    # TODO: 可能注册失败
     @pytest.mark.run(order=270)
     @pytest.mark.skip_local
     @allure.title("注册CMS账户并绑定教师")
@@ -77,7 +78,7 @@ class TestCreateTeacher:
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                "智慧大学", "机构管理员",
+                DATA["school_name"], "机构管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

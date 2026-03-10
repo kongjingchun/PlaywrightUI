@@ -42,9 +42,8 @@ class Settings:
     # ==================== 浏览器配置 ====================
     # True = 无界面运行（适合 CI/CD），False = 有界面运行（适合调试）
     # 修改此处或 .env 的 HEADLESS 即可改默认；执行时加 --headed 可临时覆盖为有头
-    HEADLESS = os.getenv("HEADLESS", "false").lower() == "true" # 默认有头模式
+    HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"  # 默认有头模式
     # HEADLESS = os.getenv("HEADLESS", "true").lower() == "true" # 默认无头模式
-
 
     # BROWSER_TYPE / SLOW_MO: 可由命令行 --browser、--slowmo 覆盖
     BROWSER_TYPE = os.getenv("BROWSER", "chromium")

@@ -5,15 +5,18 @@
 # 使用方法：ENV=local pytest tests/
 # ========================================
 
-# 基础 URL - 本地服务地址
-base_url: "http://59.110.92.54"
+# 基础 URL - 本地服务地址（需包含协议，如 http://）
+base_url: "http://192.168.200.204:5173"
 
 
 # 初始管理员用户信息
-initial_admin:
-  username: "orgadmin"
-  password: "j=zCD7NtiL"
+# initial_admin:
+#   username: "orgadmin"
+#   password: "j=zCD7NtiL"
 
+initial_admin:
+  username: "superadmin"
+  password: "111"
 # API 配置
 api:
   base_url: "http://localhost:8080"
