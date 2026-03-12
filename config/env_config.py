@@ -15,7 +15,7 @@ import yaml
 from pathlib import Path
 from typing import Any, Optional
 
-from config.settings import DEFAULT_ENV
+from config.settings import DEFAULT_ENV, Settings
 
 
 class EnvConfig:
@@ -46,27 +46,49 @@ class EnvConfig:
     # 配置文件目录
     _CONFIG_DIR = Path(__file__).parent / "environments"
     
-    def __init__(self, env: Optional[str] = None):
+    def __init__(self, env: Optional[str] = None, config_file: Optional[str] = None):
         """
         初始化环境配置
         
         Args:
             env: 环境名称（dev/test/prod），不传则从 ENV 环境变量获取
+            config_file: 直接指定配置文件路径，优先级最高；支持相对项目根的路径
         
         Raises:
             FileNotFoundError: 配置文件不存在时抛出
         """
-        # 获取当前环境，优先使用传入的参数，其次使用环境变量（与 config.settings.DEFAULT_ENV 保持一致）
-        self.env = env or os.getenv("ENV", DEFAULT_ENV)
-        
-        # 配置文件路径
-        self._config_file = self._CONFIG_DIR / f"{self.env}.yaml"
+        # 配置文件路径：优先级 config_file 参数 > ENV_CONFIG_FILE > 按 env 推导
+        explicit_path = config_file or getattr(Settings, "ENV_CONFIG_FILE", "") or os.getenv("ENV_CONFIG_FILE", "")
+        if explicit_path and explicit_path.strip():
+            self._config_file = self._resolve_config_path(explicit_path.strip())
+            self.env = self._config_file.stem  # 用于显示
+        else:
+            self.env = env or os.getenv("ENV", DEFAULT_ENV)
+            self._config_file = self._CONFIG_DIR / f"{self.env}.yaml"
         
         # 存储加载的配置数据
         self._config: dict = {}
         
         # 加载配置文件
         self._load_config()
+    
+    def _resolve_config_path(self, path: str) -> Path:
+        """
+        解析配置文件路径。
+        支持：绝对路径、相对于项目根的路径；自动补全 .yaml 后缀。
+        若路径不以 config/ 开头，则视为相对于 config/environments/ 的简写（如 gqkt/local -> config/environments/gqkt/local.yaml）。
+        """
+        p = Path(path)
+        if p.is_absolute():
+            resolved = p
+        else:
+            # 简写：gqkt/local 或 gqkt/education/local -> config/environments/...
+            if not path.startswith("config"):
+                path = f"config/environments/{path}"
+            resolved = Settings.PROJECT_ROOT / path
+        if not resolved.suffix:
+            resolved = resolved.with_suffix(".yaml")
+        return resolved
     
     def _load_config(self) -> None:
         """
@@ -167,12 +189,13 @@ class EnvConfig:
 # ==================== 模块级便捷函数 ====================
 # 创建一个全局配置实例，方便直接导入使用
 
-def get_env_config(env: Optional[str] = None) -> EnvConfig:
+def get_env_config(env: Optional[str] = None, config_file: Optional[str] = None) -> EnvConfig:
     """
     获取环境配置实例的工厂函数
     
     Args:
         env: 环境名称，不传则使用 ENV 环境变量
+        config_file: 直接指定配置文件路径，优先级高于 env
     
     Returns:
         EnvConfig 实例
@@ -181,7 +204,7 @@ def get_env_config(env: Optional[str] = None) -> EnvConfig:
         from config.env_config import get_env_config
         
         config = get_env_config()
-        # 或指定环境
         config = get_env_config("prod")
+        config = get_env_config(config_file="config/environments/gqkt/education/local.yaml")
     """
-    return EnvConfig(env)
+    return EnvConfig(env=env, config_file=config_file)

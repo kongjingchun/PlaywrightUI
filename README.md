@@ -15,11 +15,12 @@ Playwright_Ui/
 │   ├── __init__.py
 │   ├── settings.py                 # 全局配置（浏览器、超时、路径等）
 │   ├── env_config.py               # 环境配置加载器
-│   └── environments/               # 环境配置文件目录
-│       ├── local.yaml              # 本地环境配置
-│       ├── dev.yaml                # 开发环境配置
-│       ├── test.yaml               # 测试环境配置
-│       └── prod.yaml               # 生产环境配置
+│   └── environments/               # 环境配置文件目录（支持多项目/多业务线子目录）
+│       └── gqkt/
+│           ├── local.yaml          # 本地环境配置
+│           ├── dev.yaml            # 开发环境配置
+│           ├── test.yaml           # 测试环境配置
+│           └── prod.yaml           # 生产环境配置
 │
 ├── pages/                          # Page Object Model (POM)
 │   ├── __init__.py
@@ -45,7 +46,7 @@ Playwright_Ui/
 ├── data/                           # 测试数据目录
 │   └── gqkt/
 │       ├── prod_config.yaml        # 生产环境业务数据
-│       └── local_config.yaml       # 本地环境业务数据（按 ENV 自动选择）
+│       └── local_config.yaml       # 本地环境业务数据（由 environments/gqkt/*.yaml 的 gqkt_config_file 指定）
 │
 ├── file/                           # 测试用文件（上传等）
 │   └── gqkt/
@@ -94,31 +95,38 @@ playwright install
 ### 2. 运行测试
 
 ```bash
-# 完整示例：指定目录    +    环境   + 有头/无头模式  + Allure 报告   +   线程数
-pytest tests/gqtest/ -v --env=local --headed --alluredir=UIreport -n 1
+# 完整示例：指定目录     +      配置文件    +   有头/无头模式 + Allure 报告  +   线程数
+pytest tests/gqtest/ -v --config=gqkt/local --headed --alluredir=UIreport -n 1
 
 # 参数说明：
 #   tests/gqtest/        指定测试目录
-#   --env=local          运行环境（local/dev/test/prod）
+#   --config=gqkt/local   配置文件路径（简写，对应 config/environments/gqkt/local.yaml）
 #   --headed             有头模式（显示浏览器）；不加则使用 HEADLESS 配置（.env 或 config/settings.py）
 #   --alluredir=UIreport Allure 报告数据输出目录
 #   -n 1                 单线程（-n 4 或 -n auto 可并行，用例有依赖时建议 -n 1）
 
 
-# 运行所有测试
+# 运行所有测试（使用 settings.py 中的 DEFAULT_ENV_CONFIG_FILE）
 pytest
 
 # 运行特定测试文件
 pytest tests/demo/test_login.py -v
 pytest tests/gqtest/test_018_add_course_resource.py -v
 
-# 指定环境运行（推荐：命令行参数，跨平台）
-pytest tests/ --env=prod
-pytest tests/gqtest/test_004_create_major.py -v --env=local
+# 指定配置文件运行（推荐，支持多项目/多业务线任意目录层级）
+pytest tests/ --config=gqkt/prod
+pytest tests/gqtest/test_004_create_major.py -v --config=gqkt/local
+# 完整路径
+pytest tests/ --config=config/environments/gqkt/prod.yaml
+# 多业务线示例（若存在 education 子目录）
+pytest tests/ --config=config/environments/gqkt/education/local.yaml
 
-# 或使用环境变量（Mac/Linux）
-# ENV=prod pytest tests/
-# Windows: set ENV=prod && pytest tests/ 或 $env:ENV="prod"; pytest tests/
+# 或使用 settings.py / 环境变量 指定默认配置
+# 在 config/settings.py 中设置 DEFAULT_ENV_CONFIG_FILE = "config/environments/gqkt/prod.yaml"
+# ENV_CONFIG_FILE=config/environments/gqkt/local.yaml pytest tests/
+
+# 使用 --env 时需存在 config/environments/{env}.yaml（flat 结构）
+# pytest tests/ --env=prod
 
 # 运行冒烟测试
 pytest -m smoke -v
@@ -201,7 +209,7 @@ screenshots_dir = Settings.SCREENSHOTS_DIR
 
 #### 环境配置 (config/env_config.py)
 
-支持环境：`local`、`dev`、`test`、`prod`，对应 `config/environments/*.yaml`。
+支持环境：`local`、`dev`、`test`、`prod`，配置文件位于 `config/environments/gqkt/*.yaml`。可通过 `--config`、`ENV_CONFIG_FILE` 或 `DEFAULT_ENV_CONFIG_FILE` 指定。
 
 ```python
 from config.env_config import EnvConfig
@@ -237,12 +245,14 @@ DEFAULT_TIMEOUT=30000
 
 #### 从 YAML 加载数据
 
-业务测试使用 `load_yaml("gqkt/gqkt_config.yaml")`，会**根据 ENV 自动解析**为 `prod_config.yaml` 或 `local_config.yaml`：
+业务测试使用 `load_yaml("gqkt/gqkt_config.yaml")`，会**根据环境配置加载**对应数据文件：
+- 优先从环境配置的 `gqkt_config_file` 读取路径（如 `gqkt/local_config.yaml`）
+- 若未配置则按 ENV 推导（prod -> prod_config.yaml，local -> local_config.yaml）
 
 ```python
 from utils.data_loader import load_yaml
 
-# 根据 ENV 自动加载 prod_config 或 local_config
+# 根据环境配置加载（gqkt_config_file 或 ENV 推导）
 DATA = load_yaml("gqkt/gqkt_config.yaml")
 major_info = DATA["major"]
 user_info = DATA["user"]["dean_cms"]
@@ -411,7 +421,8 @@ pytest -m "smoke and login"
 
 | 参数 | 说明 | 示例 |
 |------|------|------|
-| `--env` | 测试环境（local/dev/test/prod），**跨平台** | `pytest --env=prod tests/` |
+| `--config` | 直接指定配置文件路径（支持任意层级，推荐） | `pytest --config=gqkt/local tests/` |
+| `--env` | 测试环境（需存在 flat 结构 `config/environments/{env}.yaml`） | `pytest --env=prod tests/` |
 | `--browser` | 浏览器类型 | `--browser=firefox` |
 | `--headed` | 有头模式 | `--headed` |
 | `--base-url-override` | 覆盖环境中的基础 URL | `--base-url-override=https://example.com` |
@@ -420,9 +431,9 @@ pytest -m "smoke and login"
 **示例：**
 
 ```bash
-# 指定环境运行（推荐，跨平台）
-pytest tests/ --env=prod
-pytest tests/gqtest/test_004_create_major.py -v --env=local
+# 指定配置文件运行（推荐）
+pytest tests/ --config=gqkt/prod
+pytest tests/gqtest/test_004_create_major.py -v --config=gqkt/local
 
 # 使用 Firefox
 pytest --browser=firefox
@@ -514,8 +525,8 @@ allure generate UIreport -o allure-report --clean
 
 ### Q: 如何添加新的测试数据？
 
-1. 业务数据放在 `data/gqkt/prod_config.yaml` 或 `local_config.yaml`（按 ENV 自动选择）
-2. 使用 `load_yaml("gqkt/gqkt_config.yaml")` 加载（会自动解析为 prod/local）
+1. 业务数据放在 `data/gqkt/prod_config.yaml` 或 `local_config.yaml`，在 `config/environments/gqkt/*.yaml` 中通过 `gqkt_config_file` 指定路径
+2. 使用 `load_yaml("gqkt/gqkt_config.yaml")` 加载（会按 gqkt_config_file 或 ENV 解析）
 3. 演示用通用数据可在 `conftest.py` 中增加 fixture，并保证 `data/` 下对应文件存在
 
 ## 📝 开发规范

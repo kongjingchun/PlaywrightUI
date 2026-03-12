@@ -51,8 +51,16 @@ def pytest_addoption(parser):
     使用方法：
         pytest --env=prod tests/
         pytest --env=local tests/gqtest/test_004_create_major.py -v
+        pytest --config=config/environments/gqkt/education/local.yaml tests/
         pytest --base-url-override=https://example.com
     """
+    # 直接指定配置文件路径（支持任意目录层级，优先级高于 --env）
+    parser.addoption(
+        "--config",
+        action="store",
+        default=None,
+        help="环境配置文件路径（相对于项目根），如 config/environments/gqkt/education/local.yaml"
+    )
     # 环境（支持命令行参数，与 ENV 环境变量等效，命令行优先）
     parser.addoption(
         "--env",
@@ -75,17 +83,24 @@ def pytest_configure(config):
     pytest 配置钩子（测试运行前执行）
 
     功能：
-    1. 应用 --env 参数（若提供则覆盖 ENV 环境变量）
+    1. 应用 --config 或 --env 参数
     2. 创建输出目录
     3. 配置 Allure 环境信息
     4. 注册自定义标记
     """
-    # 若命令行指定了 --env，则覆盖环境变量和 Settings.ENV
-    env_opt = config.getoption("--env", default=None)
-    if env_opt:
-        os.environ["ENV"] = env_opt
-        Settings.ENV = env_opt
-        logger.info(f"使用命令行指定的环境: {env_opt}")
+    # 若指定了 --config，直接使用该配置文件（优先级高于 --env）
+    config_opt = config.getoption("--config", default=None)
+    if config_opt:
+        os.environ["ENV_CONFIG_FILE"] = config_opt
+        Settings.ENV_CONFIG_FILE = config_opt
+        logger.info(f"使用指定配置文件: {config_opt}")
+    else:
+        # 若命令行指定了 --env，则覆盖环境变量和 Settings.ENV
+        env_opt = config.getoption("--env", default=None)
+        if env_opt:
+            os.environ["ENV"] = env_opt
+            Settings.ENV = env_opt
+            logger.info(f"使用命令行指定的环境: {env_opt}")
 
     # 检查是否只是收集测试用例
     if hasattr(config, 'option') and hasattr(config.option, 'collectonly'):

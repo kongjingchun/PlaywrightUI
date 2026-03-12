@@ -17,6 +17,10 @@ base_url: "http://192.168.200.204:5173"
 initial_admin:
   username: "superadmin"
   password: "111"
+
+# 测试数据文件路径（相对于 data/ 目录）
+gqkt_config_file: "gqkt/local_config.yaml"
+
 # API 配置
 api:
   base_url: "http://localhost:8080"

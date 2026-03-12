@@ -13,6 +13,7 @@ import yaml
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from config.settings import Settings
+from config.env_config import get_env_config
 from utils.logger import Logger
 
 
@@ -53,11 +54,22 @@ class DataLoader:
     def _resolve_gqkt_config_filename(self, filename: str) -> str:
         """
         根据运行环境解析 gqkt 配置文件名。
-        - 请求 gqkt/gqkt_config.yaml 时：prod 使用 gqkt/prod_config.yaml，local 使用 gqkt/local_config.yaml
-        - 若环境对应文件不存在则回退到 gqkt/gqkt_config.yaml
+        优先从环境配置（config/environments/*.yaml）的 gqkt_config_file 读取路径；
+        若未配置则按 env 推导：prod -> gqkt/prod_config.yaml，local -> gqkt/local_config.yaml；
+        若环境对应文件不存在则回退到 gqkt/gqkt_config.yaml。
         """
         if filename != "gqkt/gqkt_config.yaml":
             return filename
+        # 优先从环境 YAML 的 gqkt_config_file 读取
+        try:
+            env_config = get_env_config()
+            config_file = env_config.get("gqkt_config_file")
+            if config_file and (self.data_dir / config_file).exists():
+                self.logger.debug(f"按环境配置加载: {config_file}")
+                return config_file
+        except Exception as e:
+            self.logger.debug(f"读取环境配置 gqkt_config_file 失败，使用 env 推导: {e}")
+        # 回退：按 env 推导
         env = getattr(Settings, "ENV", "prod")
         env_filename = f"gqkt/{env}_config.yaml"
         if (self.data_dir / env_filename).exists():

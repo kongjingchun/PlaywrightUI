@@ -20,6 +20,12 @@ load_dotenv()
 # 支持 local、dev、test、prod
 DEFAULT_ENV = "prod"
 
+# ==================== 直接指定配置文件路径（优先级高于 ENV） ====================
+# 若设置，将直接加载该配置文件，支持任意目录层级，忽略 ENV 推导
+# 路径相对于项目根目录，如：config/environments/gqkt/education/local.yaml
+# 可通过 .env 的 ENV_CONFIG_FILE 或命令行 --config 覆盖
+DEFAULT_ENV_CONFIG_FILE = "config/environments/gqkt/prod.yaml"
+
 
 class Settings:
     """
@@ -57,6 +63,8 @@ class Settings:
     # ==================== 环境配置 ====================
     # ENV: 当前运行环境（从环境变量读取，未设置时使用 DEFAULT_ENV）
     ENV = os.getenv("ENV", DEFAULT_ENV)
+    # ENV_CONFIG_FILE: 直接指定配置文件路径时使用，支持任意层级（如 config/environments/gqkt/education/local.yaml）
+    ENV_CONFIG_FILE = os.getenv("ENV_CONFIG_FILE", DEFAULT_ENV_CONFIG_FILE)
 
     # ==================== 超时配置（单位：毫秒） ====================
     # DEFAULT_TIMEOUT: 默认操作超时时间

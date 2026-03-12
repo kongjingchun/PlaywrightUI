@@ -13,6 +13,9 @@ initial_admin:
   username: "dev_admin"
   password: "dev_admin_123"
 
+# 测试数据文件路径（相对于 data/ 目录）
+gqkt_config_file: "gqkt/prod_config.yaml"
+
 # 登录凭据
 credentials:
   username: "dev_user"
