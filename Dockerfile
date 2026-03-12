@@ -20,6 +20,8 @@ RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
 RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/ \
     && pip config set install.trusted-host mirrors.aliyun.com
 
+COPY requirements.txt ./
+
 # 安装依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
