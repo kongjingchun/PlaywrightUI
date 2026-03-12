@@ -97,9 +97,6 @@ auth.save_auth_state(page, "我的用户")
 1. `.auth/` 目录已加入 `.gitignore`，不会提交到 Git
 2. 状态过期后会自动清除，需要重新登录
 3. 不同环境（dev/test/prod）建议使用不同的用户标识
-
-
-
         # 定义用户标识（用于免登录）
         auth_key = "机构管理员"
 

@@ -44,7 +44,8 @@ Playwright_Ui/
 │
 ├── data/                           # 测试数据目录
 │   └── gqkt/
-│       └── gqkt_config.yaml        # GQKT 业务测试配置与数据
+│       ├── prod_config.yaml        # 生产环境业务数据
+│       └── local_config.yaml       # 本地环境业务数据（按 ENV 自动选择）
 │
 ├── file/                           # 测试用文件（上传等）
 │   └── gqkt/
@@ -54,9 +55,11 @@ Playwright_Ui/
 │   └── gqtest/                     # GQKT 业务测试（test_001_* ~ test_022_* 等）
 │
 ├── docs/                           # 项目文档
-│   ├── auth_helper.md
-│   ├── dingtalk_notification.md
-│   └── image_recognition.md
+│   ├── 框架讲解文档.md              # 框架使用方法与定位器指南（推荐阅读）
+│   ├── auth_helper.md              # 免登录
+│   ├── dingtalk_notification.md    # 钉钉通知
+│   ├── database_usage.md           # 数据库使用
+│   └── image_recognition.md       # 图像识别
 │
 ├── UIreport/                       # Allure 报告目录（自动创建）
 ├── logs/                           # 日志文件目录（自动创建）
@@ -95,17 +98,21 @@ playwright install
 pytest
 
 # 运行特定测试文件
-pytest tests/test_demo.py -v
-pytest tests/gqtest/test_018_add_course_resource.py --env=prod -v
+pytest tests/demo/test_login.py -v
+pytest tests/gqtest/test_018_add_course_resource.py -v
+
+# 指定环境运行（通过环境变量 ENV）
+ENV=prod pytest tests/
+ENV=local pytest tests/gqtest/test_004_create_major.py -v
 
 # 运行冒烟测试
 pytest -m smoke -v
 
 # 使用有头模式（显示浏览器窗口）
-pytest tests/test_demo.py -v --headed
+pytest tests/demo/test_login.py -v --headed
 
 # 使用慢动作模式调试
-pytest tests/test_demo.py -v --headed --slow-mo=1000
+pytest tests/demo/test_login.py -v --headed --slow-mo=1000
 ```
 
 ### 3. 生成测试报告
@@ -125,34 +132,36 @@ allure generate UIreport -o allure-report --clean
 
 ### 1. Page Object Model (POM)
 
-框架采用 POM 设计模式，将页面元素和操作封装在独立的类中：
+框架采用 POM 设计模式，将页面元素和操作封装在独立的类中。**推荐优先使用语义化定位器**（`get_by_role`、`get_by_placeholder` 等），详见 [docs/框架讲解文档.md](docs/框架讲解文档.md)。
 
 ```python
-# pages/demo/login_page.py
+# pages/gqkt/login_page.py
 from base.base_page import BasePage
 
-class LoginPage(BasePage):
+class GqktLoginPage(BasePage):
     def __init__(self, page):
         super().__init__(page)
-        self.username_input = page.locator("#username")
-        self.password_input = page.locator("#password")
-        self.login_button = page.locator("#login-btn")
+        # 推荐：语义化定位器
+        self.username_input = page.get_by_placeholder("请输入您的账户")
+        self.password_input = page.get_by_placeholder("请输入您的密码")
+        self.login_button = page.get_by_role("button", name="登录")
     
     def login(self, username: str, password: str):
         """执行登录操作"""
         self.fill_element(self.username_input, username)
         self.fill_element(self.password_input, password)
         self.click_element(self.login_button)
+        return self
 ```
 
 **在测试中使用：**
 
 ```python
-def test_login(page):
-    login_page = LoginPage(page)
-    login_page.navigate_to_login("https://example.com")
+def test_login(page, base_url):
+    login_page = GqktLoginPage(page)
+    login_page.navigate_to(f"{base_url}/login")
     login_page.login("admin", "password123")
-    assert login_page.is_login_successful()
+    assert login_page.is_login_success()
 ```
 
 ### 2. 配置管理
@@ -181,7 +190,7 @@ screenshots_dir = Settings.SCREENSHOTS_DIR
 ```python
 from config.env_config import EnvConfig
 
-# 加载当前环境配置（默认由 --env 或 Settings.DEFAULT_ENV 决定）
+# 加载当前环境配置（默认由环境变量 ENV 或 Settings.DEFAULT_ENV 决定）
 config = EnvConfig()
 
 # 获取配置项
@@ -212,7 +221,18 @@ DEFAULT_TIMEOUT=30000
 
 #### 从 YAML 加载数据
 
-业务测试主要使用 `data/gqkt/gqkt_config.yaml`：
+业务测试使用 `load_yaml("gqkt/gqkt_config.yaml")`，会**根据 ENV 自动解析**为 `prod_config.yaml` 或 `local_config.yaml`：
+
+```python
+from utils.data_loader import load_yaml
+
+# 根据 ENV 自动加载 prod_config 或 local_config
+DATA = load_yaml("gqkt/gqkt_config.yaml")
+major_info = DATA["major"]
+user_info = DATA["user"]["dean_cms"]
+```
+
+或使用 `DataLoader` 实例：
 
 ```python
 from utils.data_loader import DataLoader
@@ -373,25 +393,29 @@ pytest -m "smoke and login"
 
 ## 📋 命令行参数
 
-| 参数 | 说明 | 示例 |
-|------|------|------|
+| 参数/环境变量 | 说明 | 示例 |
+|---------------|------|------|
+| `ENV` | 测试环境（local/dev/test/prod），**环境变量** | `ENV=prod pytest` |
 | `--browser` | 浏览器类型 | `--browser=firefox` |
 | `--headed` | 有头模式 | `--headed` |
-| `--env` | 测试环境（local/dev/test/prod） | `--env=prod` |
 | `--base-url-override` | 覆盖环境中的基础 URL | `--base-url-override=https://example.com` |
-| `--slow-mo` | 慢动作延迟 | `--slow-mo=1000` |
+| `--slow-mo` | 慢动作延迟（毫秒） | `--slow-mo=1000` |
 
 **示例：**
 
 ```bash
-# 使用 Firefox 在生产环境运行
-pytest --browser=firefox --env=prod
+# 指定环境运行（通过环境变量 ENV）
+ENV=prod pytest tests/
+ENV=local pytest tests/gqtest/test_004_create_major.py
+
+# 使用 Firefox
+pytest --browser=firefox
 
 # 有头模式带慢动作调试
 pytest --headed --slow-mo=500
 
-# 指定基础URL
-pytest --base-url=https://staging.example.com
+# 覆盖基础 URL
+pytest --base-url-override=https://staging.example.com
 ```
 
 ## 🔧 Fixtures 说明
@@ -400,18 +424,19 @@ pytest --base-url=https://staging.example.com
 
 | Fixture | Scope | 说明 |
 |---------|-------|------|
-| `page` | function | 干净的页面实例 |
+| `page` | function | 干净的页面实例（pytest-playwright 提供） |
 | `context` | function | 浏览器上下文 |
 | `browser` | session | 浏览器实例 |
 | `base_url` | session | 基础 URL（来自当前环境配置） |
 | `env_config` | session | 环境配置 |
+| `initial_admin` | session | 初始管理员账号（从环境配置读取） |
 | `data_loader` | session | 数据加载器 |
 | `screenshot_helper` | function | 截图助手 |
 | `login_data` | session | 登录测试数据（依赖 `data/login_data.yaml`，演示用） |
 | `search_data` | session | 搜索测试数据（依赖 `data/search_data.yaml`，演示用） |
 | `common_data` | session | 通用测试数据（依赖 `data/common_data.yaml`，演示用） |
 
-业务测试（`tests/gqtest`）通常直接使用 `DataLoader` 加载 `data/gqkt/gqkt_config.yaml`，不依赖上述三个 data fixture。
+业务测试（`tests/gqtest`）通常使用 `load_yaml("gqkt/gqkt_config.yaml")` 加载数据，并通过 `TestContextHelper` 完成登录、切换学校/角色等操作（支持免登录）。
 
 **使用示例：**
 
@@ -473,8 +498,8 @@ allure generate UIreport -o allure-report --clean
 
 ### Q: 如何添加新的测试数据？
 
-1. 业务数据可放在 `data/gqkt/gqkt_config.yaml` 或新建 `data/xxx/` 下 YAML/JSON
-2. 使用 `DataLoader` 加载（如 `loader.load_yaml("gqkt/gqkt_config.yaml")`）
+1. 业务数据放在 `data/gqkt/prod_config.yaml` 或 `local_config.yaml`（按 ENV 自动选择）
+2. 使用 `load_yaml("gqkt/gqkt_config.yaml")` 加载（会自动解析为 prod/local）
 3. 演示用通用数据可在 `conftest.py` 中增加 fixture，并保证 `data/` 下对应文件存在
 
 ## 📝 开发规范
