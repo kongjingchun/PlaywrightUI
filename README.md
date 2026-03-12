@@ -94,6 +94,17 @@ playwright install
 ### 2. 运行测试
 
 ```bash
+# 完整示例：指定目录    +    环境   + 有头/无头模式  + Allure 报告   +   线程数
+pytest tests/gqtest/ -v --env=local --headed --alluredir=UIreport -n 1
+
+# 参数说明：
+#   tests/gqtest/        指定测试目录
+#   --env=local          运行环境（local/dev/test/prod）
+#   --headed             有头模式（显示浏览器）；不加则使用 HEADLESS 配置（.env 或 config/settings.py）
+#   --alluredir=UIreport Allure 报告数据输出目录
+#   -n 1                 单线程（-n 4 或 -n auto 可并行，用例有依赖时建议 -n 1）
+
+
 # 运行所有测试
 pytest
 
@@ -101,9 +112,13 @@ pytest
 pytest tests/demo/test_login.py -v
 pytest tests/gqtest/test_018_add_course_resource.py -v
 
-# 指定环境运行（通过环境变量 ENV）
-ENV=prod pytest tests/
-ENV=local pytest tests/gqtest/test_004_create_major.py -v
+# 指定环境运行（推荐：命令行参数，跨平台）
+pytest tests/ --env=prod
+pytest tests/gqtest/test_004_create_major.py -v --env=local
+
+# 或使用环境变量（Mac/Linux）
+# ENV=prod pytest tests/
+# Windows: set ENV=prod && pytest tests/ 或 $env:ENV="prod"; pytest tests/
 
 # 运行冒烟测试
 pytest -m smoke -v
@@ -112,8 +127,9 @@ pytest -m smoke -v
 pytest tests/demo/test_login.py -v --headed
 
 # 使用慢动作模式调试
-pytest tests/demo/test_login.py -v --headed --slow-mo=1000
-```
+pytest tests/demo/test_login.py -v --headed --slowmo=1000
+
+
 
 ### 3. 生成测试报告
 
@@ -132,7 +148,7 @@ allure generate UIreport -o allure-report --clean
 
 ### 1. Page Object Model (POM)
 
-框架采用 POM 设计模式，将页面元素和操作封装在独立的类中。**推荐优先使用语义化定位器**（`get_by_role`、`get_by_placeholder` 等），详见 [docs/框架讲解文档.md](docs/框架讲解文档.md)。
+框架采用 POM 设计模式，将页面元素和操作封装在独立的类中。**推荐优先使用语义化定位器**（`get_by_role`、`get_by_placeholder` 等
 
 ```python
 # pages/gqkt/login_page.py
@@ -393,26 +409,26 @@ pytest -m "smoke and login"
 
 ## 📋 命令行参数
 
-| 参数/环境变量 | 说明 | 示例 |
-|---------------|------|------|
-| `ENV` | 测试环境（local/dev/test/prod），**环境变量** | `ENV=prod pytest` |
+| 参数 | 说明 | 示例 |
+|------|------|------|
+| `--env` | 测试环境（local/dev/test/prod），**跨平台** | `pytest --env=prod tests/` |
 | `--browser` | 浏览器类型 | `--browser=firefox` |
 | `--headed` | 有头模式 | `--headed` |
 | `--base-url-override` | 覆盖环境中的基础 URL | `--base-url-override=https://example.com` |
-| `--slow-mo` | 慢动作延迟（毫秒） | `--slow-mo=1000` |
+| `--slowmo` | 慢动作延迟（毫秒） | `--slowmo=1000` |
 
 **示例：**
 
 ```bash
-# 指定环境运行（通过环境变量 ENV）
-ENV=prod pytest tests/
-ENV=local pytest tests/gqtest/test_004_create_major.py
+# 指定环境运行（推荐，跨平台）
+pytest tests/ --env=prod
+pytest tests/gqtest/test_004_create_major.py -v --env=local
 
 # 使用 Firefox
 pytest --browser=firefox
 
 # 有头模式带慢动作调试
-pytest --headed --slow-mo=500
+pytest --headed --slowmo=500
 
 # 覆盖基础 URL
 pytest --base-url-override=https://staging.example.com

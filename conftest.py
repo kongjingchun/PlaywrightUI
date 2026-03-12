@@ -49,10 +49,17 @@ def pytest_addoption(parser):
     注意：--browser, --headed, --slowmo 由 pytest-playwright 提供
 
     使用方法：
-        ENV=local pytest tests/
+        pytest --env=prod tests/
+        pytest --env=local tests/gqtest/test_004_create_major.py -v
         pytest --base-url-override=https://example.com
     """
-    # 环境由环境变量 ENV 决定（与 Settings.ENV 一致），不再提供 --env 参数
+    # 环境（支持命令行参数，与 ENV 环境变量等效，命令行优先）
+    parser.addoption(
+        "--env",
+        action="store",
+        default=None,
+        help="测试环境: local/dev/test/prod（与 ENV 环境变量等效，命令行优先）"
+    )
 
     # 基础URL覆盖
     parser.addoption(
@@ -68,10 +75,18 @@ def pytest_configure(config):
     pytest 配置钩子（测试运行前执行）
 
     功能：
-    1. 创建输出目录
-    2. 配置 Allure 环境信息
-    3. 注册自定义标记
+    1. 应用 --env 参数（若提供则覆盖 ENV 环境变量）
+    2. 创建输出目录
+    3. 配置 Allure 环境信息
+    4. 注册自定义标记
     """
+    # 若命令行指定了 --env，则覆盖环境变量和 Settings.ENV
+    env_opt = config.getoption("--env", default=None)
+    if env_opt:
+        os.environ["ENV"] = env_opt
+        Settings.ENV = env_opt
+        logger.info(f"使用命令行指定的环境: {env_opt}")
+
     # 检查是否只是收集测试用例
     if hasattr(config, 'option') and hasattr(config.option, 'collectonly'):
         if config.option.collectonly:
