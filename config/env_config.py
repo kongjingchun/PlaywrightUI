@@ -15,7 +15,7 @@ import yaml
 from pathlib import Path
 from typing import Any, Optional
 
-from config.settings import DEFAULT_ENV, Settings
+from config.settings import Settings
 
 
 class EnvConfig:
@@ -63,7 +63,7 @@ class EnvConfig:
             self._config_file = self._resolve_config_path(explicit_path.strip())
             self.env = self._config_file.stem  # 用于显示
         else:
-            self.env = env or os.getenv("ENV", DEFAULT_ENV)
+            self.env = env or os.getenv("ENV", "prod")
             self._config_file = self._CONFIG_DIR / f"{self.env}.yaml"
         
         # 存储加载的配置数据

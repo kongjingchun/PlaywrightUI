@@ -214,7 +214,7 @@ screenshots_dir = Settings.SCREENSHOTS_DIR
 ```python
 from config.env_config import EnvConfig
 
-# 加载当前环境配置（默认由环境变量 ENV 或 Settings.DEFAULT_ENV 决定）
+# 加载当前环境配置（默认由 DEFAULT_ENV_CONFIG_FILE 或 --config / ENV_CONFIG_FILE 指定）
 config = EnvConfig()
 
 # 获取配置项

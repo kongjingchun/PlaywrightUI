@@ -16,15 +16,10 @@ from dotenv import load_dotenv
 # .env 文件用于存储敏感信息（如密码、API密钥）和环境特定配置
 load_dotenv()
 
-# ==================== 默认环境（修改此处即可同步 conftest 和 env_config） ====================
-# 支持 local、dev、test、prod
-DEFAULT_ENV = "prod"
-
-# ==================== 直接指定配置文件路径（优先级高于 ENV） ====================
-# 若设置，将直接加载该配置文件，支持任意目录层级，忽略 ENV 推导
-# 路径相对于项目根目录，如：config/environments/gqkt/education/local.yaml
+# ==================== 默认配置文件路径 ====================
+# 直接指定环境配置文件，支持任意目录层级（简写自动补全 config/environments/ 前缀）
 # 可通过 .env 的 ENV_CONFIG_FILE 或命令行 --config 覆盖
-DEFAULT_ENV_CONFIG_FILE = "config/environments/gqkt/prod.yaml"
+DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"
 
 
 class Settings:
@@ -61,8 +56,8 @@ class Settings:
     VIEWPORT_HEIGHT = int(os.getenv("VIEWPORT_HEIGHT", "1080"))
 
     # ==================== 环境配置 ====================
-    # ENV: 当前运行环境（从环境变量读取，未设置时使用 DEFAULT_ENV）
-    ENV = os.getenv("ENV", DEFAULT_ENV)
+    # ENV: 当前运行环境（从环境变量读取，未设置时使用 prod；配置加载以 ENV_CONFIG_FILE 为准）
+    ENV = os.getenv("ENV", "prod")
     # ENV_CONFIG_FILE: 直接指定配置文件路径时使用，支持任意层级（如 config/environments/gqkt/education/local.yaml）
     ENV_CONFIG_FILE = os.getenv("ENV_CONFIG_FILE", DEFAULT_ENV_CONFIG_FILE)
 

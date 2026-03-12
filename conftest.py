@@ -23,7 +23,7 @@ from typing import Generator
 from playwright.sync_api import Page
 
 # 项目模块导入
-from config.settings import Settings, DEFAULT_ENV
+from config.settings import Settings
 from config.env_config import EnvConfig
 from utils.logger import Logger
 from utils.screenshot_helper import ScreenshotHelper, ConsoleLogCollector
@@ -148,7 +148,7 @@ def pytest_collection_modifyitems(session, config, items):
     1. 按 order 全局排序
     2. 根据环境标记跳过测试（skip_local、skip_remote）
     """
-    env_name = os.getenv("ENV", DEFAULT_ENV)
+    env_name = os.getenv("ENV", "prod")
 
     # 根据环境标记跳过测试
     for item in items:
@@ -406,7 +406,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 
     # 发送钉钉通知（如果配置启用）
     try:
-        env_name_value = os.getenv("ENV", DEFAULT_ENV)
+        env_name_value = os.getenv("ENV", "prod")
         env_cfg = EnvConfig(env_name_value)
 
         # 获取钉钉配置
@@ -449,7 +449,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 @pytest.fixture(scope="session")
 def env_name() -> str:
     """获取环境名称（来自环境变量 ENV，与 Settings.ENV 一致）"""
-    return os.getenv("ENV", DEFAULT_ENV)
+    return os.getenv("ENV", "prod")
 
 
 @pytest.fixture(scope="session")
