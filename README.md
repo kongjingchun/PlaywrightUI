@@ -106,7 +106,7 @@ pytest tests/gqtest/ -v --config=gqkt/local --headed --alluredir=UIreport -n 1
 #   -n 1                 单线程（-n 4 或 -n auto 可并行，用例有依赖时建议 -n 1）
 
 
-# 运行所有测试（使用 settings.py 中的 DEFAULT_ENV_CONFIG_FILE）
+# 运行所有测试（默认使用 config/settings.py 中的 DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"）
 pytest
 
 # 运行特定测试文件
@@ -122,11 +122,8 @@ pytest tests/ --config=config/environments/gqkt/prod.yaml
 pytest tests/ --config=config/environments/gqkt/education/local.yaml
 
 # 或使用 settings.py / 环境变量 指定默认配置
-# 在 config/settings.py 中设置 DEFAULT_ENV_CONFIG_FILE = "config/environments/gqkt/prod.yaml"
-# ENV_CONFIG_FILE=config/environments/gqkt/local.yaml pytest tests/
-
-# 使用 --env 时需存在 config/environments/{env}.yaml（flat 结构）
-# pytest tests/ --env=prod
+# 在 config/settings.py 中设置 DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"
+# ENV_CONFIG_FILE=gqkt/local pytest tests/
 
 # 运行冒烟测试
 pytest -m smoke -v
@@ -195,6 +192,10 @@ def test_login(page, base_url):
 ```python
 from config.settings import Settings
 
+# 默认环境配置文件（修改此处即可切换默认环境）
+# DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"  # 生产
+# DEFAULT_ENV_CONFIG_FILE = "gqkt/local.yaml"  # 本地
+
 # 获取浏览器配置
 browser_type = Settings.BROWSER_TYPE  # chromium/firefox/webkit
 headless = Settings.HEADLESS          # True/False
@@ -209,28 +210,28 @@ screenshots_dir = Settings.SCREENSHOTS_DIR
 
 #### 环境配置 (config/env_config.py)
 
-支持环境：`local`、`dev`、`test`、`prod`，配置文件位于 `config/environments/gqkt/*.yaml`。可通过 `--config`、`ENV_CONFIG_FILE` 或 `DEFAULT_ENV_CONFIG_FILE` 指定。
+配置文件位于 `config/environments/gqkt/*.yaml`，默认由 `DEFAULT_ENV_CONFIG_FILE` 指定，可通过 `--config` 或 `ENV_CONFIG_FILE` 覆盖。
 
 ```python
-from config.env_config import EnvConfig
+from config.env_config import get_env_config
 
-# 加载当前环境配置（默认由 DEFAULT_ENV_CONFIG_FILE 或 --config / ENV_CONFIG_FILE 指定）
-config = EnvConfig()
+# 加载当前环境配置（默认使用 settings.py 中的 DEFAULT_ENV_CONFIG_FILE）
+config = get_env_config()
 
 # 获取配置项
 base_url = config.base_url
 username = config.get("credentials.username")
 api_key = config.get("api.api_key")
 
-# 指定环境加载
-prod_config = EnvConfig("prod")
+# 指定配置文件加载
+local_config = get_env_config(config_file="gqkt/local.yaml")
 ```
 
 #### 环境变量 (.env)
 
 ```bash
-# 切换环境（local / dev / test / prod）
-ENV=test
+# 指定配置文件（覆盖 settings.py 中的 DEFAULT_ENV_CONFIG_FILE）
+ENV_CONFIG_FILE=gqkt/local
 
 # 浏览器配置
 BROWSER=chromium
@@ -421,8 +422,7 @@ pytest -m "smoke and login"
 
 | 参数 | 说明 | 示例 |
 |------|------|------|
-| `--config` | 直接指定配置文件路径（支持任意层级，推荐） | `pytest --config=gqkt/local tests/` |
-| `--env` | 测试环境（需存在 flat 结构 `config/environments/{env}.yaml`） | `pytest --env=prod tests/` |
+| `--config` | 指定配置文件路径（简写如 gqkt/local，或完整路径） | `pytest --config=gqkt/local tests/` |
 | `--browser` | 浏览器类型 | `--browser=firefox` |
 | `--headed` | 有头模式 | `--headed` |
 | `--base-url-override` | 覆盖环境中的基础 URL | `--base-url-override=https://example.com` |
@@ -525,8 +525,8 @@ allure generate UIreport -o allure-report --clean
 
 ### Q: 如何添加新的测试数据？
 
-1. 业务数据放在 `data/gqkt/prod_config.yaml` 或 `local_config.yaml`，在 `config/environments/gqkt/*.yaml` 中通过 `gqkt_config_file` 指定路径
-2. 使用 `load_yaml("gqkt/gqkt_config.yaml")` 加载（会按 gqkt_config_file 或 ENV 解析）
+1. 业务数据放在 `data/gqkt/prod_config.yaml` 或 `local_config.yaml`，在环境配置 `config/environments/gqkt/*.yaml` 中通过 `gqkt_config_file` 指定路径
+2. 使用 `load_yaml("gqkt/gqkt_config.yaml")` 加载（会按当前环境配置的 gqkt_config_file 解析）
 3. 演示用通用数据可在 `conftest.py` 中增加 fixture，并保证 `data/` 下对应文件存在
 
 ## 📝 开发规范
