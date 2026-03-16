@@ -77,6 +77,15 @@ def pytest_addoption(parser):
         help="覆盖环境配置中的基础URL"
     )
 
+    # 有头/无头模式（支持 true/false，跨平台；优先级高于 --headed 和 Settings.HEADLESS）
+    parser.addoption(
+        "--headless",
+        action="store",
+        default=None,
+        choices=["true", "false", "1", "0"],
+        help="无头模式: true/1=无头(不显示浏览器), false/0=有头(显示浏览器)。支持 Windows/Linux/Mac"
+    )
+
 
 def pytest_configure(config):
     """
@@ -498,13 +507,21 @@ def initial_admin(env_config) -> dict:
 def browser_type_launch_args(browser_type_launch_args, request):
     """
     覆盖浏览器启动参数：默认使用 config/settings.py 的 HEADLESS，
-    命令行 --headed 可覆盖为有头模式
+    命令行可覆盖：
+    - --headless=true/false  显式指定（支持 Windows/Linux/Mac）
+    - --headed              有头模式（pytest-playwright 提供）
 
-    优先级：命令行 --headed > Settings.HEADLESS
+    优先级：--headless > --headed > Settings.HEADLESS
     """
     # 合并 Settings：headless、slow_mo（slow_mo 单位毫秒，>0 时每个操作后延迟，可观察执行）
     base = {**browser_type_launch_args, "headless": Settings.HEADLESS, "slow_mo": Settings.SLOW_MO}
-    if getattr(request.config.option, "headed", False):
+
+    # 1. --headless=true/false 优先级最高（跨平台）
+    headless_opt = getattr(request.config.option, "headless", None)
+    if headless_opt is not None:
+        base["headless"] = headless_opt in ("true", "1")
+    # 2. elif --headed 则覆盖为有头
+    elif getattr(request.config.option, "headed", False):
         base["headless"] = False
     return base
 

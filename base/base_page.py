@@ -167,6 +167,7 @@ class BasePage:
         self,
         locator: Union[Locator, str],
         timeout: Optional[int] = None,
+        force: bool = False,
         multi: MultiIndex = None
     ) -> "BasePage":
         """
@@ -175,12 +176,13 @@ class BasePage:
         Args:
             locator: 元素定位器
             timeout: 超时时间
+            force: 是否强制双击（跳过可操作性检查）
             multi: 多元素时取哪个，None/"first"/"last"/int
         """
         element = self._resolve_locator(locator, multi)
         try:
             self.logger.info(f"双击元素: {self._locator_to_log_str(locator)}")
-            element.dblclick(timeout=timeout)
+            element.dblclick(timeout=timeout, force=force)
         except Exception as e:
             self.logger.error(f"双击元素失败: {self._locator_to_log_str(locator)}, 错误: {str(e)}")
             self.take_screenshot("double_click_failed")
@@ -236,17 +238,23 @@ class BasePage:
         return self
 
     @allure.step("清空输入框")
-    def clear_input(self, locator: Union[Locator, str], multi: MultiIndex = None) -> "BasePage":
+    def clear_input(
+        self,
+        locator: Union[Locator, str],
+        timeout: Optional[int] = None,
+        multi: MultiIndex = None
+    ) -> "BasePage":
         """
         清空输入框内容（支持链式调用）
 
         Args:
             locator: 输入框元素定位器
+            timeout: 超时时间
             multi: 多元素时取哪个，None/"first"/"last"/int
         """
         element = self._resolve_locator(locator, multi)
         self.logger.info(f"清空输入框: {self._locator_to_log_str(locator)}")
-        element.clear()
+        element.clear(timeout=timeout)
         return self
 
     @allure.step("通过 FileChooser 上传文件")
@@ -254,6 +262,7 @@ class BasePage:
         self,
         upload_trigger: Union[Locator, str],
         file_path: Union[str, List[str]],
+        timeout: Optional[int] = None,
         multi: MultiIndex = None
     ) -> "BasePage":
         """
@@ -263,12 +272,14 @@ class BasePage:
         Args:
             upload_trigger: 上传触发元素定位器（可来自 page 或 frame）
             file_path: 文件路径，或路径列表（多文件）
+            timeout: 等待 FileChooser 出现的超时时间
+            multi: 多元素时取哪个，None/"first"/"last"/int
 
         Returns:
             self，支持链式调用
         """
         trigger = self._resolve_locator(upload_trigger, multi)
-        with self.page.expect_file_chooser() as fc_info:
+        with self.page.expect_file_chooser(timeout=timeout) as fc_info:
             trigger.click()
         fc_info.value.set_files(file_path)
         self.logger.info(f"已通过 FileChooser 设置文件: {file_path}")
@@ -281,6 +292,7 @@ class BasePage:
         value: Optional[str] = None,
         label: Optional[str] = None,
         index: Optional[int] = None,
+        timeout: Optional[int] = None,
         multi: MultiIndex = None
     ) -> "BasePage":
         """
@@ -291,6 +303,7 @@ class BasePage:
             value: 按 value 属性选择
             label: 按显示文本选择
             index: 按索引选择（从0开始）
+            timeout: 超时时间
             multi: 多元素时取哪个，None/"first"/"last"/int
         """
         element = self._resolve_locator(locator, multi)
@@ -298,13 +311,13 @@ class BasePage:
         try:
             if value is not None:
                 self.logger.info(f"按value选择: {value}")
-                element.select_option(value=value)
+                element.select_option(value=value, timeout=timeout)
             elif label is not None:
                 self.logger.info(f"按label选择: {label}")
-                element.select_option(label=label)
+                element.select_option(label=label, timeout=timeout)
             elif index is not None:
                 self.logger.info(f"按index选择: {index}")
-                element.select_option(index=index)
+                element.select_option(index=index, timeout=timeout)
             else:
                 raise ValueError("必须提供 value、label 或 index 之一")
         except Exception as e:
@@ -319,23 +332,30 @@ class BasePage:
         self,
         locator: Union[Locator, str],
         check: bool = True,
+        timeout: Optional[int] = None,
+        force: bool = False,
         multi: MultiIndex = None
     ) -> "BasePage":
         """
-        勾选或取消勾选复选框（支持链式调用）
+        勾选或取消勾选复选框/单选框（支持链式调用）
+
+        适用于 checkbox、radio。Element UI 等组件的 radio/checkbox 若被 span 遮挡，
+        可传 force=True 跳过可操作性检查。
 
         Args:
-            locator: 复选框元素定位器
-            check: True=勾选，False=取消勾选
+            locator: 复选框/单选框元素定位器
+            check: True=勾选/选中，False=取消勾选
+            timeout: 超时时间
+            force: 是否强制操作（跳过可操作性检查，适用于被遮挡的 Element UI 组件）
             multi: 多元素时取哪个，None/"first"/"last"/int
         """
         element = self._resolve_locator(locator, multi)
         self.logger.info(f"{'勾选' if check else '取消勾选'}复选框")
 
         if check:
-            element.check()
+            element.check(timeout=timeout, force=force)
         else:
-            element.uncheck()
+            element.uncheck(timeout=timeout, force=force)
 
         return self
 

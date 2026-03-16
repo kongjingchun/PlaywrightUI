@@ -56,7 +56,7 @@ Playwright_Ui/
 │   └── gqtest/                     # GQKT 业务测试（test_001_* ~ test_022_* 等）
 │
 ├── docs/                           # 项目文档
-│   ├── 框架讲解文档.md              # 框架使用方法与定位器指南（推荐阅读）
+│   ├── locator_guide.md            # 定位方式使用指南（推荐阅读）
 │   ├── auth_helper.md              # 免登录
 │   ├── dingtalk_notification.md    # 钉钉通知
 │   ├── database_usage.md           # 数据库使用
@@ -95,13 +95,15 @@ playwright install
 ### 2. 运行测试
 
 ```bash
-# 完整示例：指定目录     +      配置文件    +   有头/无头模式 + Allure 报告  +   线程数
-pytest tests/gqtest/ -v --config=gqkt/local --headed --alluredir=UIreport -n 1
+# 完整示例：指定目录   +      配置文件 +          环境 +      是否无头模式执行     + Allure 报告   + 线程数
+pytest tests/gqtest/ -v --config=gqkt/local --env=local --headless=true --alluredir=UIreport -n 1
 
 # 参数说明：
 #   tests/gqtest/        指定测试目录
 #   --config=gqkt/local   配置文件路径（简写，对应 config/environments/gqkt/local.yaml）
-#   --headed             有头模式（显示浏览器）；不加则使用 HEADLESS 配置（.env 或 config/settings.py）
+#   --env=local           环境名称（用于 Allure 报告、skip_local/skip_prod 等标记）
+#   --headed             有头模式（显示浏览器，pytest-playwright 提供）
+#   --headless=true/false 显式指定有头/无头（跨平台，Windows 可用）；true=无头，false=有头
 #   --alluredir=UIreport Allure 报告数据输出目录
 #   -n 1                 单线程（-n 4 或 -n auto 可并行，用例有依赖时建议 -n 1）
 
@@ -130,6 +132,9 @@ pytest -m smoke -v
 
 # 使用有头模式（显示浏览器窗口）
 pytest tests/demo/test_login.py -v --headed
+
+# 使用无头模式（跨平台，Windows 可用）
+pytest tests/gqtest/ -v --config=gqkt/local --headless=true
 
 # 使用慢动作模式调试
 pytest tests/demo/test_login.py -v --headed --slowmo=1000
