@@ -27,6 +27,39 @@ except ImportError:
 from config.settings import Settings
 
 
+class _ConsoleStreamHandler(logging.StreamHandler):
+    """
+    控制台输出用 Handler。
+
+    pytest-xdist 在 worker 子进程里跑用例时，往 sys.stdout 打日志经常无法实时出现在
+    主进程终端里，``-s`` 也往往无效（捕获/管道与 execnet 转发限制）。
+    此时改用 sys.stderr 并在每条记录后 flush，主终端通常能稳定看到与 logs 一致的内容。
+    非 worker（单进程或未启用 xdist）仍用 stdout，行为与历史一致。
+    """
+
+    def __init__(self, stream, flush_each: bool) -> None:
+        super().__init__(stream)
+        self._flush_each = flush_each
+
+    def emit(self, record: logging.LogRecord) -> None:
+        super().emit(record)
+        if self._flush_each:
+            try:
+                self.flush()
+            except Exception:
+                pass
+
+
+def _xdist_worker_console_target() -> tuple:
+    """
+    Returns:
+        (stream, flush_each): 控制台写入目标与是否每条后 flush
+    """
+    if os.environ.get("PYTEST_XDIST_WORKER"):
+        return sys.stderr, True
+    return sys.stdout, False
+
+
 # ==================== 全局日志文件路径 ====================
 # 每次测试运行使用同一个日志文件（通过时间戳区分不同运行）
 _LOG_FILE_PATH: Optional[Path] = None
@@ -186,12 +219,13 @@ class Logger:
         """
         创建控制台日志处理器
         
-        如果 colorlog 可用，使用彩色输出；否则使用标准输出。
-        
+        如果 colorlog 可用，使用彩色输出；否则使用纯文本。
+
         Returns:
             配置好的控制台处理器
         """
-        handler = logging.StreamHandler(sys.stdout)
+        stream, flush_each = _xdist_worker_console_target()
+        handler = _ConsoleStreamHandler(stream, flush_each)
         handler.setLevel(logging.DEBUG)
         
         if HAS_COLORLOG:

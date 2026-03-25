@@ -16,7 +16,7 @@ base_url: "https://www.gqkt.cn"
 # 初始管理员用户信息
 initial_admin:
   username: "superadmin"
-  password: "gqkt111!"
+  password: "supergqkt123!"
 
 # initial_admin:
 #   username: "superadmin"

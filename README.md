@@ -95,18 +95,19 @@ playwright install
 ### 2. 运行测试
 
 ```bash
-# 完整示例：指定目录   +      配置文件 +          环境 +      是否无头模式执行     + Allure 报告   + 线程数
-pytest tests/gqtest/ -v --config=gqkt/local --env=local --headless=true --alluredir=UIreport -n 1
+# 完整示例：指定目录 +  是否显示日志    配置文件 +          环境 +      是否无头模式执行     + Allure 报告   + 线程数
+pytest tests/gqtest/ -s     -v --config=gqkt/local --env=local --headless=true --alluredir=UIreport -n 1
 
 # 参数说明：
-#   tests/gqtest/        指定测试目录
-#   --config=gqkt/local   配置文件路径（简写，对应 config/environments/gqkt/local.yaml）
-#   --env=local           环境名称（用于 Allure 报告、skip_local/skip_prod 等标记）
-#   --headed             有头模式（显示浏览器，pytest-playwright 提供）
-#   --headless=true/false 显式指定有头/无头（跨平台，Windows 可用）；true=无头，false=有头
-#   --alluredir=UIreport Allure 报告数据输出目录
-#   -n 1                 单线程（-n 4 或 -n auto 可并行，用例有依赖时建议 -n 1）
-
+#   tests/gqtest/           指定测试目录
+#   --config=gqkt/local     简写，对应 config/environments/gqkt/local.yaml
+#   --env=local             环境名（与标记、Allure、钉钉等一致；须与所用 yaml 匹配）
+#   -s, --capture=no        可选；便于在终端看到 print 等输出
+#   --headed                有头模式（显示浏览器，由 pytest-playwright 提供）
+#   --headless=true|false   显式无头/有头（跨平台）；true=无头，false=有头
+#   --alluredir=UIreport    Allure 原始数据输出目录
+#   -n 1                    单 worker；用例有顺序依赖时建议 -n 1；-n auto 可多 worker 并行
+#                           业务日志由 utils/logger 写入 logs/test_*.log；使用 -n 时若终端与文件不一致，以日志文件为准，或去掉 -n 单进程调试
 
 # 运行所有测试（默认使用 config/settings.py 中的 DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"）
 pytest
@@ -138,8 +139,7 @@ pytest tests/gqtest/ -v --config=gqkt/local --headless=true
 
 # 使用慢动作模式调试
 pytest tests/demo/test_login.py -v --headed --slowmo=1000
-
-
+```
 
 ### 3. 生成测试报告
 
