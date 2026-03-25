@@ -1,4 +1,4 @@
-FROM xuetangx-registry.cn-beijing.cr.aliyuncs.com/xc-project/xc/playwrightui:202603121022
+FROM xuetangx-registry.cn-beijing.cr.aliyuncs.com/xc-project/xc/playwrightui:202603201147
 
 # 工作目录
 WORKDIR /root/PlaywrightUI
