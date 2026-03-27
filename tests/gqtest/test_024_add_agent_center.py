@@ -12,10 +12,6 @@ from playwright.sync_api import Page
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import AgentCenterPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
 
 # 本次添加的智能体卡片
 AGENT_NAMES = ["智能教案", "教学案例", "伴学书童", "智能出题", "课程设计师"]
@@ -30,19 +26,19 @@ class TestAddAgentCenter:
 
     @pytest.mark.run(order=370)
     @allure.title("添加智能体中心")
-    def test_add_agent_center(self, page: Page, screenshot_helper, base_url):
+    def test_add_agent_center(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         进入智能体中心，点击智能体广场，依次添加智能教案、教学案例、伴学书童、智能出题、课程设计师
         """
-        teacher_cms = DATA["user"]["teacher_cms"]
-        course_name = DATA["course"]["课程名称"]
+        teacher_cms = gqkt_data["user"]["teacher_cms"]
+        course_name = gqkt_data["course"]["课程名称"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )

@@ -12,11 +12,6 @@ from playwright.sync_api import Page
 from common.tools import build_path
 from pages.gqkt.dean_manage import CourseManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建课程")
@@ -27,21 +22,21 @@ class TestCreateCourse:
 
     @pytest.mark.run(order=190)
     @allure.title("创建课程")
-    def test_create_course(self, page: Page, screenshot_helper, base_url):
+    def test_create_course(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建课程
         """
         # CMS 教务管理员用户信息
-        cms_dean_info = DATA["user"]["dean_cms"]
+        cms_dean_info = gqkt_data["user"]["dean_cms"]
         # 课程信息
-        course_info = DATA["course"]
+        course_info = gqkt_data["course"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教务管理员"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],
-                DATA["school_name"], "教务管理员",
+                gqkt_data["school_name"], "教务管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

@@ -12,11 +12,6 @@ from playwright.sync_api import Page
 
 from pages.gqkt.ai_major import MajorCourseGroupGraphPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("设置专业课程群图谱")
@@ -27,21 +22,21 @@ class TestSetCourseGroupGraph:
 
     @pytest.mark.run(order=250)
     @allure.title("设置专业课程群图谱")
-    def test_set_course_group_graph(self, page: Page, screenshot_helper, base_url):
+    def test_set_course_group_graph(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         设置专业课程群图谱：
         """
         # 专业管理员用户信息
-        cms_prof_info = DATA["user"]["prof_cms"]
+        cms_prof_info = gqkt_data["user"]["prof_cms"]
         # 关联图谱名称
-        graph_name = DATA["knowledge_graph"]["图谱名称"]
+        graph_name = gqkt_data["knowledge_graph"]["图谱名称"]
 
         helper = TestContextHelper()
 
         with allure.step("登录专业管理员"):
             helper.login_and_init(
                 page, base_url, cms_prof_info["username"], cms_prof_info["password"],
-                DATA["school_name"], "专业管理员",
+                gqkt_data["school_name"], "专业管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

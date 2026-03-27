@@ -13,11 +13,6 @@ from playwright.sync_api import Page
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import CourseContentPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建课程内容")
@@ -28,19 +23,19 @@ class TestCreateCourseContent:
 
     @pytest.mark.run(order=340)
     @allure.title("创建课程内容")
-    def test_create_course_content(self, page: Page, screenshot_helper, base_url):
+    def test_create_course_content(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         根据 yaml 配置创建课程内容（视频/资料/课件/讨论/作业/考试/链接/音频/课堂）
         """
-        teacher_cms = DATA["user"]["teacher_cms"]
-        course_name = DATA["course"]["课程名称"]
+        teacher_cms = gqkt_data["user"]["teacher_cms"]
+        course_name = gqkt_data["course"]["课程名称"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -60,7 +55,7 @@ class TestCreateCourseContent:
         with allure.step("点击管理学习单元"):
             content_page.click_element(content_page.manage_learning_unit_button)
 
-        cc_config = DATA["course_content"]
+        cc_config = gqkt_data["course_content"]
         # 支持的学习单元类型（待页面补充 create_xxx_learning_unit 后扩展 课件/讨论/作业）
         supported_types = ("视频", "资料", "课件", "讨论", "作业", "考试", "链接", "音频", "课堂")
 

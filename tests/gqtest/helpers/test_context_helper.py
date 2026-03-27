@@ -25,12 +25,12 @@ class TestContextHelper:
     - 认证状态保存和加载（免登录）
 
     使用示例：
-        def test_example(self, page, base_url, initial_admin):
+        def test_example(self, page, base_url, initial_admin, gqkt_data):
             # 创建助手实例
             helper = TestContextHelper()
 
             # 一键完成登录和初始化（自动尝试免登录，学校名从配置获取以支持多环境）
-            helper.login_and_init(page, base_url, initial_admin["username"], initial_admin["password"], DATA["school_name"], "机构管理员")
+            helper.login_and_init(page, base_url, initial_admin["username"], initial_admin["password"], gqkt_data["school_name"], "机构管理员")
 
             # 后续的测试步骤...
     """
@@ -61,7 +61,7 @@ class TestContextHelper:
             base_url: 基础URL
             username: 登录用户名
             password: 登录密码
-            school_name: 学校名称，建议从 DATA["school_name"] 获取以支持多环境，默认"智慧大学"
+            school_name: 学校名称，建议从 gqkt_data["school_name"] 获取以支持多环境，默认"智慧大学"
             role_name: 角色名称，默认"机构管理员"
             use_saved_auth: 是否尝试使用保存的认证状态（免登录），默认True
             save_auth: 登录成功后是否保存认证状态，默认True

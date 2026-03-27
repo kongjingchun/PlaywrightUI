@@ -13,11 +13,6 @@ from playwright.sync_api import Page
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_teaching import TeachingClassManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建教学班")
@@ -28,20 +23,20 @@ class TestCreateTeachingClass:
 
     @pytest.mark.run(order=330)
     @allure.title("创建教学班并设置主讲教师")
-    def test_create_teaching_class(self, page: Page, screenshot_helper, base_url):
+    def test_create_teaching_class(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建教学班并给教学班设置主讲教师
         """
-        teacher_cms = DATA["user"]["teacher_cms"]
-        course_name = DATA["course"]["课程名称"]
-        tc_config = DATA["teaching_class"]
+        teacher_cms = gqkt_data["user"]["teacher_cms"]
+        course_name = gqkt_data["course"]["课程名称"]
+        tc_config = gqkt_data["teaching_class"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )

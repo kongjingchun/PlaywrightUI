@@ -13,11 +13,6 @@ from playwright.sync_api import Page
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import CourseTeamPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("设置课程团队")
@@ -28,23 +23,23 @@ class TestSetCourseTeam:
 
     @pytest.mark.run(order=300)
     @allure.title("设置课程团队")
-    def test_set_course_team(self, page: Page, screenshot_helper, base_url):
+    def test_set_course_team(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         设置课程团队：
         """
         # 教师用户信息（有课程权限的专业负责人）
-        teacher_cms = DATA["user"]["prof_cms"]
+        teacher_cms = gqkt_data["user"]["prof_cms"]
         # 课程名称（用于在我教的课中进入该课程）
-        course_name = DATA["course"]["课程名称"]
+        course_name = gqkt_data["course"]["课程名称"]
         # 课程团队 - 要操作的教师（test_013 创建的教师）
-        team_teacher_name = DATA["course_outline"]["课程团队"]["教师姓名"]
+        team_teacher_name = gqkt_data["course_outline"]["课程团队"]["教师姓名"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )

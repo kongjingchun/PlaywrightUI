@@ -1,0 +1,8 @@
+# 点字防水墙：ddddocr set_ranges 候选字（可选）；不填则用语义解析的题目字作为候选
+captcha_char_pool: ""
+
+user:
+  # 教师账号
+  teacher:
+    账号: 15176666126
+    密码: Jingchun0302

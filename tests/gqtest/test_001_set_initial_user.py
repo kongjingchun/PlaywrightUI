@@ -15,10 +15,6 @@ from pages.gqkt.dean_manage import UserManagePage
 from pages.gqkt.dean_manage import RoleManagePage
 from tests.gqtest import TestContextHelper
 from utils.auth_helper import AuthHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
 
 
 @allure.feature("光穹课堂")
@@ -30,15 +26,15 @@ class TestSetInitialUser:
 
     @pytest.mark.run(order=100)
     @allure.title("创建用户")
-    def test_create_user(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_create_user(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         创建用户
         """
         # 教务管理员用户信息
-        dean_user_info = DATA["user"]["dean"]
+        dean_user_info = gqkt_data["user"]["dean"]
 
         # 专业负责人用户信息
-        prof_user_info = DATA["user"]["prof"]
+        prof_user_info = gqkt_data["user"]["prof"]
 
         # 定义用户标识（用于免登录）
         auth_key = "超级管理员"
@@ -46,7 +42,7 @@ class TestSetInitialUser:
         helper = TestContextHelper()
 
         # ========== 手动控制免登录 ==========
-        school_name = DATA["school_name"]
+        school_name = gqkt_data["school_name"]
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
@@ -73,18 +69,18 @@ class TestSetInitialUser:
     @pytest.mark.run(order=120)
     @pytest.mark.skip_local
     @allure.title("注册CMS账户并绑定用户")
-    def test_bind_user(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_bind_user(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         注册CMS账户并绑定用户
         """
         # cms 教务管理员用户信息
-        dean_cms_info = DATA["user"]["dean_cms"]
+        dean_cms_info = gqkt_data["user"]["dean_cms"]
         # cms 专业负责人用户信息
-        prof_cms_info = DATA["user"]["prof_cms"]
+        prof_cms_info = gqkt_data["user"]["prof_cms"]
         # 教务管理员用户信息
-        dean_info = DATA["user"]["dean"]
+        dean_info = gqkt_data["user"]["dean"]
         # 专业负责人用户信息
-        prof_info = DATA["user"]["prof"]
+        prof_info = gqkt_data["user"]["prof"]
         # 测试上下文助手
         helper = TestContextHelper()
 
@@ -100,7 +96,7 @@ class TestSetInitialUser:
             print("user_id: " + str(prof_cms_id))
             assert prof_cms_id is not None, f"用户 {prof_cms_info['username']} 注册失败"
 
-        school_name = DATA["school_name"]
+        school_name = gqkt_data["school_name"]
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
@@ -125,18 +121,18 @@ class TestSetInitialUser:
     @pytest.mark.run(order=130)
     @pytest.mark.skip_prod
     @allure.title("重置密码")
-    def test_reset_password(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_reset_password(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         重置密码
         """
         # 教务管理员用户信息
-        dean_info = DATA["user"]["dean"]
+        dean_info = gqkt_data["user"]["dean"]
         # CMS 教务管理员用户信息
-        dean_cms_info = DATA["user"]["dean_cms"]
+        dean_cms_info = gqkt_data["user"]["dean_cms"]
         # 专业负责人用户信息
-        prof_info = DATA["user"]["prof"]
+        prof_info = gqkt_data["user"]["prof"]
         # CMS 专业负责人用户信息
-        prof_cms_info = DATA["user"]["prof_cms"]
+        prof_cms_info = gqkt_data["user"]["prof_cms"]
 
         with allure.step("重置教务管理员密码"):
             login_page = GqktLoginPage(page, base_url)
@@ -156,22 +152,22 @@ class TestSetInitialUser:
 
     @pytest.mark.run(order=140)
     @allure.title("分配角色")
-    def test_assign_role(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_assign_role(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         分配角色
         """
         # 教务管理员用户信息
-        cms_dean_info = DATA["user"]["dean_cms"]
+        cms_dean_info = gqkt_data["user"]["dean_cms"]
         # 专业负责人用户信息
-        cms_prof_info = DATA["user"]["prof_cms"]
+        cms_prof_info = gqkt_data["user"]["prof_cms"]
         # 教务管理员用户信息
-        dean_info = DATA["user"]["dean"]
+        dean_info = gqkt_data["user"]["dean"]
         # 专业负责人用户信息
-        prof_info = DATA["user"]["prof"]
+        prof_info = gqkt_data["user"]["prof"]
         # 测试上下文助手
         helper = TestContextHelper()
         # 登录CMS教务管理员
-        school_name = DATA["school_name"]
+        school_name = gqkt_data["school_name"]
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],

@@ -11,11 +11,6 @@ from playwright.sync_api import Page
 
 from pages.gqkt.dean_manage import SemesterManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建学期")
@@ -27,21 +22,21 @@ class TestCreateSemester:
     # @pytest.mark.skip(reason="临时跳过创建学期用例")
     @pytest.mark.run(order=160)
     @allure.title("创建学期")
-    def test_create_semester(self, page: Page, screenshot_helper, base_url, ):
+    def test_create_semester(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建学期
         """
         # CMS 教务管理员用户信息
-        cms_dean_info = DATA["user"]["dean_cms"]
+        cms_dean_info = gqkt_data["user"]["dean_cms"]
         # 学期信息
-        semester_info = DATA["semester"]
+        semester_info = gqkt_data["semester"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教务管理员"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],
-                DATA["school_name"], "教务管理员",
+                gqkt_data["school_name"], "教务管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

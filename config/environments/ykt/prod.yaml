@@ -1,0 +1,19 @@
+# ========================================
+# 雨课堂（yuketang.cn）
+# ========================================
+# 使用方式：
+#   pytest tests/ykt/ --config=config/environments/ykt/local.yaml
+# ========================================
+
+base_url: "https://www.yuketang.cn"
+
+# 网页版入口路径（与 base_url 拼接为 https://www.yuketang.cn/web）
+ykt_web_path: "/web"
+
+# 账号密码登录（手机登录 Tab）；勿将真实密码提交到仓库
+ykt:
+  phone: ""
+  password: ""
+
+# 测试数据文件路径（相对于 data/ 目录）
+ykt_config_file: "ykt/prod_config.yaml"

@@ -15,11 +15,6 @@ from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import CourseResourcePage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction.course_resource import ExamPage, HomeworkPage, LinkPage, OverviewPage, QuestionBankPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("添加课程资源")
@@ -30,23 +25,23 @@ class TestAddCourseResource:
 
     @pytest.mark.run(order=320)
     @allure.title("添加课程资源")
-    def test_add_course_resource(self, page: Page, screenshot_helper, base_url):
+    def test_add_course_resource(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         添加课程资源
         """
         # 教师用户信息（有课程权限的专业负责人）
-        teacher_cms = DATA["user"]["teacher_cms"]
+        teacher_cms = gqkt_data["user"]["teacher_cms"]
         # 课程名称（用于在我教的课中进入该课程）
-        course_name = DATA["course"]["课程名称"]
+        course_name = gqkt_data["course"]["课程名称"]
         # 课程资源配置
-        course_resource = DATA["course_resource"]
+        course_resource = gqkt_data["course_resource"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -93,7 +88,7 @@ class TestAddCourseResource:
             screenshot_helper.capture_full_page("课件上传完成")
 
         with allure.step("新建简答题"):
-            qb_config = DATA["question_bank"]["简答题"]
+            qb_config = gqkt_data["question_bank"]["简答题"]
             question_page = QuestionBankPage(page)
             question_page.click_left_menu_by_name("题库")
             knowledge_info = None
@@ -115,7 +110,7 @@ class TestAddCourseResource:
 
         with allure.step("导入题库"):
             resource_page.click_left_menu_by_name("题库")
-            import_path = DATA["question_bank"]["导入文件"]
+            import_path = gqkt_data["question_bank"]["导入文件"]
             file_path = build_path(import_path)
             assert file_path.exists(), f"导入文件不存在: {file_path}"
             question_page.upload_question(str(file_path))
@@ -184,7 +179,7 @@ class TestAddCourseResource:
         # with allure.step("添加作业"):
         #     resource_page.click_directory_type_by_name("作业")
         #     homework_page = HomeworkPage(page)
-        #     homework_title = DATA["homework"]["作业标题"]
+        #     homework_title = gqkt_data["homework"]["作业标题"]
         #     homework_page.create_homework(homework_title)
         #     assert homework_page.is_homework_save_success(), "添加作业失败"
         #     screenshot_helper.capture_full_page("作业创建完成")
@@ -192,7 +187,7 @@ class TestAddCourseResource:
         # with allure.step("添加试卷"):
         #     resource_page.click_directory_type_by_name("试卷")
         #     exam_page = ExamPage(page)
-        #     exam_title = DATA["exam"]["试卷标题"]
+        #     exam_title = gqkt_data["exam"]["试卷标题"]
         #     exam_page.create_exam(exam_title)
         #     assert exam_page.is_exam_save_success(), "添加试卷失败"
         #     screenshot_helper.capture_full_page("试卷创建完成")

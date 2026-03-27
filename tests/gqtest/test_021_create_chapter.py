@@ -13,11 +13,6 @@ from playwright.sync_api import Page
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import CourseContentPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建章节")
@@ -28,20 +23,20 @@ class TestCreateChapter:
 
     @pytest.mark.run(order=350)
     @allure.title("创建课程内容版本")
-    def test_create_chapter(self, page: Page, screenshot_helper, base_url):
+    def test_create_chapter(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建课程内容版
         """
-        teacher_cms = DATA["user"]["teacher_cms"]
-        course_name = DATA["course"]["课程名称"]
-        ch_config = DATA["chapter"]
+        teacher_cms = gqkt_data["user"]["teacher_cms"]
+        course_name = gqkt_data["course"]["课程名称"]
+        ch_config = gqkt_data["chapter"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )

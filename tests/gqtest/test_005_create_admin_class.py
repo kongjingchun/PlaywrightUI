@@ -11,11 +11,6 @@ from playwright.sync_api import Page
 
 from pages.gqkt.dean_manage import AdminClassManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建行政班")
@@ -26,21 +21,21 @@ class TestCreateAdminClass:
 
     @pytest.mark.run(order=180)
     @allure.title("创建行政班")
-    def test_create_admin_class(self, page: Page, screenshot_helper, base_url):
+    def test_create_admin_class(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建行政班
         """
         # CMS 教务管理员用户信息
-        cms_dean_info = DATA["user"]["dean_cms"]
+        cms_dean_info = gqkt_data["user"]["dean_cms"]
         # 行政班信息
-        admin_class_info = DATA["admin_class"]
+        admin_class_info = gqkt_data["admin_class"]
 
         helper = TestContextHelper()
 
         with allure.step("登录教务管理员"):
             helper.login_and_init(
                 page, base_url, cms_dean_info["username"], cms_dean_info["password"],
-                DATA["school_name"], "教务管理员",
+                gqkt_data["school_name"], "教务管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

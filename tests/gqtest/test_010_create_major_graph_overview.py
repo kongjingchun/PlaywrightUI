@@ -11,11 +11,6 @@ from playwright.sync_api import Page
 
 from pages.gqkt.ai_major import MajorGraphOverviewPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建专业图谱概览")
@@ -26,23 +21,23 @@ class TestCreateMajorGraphOverview:
 
     @pytest.mark.run(order=230)
     @allure.title("创建专业图谱概览")
-    def test_create_major_graph_overview(self, page: Page, screenshot_helper, base_url):
+    def test_create_major_graph_overview(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建专业图谱概览：进入专业知识图谱，点击创建专业图谱，添加若干节点构成概览。
         """
         # 专业管理员用户信息
-        cms_prof_info = DATA["user"]["prof_cms"]
+        cms_prof_info = gqkt_data["user"]["prof_cms"]
         # 专业图谱节点列表（类型 + 名称）
-        node_list = DATA["major_graph"]["节点列表"]
+        node_list = gqkt_data["major_graph"]["节点列表"]
         # 专业图谱名称
-        graph_name = DATA["major_graph"]["图谱名称"]
+        graph_name = gqkt_data["major_graph"]["图谱名称"]
 
         helper = TestContextHelper()
 
         with allure.step("登录专业管理员"):
             helper.login_and_init(
                 page, base_url, cms_prof_info["username"], cms_prof_info["password"],
-                DATA["school_name"], "专业管理员",
+                gqkt_data["school_name"], "专业管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

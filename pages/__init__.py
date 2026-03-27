@@ -33,5 +33,6 @@ from base.base_api import BaseAPI
 from .demo.login_page import LoginPage
 from .demo.home_page import HomePage
 from .gqkt.login_page import GqktLoginPage
+from .ykt.login_page import YktLoginPage
 
-__all__ = ['BasePage', 'BaseAPI', 'LoginPage', 'HomePage', 'GqktLoginPage']
+__all__ = ['BasePage', 'BaseAPI', 'LoginPage', 'HomePage', 'GqktLoginPage', 'YktLoginPage']

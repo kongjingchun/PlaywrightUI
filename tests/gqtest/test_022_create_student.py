@@ -14,11 +14,6 @@ from pages import GqktLoginPage
 from pages.gqkt import CmsApiPage
 from pages.gqkt.dean_manage import UserManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建学生")
@@ -29,19 +24,19 @@ class TestCreateStudent:
 
     @pytest.mark.run(order=353)
     @allure.title("创建学生")
-    def test_create_student(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_create_student(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         创建学生
         """
         # 学生用户信息
-        student_info = DATA["user"]["student"]
+        student_info = gqkt_data["user"]["student"]
 
         helper = TestContextHelper()
 
         with allure.step("登录机构管理员"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                DATA["school_name"], "机构管理员",
+                gqkt_data["school_name"], "机构管理员",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -50,7 +45,7 @@ class TestCreateStudent:
             helper.click_left_menu_item(page, "用户管理")
 
         with allure.step("创建学生"):
-            admin_class_info = DATA["admin_class"]
+            admin_class_info = gqkt_data["admin_class"]
             user_manage_page = UserManagePage(page)
             user_manage_page.create_user(
                 role_name="创建学生",
@@ -68,14 +63,14 @@ class TestCreateStudent:
     @pytest.mark.run(order=355)
     @pytest.mark.skip_local
     @allure.title("注册CMS账户并绑定学生")
-    def test_bind_student(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_bind_student(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         注册CMS账户并绑定学生
         """
         # CMS 学生用户信息
-        student_cms_info = DATA["user"]["student_cms"]
+        student_cms_info = gqkt_data["user"]["student_cms"]
         # 学生用户信息
-        student_info = DATA["user"]["student"]
+        student_info = gqkt_data["user"]["student"]
         helper = TestContextHelper()
 
         with allure.step("调用 API 注册学生"):
@@ -87,7 +82,7 @@ class TestCreateStudent:
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                DATA["school_name"], "机构管理员",
+                gqkt_data["school_name"], "机构管理员",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -102,14 +97,14 @@ class TestCreateStudent:
     @pytest.mark.run(order=357)
     @pytest.mark.skip_prod
     @allure.title("重置学生密码")
-    def test_reset_student_password(self, page: Page, screenshot_helper, base_url):
+    def test_reset_student_password(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         重置学生密码
         """
         # 学生用户信息
-        student_info = DATA["user"]["student"]
+        student_info = gqkt_data["user"]["student"]
         # CMS 学生用户信息
-        student_cms_info = DATA["user"]["student_cms"]
+        student_cms_info = gqkt_data["user"]["student_cms"]
 
         with allure.step("重置学生密码"):
             login_page = GqktLoginPage(page, base_url)

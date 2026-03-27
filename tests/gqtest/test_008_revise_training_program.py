@@ -11,11 +11,6 @@ from playwright.sync_api import Page
 
 from pages.gqkt.ai_major import TrainingProgramManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("修订培养方案")
@@ -26,23 +21,23 @@ class TestReviseTrainingProgram:
 
     @pytest.mark.run(order=210)
     @allure.title("修订培养方案")
-    def test_revise_training_program(self, page: Page, screenshot_helper, base_url):
+    def test_revise_training_program(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         修订培养方案
         """
         # CMS 专业管理员用户信息
-        cms_prof_info = DATA["user"]["prof_cms"]
+        cms_prof_info = gqkt_data["user"]["prof_cms"]
         # 课程信息
-        course_info = DATA["course"]
+        course_info = gqkt_data["course"]
         # 培养方案信息
-        tp_info = DATA["training_program"]
+        tp_info = gqkt_data["training_program"]
 
         helper = TestContextHelper()
 
         with allure.step("登录专业管理员"):
             helper.login_and_init(
                 page, base_url, cms_prof_info["username"], cms_prof_info["password"],
-                DATA["school_name"], "专业管理员",
+                gqkt_data["school_name"], "专业管理员",
                 use_saved_auth=True,
                 save_auth=True
             )

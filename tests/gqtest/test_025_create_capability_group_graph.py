@@ -12,11 +12,6 @@ from playwright.sync_api import Page
 from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import CapabilityGroupGraphPage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建能力图谱")
@@ -27,24 +22,24 @@ class TestCreateCapabilityGroupGraph:
 
     @pytest.mark.run(order=380)
     @allure.title("创建能力图谱并添加一级能力及子能力")
-    def test_create_capability_group_graph(self, page: Page, screenshot_helper, base_url):
+    def test_create_capability_group_graph(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         创建能力图谱，添加问题分析和抽象能力、算法和结构设计能力两个一级节点，
         再递归添加其子能力（如计算思维、分解和抽象等）
         """
         # 教师用户信息
-        teacher_cms = DATA["user"]["teacher_cms"]
+        teacher_cms = gqkt_data["user"]["teacher_cms"]
         # 课程名称（用于在我教的课中进入该课程）
-        course_name = DATA["course"]["课程名称"]
+        course_name = gqkt_data["course"]["课程名称"]
 
         helper = TestContextHelper()
 
-        capability_graph = DATA["capability_graph"]
+        capability_graph = gqkt_data["capability_graph"]
 
         with allure.step("登录教师"):
             helper.login_and_init(
                 page, base_url, teacher_cms["username"], teacher_cms["password"],
-                DATA["school_name"], "教师",
+                gqkt_data["school_name"], "教师",
                 use_saved_auth=True,
                 save_auth=True
             )

@@ -33,5 +33,6 @@ redis>=5.0.0                   # Redis 缓存操作
 # 图像识别
 opencv-python>=4.8.0           # OpenCV 图像处理
 Pillow>=10.0.0                 # Python 图像库
+ddddocr>=1.6                   # 验证码/通用 OCR（1.6.x 支持 Python 3.13）
 imagehash>=4.3.1               # 图片哈希对比
 scikit-image>=0.21.0           # 图像处理算法（SSIM）

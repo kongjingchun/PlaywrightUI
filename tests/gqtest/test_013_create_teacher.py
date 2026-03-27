@@ -14,11 +14,6 @@ from pages import GqktLoginPage
 from pages.gqkt import CmsApiPage
 from pages.gqkt.dean_manage import UserManagePage
 from tests.gqtest import TestContextHelper
-from utils.data_loader import load_yaml
-
-
-DATA = load_yaml("gqkt/gqkt_config.yaml")
-
 
 @allure.feature("光穹课堂")
 @allure.story("创建教师")
@@ -29,19 +24,19 @@ class TestCreateTeacher:
 
     @pytest.mark.run(order=260)
     @allure.title("创建教师")
-    def test_create_teacher(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_create_teacher(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         创建教师：
         """
         # 教师用户信息
-        teacher_info = DATA["user"]["teacher"]
+        teacher_info = gqkt_data["user"]["teacher"]
 
         helper = TestContextHelper()
 
         with allure.step("登录机构管理员"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                DATA["school_name"], "机构管理员",
+                gqkt_data["school_name"], "机构管理员",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -59,14 +54,14 @@ class TestCreateTeacher:
     @pytest.mark.run(order=270)
     @pytest.mark.skip_local
     @allure.title("注册CMS账户并绑定教师")
-    def test_bind_teacher(self, page: Page, screenshot_helper, base_url, initial_admin):
+    def test_bind_teacher(self, page: Page, screenshot_helper, base_url, initial_admin, gqkt_data: dict):
         """
         注册CMS账户并绑定教师
         """
         # CMS 教师用户信息
-        teacher_cms_info = DATA["user"]["teacher_cms"]
+        teacher_cms_info = gqkt_data["user"]["teacher_cms"]
         # 教师用户信息
-        teacher_info = DATA["user"]["teacher"]
+        teacher_info = gqkt_data["user"]["teacher"]
         helper = TestContextHelper()
 
         with allure.step("调用 API 注册教师"):
@@ -78,7 +73,7 @@ class TestCreateTeacher:
         with allure.step("登录用户"):
             helper.login_and_init(
                 page, base_url, initial_admin["username"], initial_admin["password"],
-                DATA["school_name"], "机构管理员",
+                gqkt_data["school_name"], "机构管理员",
                 use_saved_auth=True,
                 save_auth=True
             )
@@ -93,14 +88,14 @@ class TestCreateTeacher:
     @pytest.mark.run(order=280)
     @pytest.mark.skip_prod
     @allure.title("重置教师密码")
-    def test_reset_teacher_password(self, page: Page, screenshot_helper, base_url):
+    def test_reset_teacher_password(self, page: Page, screenshot_helper, base_url, gqkt_data: dict):
         """
         重置教师密码
         """
         # 教师用户信息
-        teacher_info = DATA["user"]["teacher"]
+        teacher_info = gqkt_data["user"]["teacher"]
         # CMS 教师用户信息
-        teacher_cms_info = DATA["user"]["teacher_cms"]
+        teacher_cms_info = gqkt_data["user"]["teacher_cms"]
 
         with allure.step("重置教师密码"):
             login_page = GqktLoginPage(page, base_url)

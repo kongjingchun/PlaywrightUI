@@ -19,7 +19,7 @@ load_dotenv()
 # ==================== 默认配置文件路径 ====================
 # 直接指定环境配置文件，支持任意目录层级（简写自动补全 config/environments/ 前缀）
 # 可通过 .env 的 ENV_CONFIG_FILE 或命令行 --config 覆盖
-DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"
+DEFAULT_ENV_CONFIG_FILE = "ykt/prod.yaml"
 
 
 class Settings:

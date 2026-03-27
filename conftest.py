@@ -53,6 +53,7 @@ def pytest_addoption(parser):
         pytest --env=local tests/gqtest/test_004_create_major.py -v
         pytest --config=config/environments/gqkt/education/local.yaml tests/
         pytest --base-url-override=https://example.com
+        pytest tests/ykt/ --config=config/environments/ykt/prod.yaml
     """
     # 直接指定配置文件路径（支持任意目录层级，优先级高于 --env）
     parser.addoption(
@@ -84,6 +85,13 @@ def pytest_addoption(parser):
         default=None,
         choices=["true", "false", "1", "0"],
         help="无头模式: true/1=无头(不显示浏览器), false/0=有头(显示浏览器)。支持 Windows/Linux/Mac"
+    )
+
+    parser.addoption(
+        "--data-file",
+        action="store",
+        default=None,
+        help="覆盖环境配置中的 ykt_config_file，路径相对于 data/，如 ykt/prod_config.yaml",
     )
 
 
