@@ -2,7 +2,7 @@
 # Page Object Model (POM) 模块
 # ========================================
 # 该模块包含所有页面对象类，遵循 Page Object Model 设计模式。
-# 
+#
 # POM 模式的优点：
 # 1. 提高代码复用性 - 页面元素和操作只定义一次
 # 2. 提高可维护性 - UI 变化只需修改对应的 Page 类
@@ -33,6 +33,5 @@ from base.base_api import BaseAPI
 from .demo.login_page import LoginPage
 from .demo.home_page import HomePage
 from .gqkt.login_page import GqktLoginPage
-from .ykt.login_page import YktLoginPage
 
-__all__ = ['BasePage', 'BaseAPI', 'LoginPage', 'HomePage', 'GqktLoginPage', 'YktLoginPage']
+__all__ = ['BasePage', 'BaseAPI', 'LoginPage', 'HomePage', 'GqktLoginPage']
