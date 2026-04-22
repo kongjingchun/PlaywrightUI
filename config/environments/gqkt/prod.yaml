@@ -1,64 +1,53 @@
 # ========================================
-# 生产环境配置文件
+# 本地环境配置文件
 # ========================================
-# 该文件包含生产环境的所有配置项
-# 使用方法：设置环境变量 ENV=prod
-# 
-# ⚠️ 警告：生产环境测试需谨慎！
-# 建议仅执行只读操作，避免修改数据
+# 用于本地开发调试，通常指向 localhost
+# 使用方法：ENV=local pytest tests/
 # ========================================
 
-# 基础 URL - 生产环境地址
-base_url: "https://www.gqkt.cn"
-# base_url: "http://192.168.200.204:5173"
-# 登录凭据
-# ⚠️ 生产环境建议使用专门的测试账号
-# 初始管理员用户信息
+# 基础 URL - 本地服务地址（需包含协议，如 http://）
+base_url: "http://192.168.200.217:5173/"
+
+
 initial_admin:
   username: "superadmin"
-  password: "supergqkt123!"
-
-# initial_admin:
-#   username: "superadmin"
-#   password: "111"
+  password: "111"
 
 # 测试数据文件路径（相对于 data/ 目录）
 gqkt_config_file: "gqkt/prod_config.yaml"
 
-# API 配置  
+# API 配置
 api:
-  base_url: "https://api.example.com"
-  timeout: 60000  # 生产环境超时时间更长
-  api_key: ""  # 生产环境敏感信息建议通过环境变量传入
+  base_url: "http://localhost:8080"
+  timeout: 30000
+  api_key: ""
 
 # MySQL 数据库配置
-# ⚠️ 生产环境通常不直接操作数据库，建议通过 API
 mysql:
-  enabled: false  # 生产环境建议关闭直接数据库访问
-  host: ""
+  enabled: false
+  host: "127.0.0.1"
   port: 3306
-  user: ""
+  user: "root"
   password: ""
-  database: ""
+  database: "local_db"
   charset: "utf8mb4"
 
 # Redis 配置
-# ⚠️ 生产环境 Redis 访问需谨慎
 redis:
-  enabled: false  # 生产环境建议关闭直接 Redis 访问
-  host: ""
+  enabled: false
+  host: "127.0.0.1"
   port: 6379
   db: 0
   password: ""
 
 # 特性开关
 features:
-  debug_mode: false      # 生产环境关闭调试模式
-  mock_api: false        # 生产环境不使用 mock
-  verbose_logging: false # 生产环境减少日志输出
+  debug_mode: true
+  mock_api: false
+  verbose_logging: true
 
 # 钉钉通知配置
 dingtalk:
-  enabled: false  # 是否启用钉钉通知
-  webhook: ""  # 钉钉机器人 webhook 地址
-  secret: ""  # 钉钉机器人加签密钥（可选）
+  enabled: false
+  webhook: ""
+  secret: ""

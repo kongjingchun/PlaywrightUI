@@ -59,7 +59,7 @@ class TestCreateCapabilityGroupGraph:
         with allure.step("创建能力图谱"):
             cap_group_graph_page.click_create_graph_button()
             assert cap_group_graph_page.is_create_graph_success(), "创建能力图谱失败"
-            screenshot_helper.capture_full_page("创建能力图谱完成")
+            screenshot_helper.capture_viewport("创建能力图谱完成")
             
         # with allure.step("编辑能力图谱"):
         #     cap_group_graph_page.click_edit_button()
@@ -98,4 +98,4 @@ class TestCreateCapabilityGroupGraph:
                 cap_group_graph_page.add_sub_ability(parent, name, desc, tags, knowledge)
                 assert cap_group_graph_page.is_add_sub_ability_success(), f"添加三级能力失败: {name}"
 
-            screenshot_helper.capture_full_page("添加能力完成")
+            screenshot_helper.capture_viewport("添加能力完成")

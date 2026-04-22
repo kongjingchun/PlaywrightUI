@@ -46,4 +46,4 @@ class TestCreateDept:
             dept_list_manage_page = DeptListManagePage(page)
             dept_list_manage_page.create_dept(dept_info["院系名称"], dept_info["院系代码"])
             assert dept_list_manage_page.is_create_dept_success(), "创建院系失败"
-            screenshot_helper.capture_full_page("创建院系成功")
+            screenshot_helper.capture_viewport("创建院系成功")

@@ -46,9 +46,9 @@ class TestMajorPortalEdit:
         with allure.step("进入专业门户编辑"):
             portal_page = MajorPortalManagePage(page)
             portal_page.click_edit_page_button(major_name)
-            screenshot_helper.capture_full_page("进入专业门户编辑页")
+            screenshot_helper.capture_viewport("进入专业门户编辑页")
 
         with allure.step("编辑页面并发布"):
             portal_page.edit_page(major_name)
             assert portal_page.is_publish_success(), "发布专业门户失败"
-            screenshot_helper.capture_full_page("专业门户编辑完成")
+            screenshot_helper.capture_viewport("专业门户编辑完成")

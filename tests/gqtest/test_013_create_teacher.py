@@ -48,7 +48,7 @@ class TestCreateTeacher:
             user_manage_page = UserManagePage(page)
             user_manage_page.create_user(role_name="创建教师", name=teacher_info["姓名"], code=teacher_info["工号"], dept_name=teacher_info["学院"])
             assert user_manage_page.is_create_user_success(), "创建教师失败"
-            screenshot_helper.capture_full_page("创建教师成功")
+            screenshot_helper.capture_viewport("创建教师成功")
 
     # TODO: 可能注册失败
     @pytest.mark.run(order=270)
@@ -83,7 +83,7 @@ class TestCreateTeacher:
             user_manage_page = UserManagePage(page)
             user_manage_page.bind_user(teacher_info["工号"], teacher_cms_id)
             assert user_manage_page.is_bind_user_success(), "绑定教师失败"
-            screenshot_helper.capture_full_page("绑定教师成功")
+            screenshot_helper.capture_viewport("绑定教师成功")
 
     @pytest.mark.run(order=280)
     @pytest.mark.skip_prod
@@ -103,4 +103,4 @@ class TestCreateTeacher:
             login_page.login(teacher_info["工号"], teacher_info["工号"][-6:])
             login_page.reset_password(teacher_cms_info["username"], teacher_cms_info["password"])
             assert login_page.is_reset_password_success(), "重置教师密码失败"
-            screenshot_helper.capture_full_page("重置教师密码成功")
+            screenshot_helper.capture_viewport("重置教师密码成功")

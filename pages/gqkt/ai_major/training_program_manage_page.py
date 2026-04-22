@@ -322,6 +322,7 @@ class TrainingProgramManagePage(BasePage):
         """添加课程"""
         self.click_menu("课程体系")  # 点击课程体系菜单
         self.click_element(self.add_course_button)  # 点击添加课程按钮
+        self.wait_for_load_state()
         self.fill_element(self.course_search_input, course_name)  # 输入课程名称或代码
         self.click_element(self.get_course_checkbox_locator(course_name))  # 点击课程复选框
         self.click_element(self.confirm_add_course_button)  # 点击确认添加课程按钮

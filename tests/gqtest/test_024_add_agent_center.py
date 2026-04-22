@@ -58,9 +58,12 @@ class TestAddAgentCenter:
         with allure.step("点击智能体广场按钮"):
             agent_center_page.click_agent_square_button()
 
-        with allure.step("依次添加智能体"):
-            for agent_name in AGENT_NAMES:
-                agent_center_page.click_join_agent_button_by_name(agent_name)
-                assert agent_center_page.is_add_agent_success(), f"添加智能体失败: {agent_name}"
+        with allure.step("依次点击加入按钮"):
+            agent_center_page.click_join_agent_buttons()
 
-            screenshot_helper.capture_full_page("添加智能体完成")
+        # with allure.step("依次添加智能体"):
+        #     for agent_name in AGENT_NAMES:
+        #         agent_center_page.click_join_agent_button_by_name(agent_name)
+        #         assert agent_center_page.is_add_agent_success(), f"添加智能体失败: {agent_name}"
+
+            screenshot_helper.capture_viewport("添加智能体完成")

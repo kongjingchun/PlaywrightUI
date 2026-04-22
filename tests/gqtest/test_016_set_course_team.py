@@ -59,19 +59,19 @@ class TestSetCourseTeam:
         with allure.step("添加教师到课程教师"):
             team_page.add_course_teacher(team_teacher_name)
             assert team_page.is_add_success(), "添加课程教师失败"
-            screenshot_helper.capture_full_page("添加课程教师完成")
+            screenshot_helper.capture_viewport("添加课程教师完成")
 
         with allure.step("删除教师从课程教师"):
             team_page.delete_course_teacher(team_teacher_name)
             assert team_page.is_delete_success(), "删除课程教师失败"
-            screenshot_helper.capture_full_page("课程团队设置完成")
+            screenshot_helper.capture_viewport("课程团队设置完成")
 
         with allure.step("添加教师为课程负责人"):
             team_page.add_course_leader(team_teacher_name)
             assert team_page.is_add_success(), "添加课程负责人失败"
-            screenshot_helper.capture_full_page("添加课程负责人完成")
+            screenshot_helper.capture_viewport("添加课程负责人完成")
 
         # with allure.step("删除教师从课程负责人"):
         #     team_page.delete_course_leader(team_teacher_name)
         #     assert team_page.is_delete_success(), "删除课程负责人失败"
-        #     screenshot_helper.capture_full_page("删除课程负责人完成")
+        #     screenshot_helper.capture_viewport("删除课程负责人完成")

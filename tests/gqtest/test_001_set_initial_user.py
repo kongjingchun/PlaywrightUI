@@ -58,13 +58,13 @@ class TestSetInitialUser:
             user_manage_page = UserManagePage(page)
             user_manage_page.create_user("创建教务管理员", dean_user_info["姓名"], dean_user_info["工号"])
             assert user_manage_page.is_create_user_success(), "创建教务管理员失败"
-            screenshot_helper.capture_full_page("创建教务管理员成功")
+            screenshot_helper.capture_viewport("创建教务管理员成功")
 
         with allure.step("创建专业负责人"):
             user_manage_page = UserManagePage(page)
             user_manage_page.create_user("创建专业负责人", prof_user_info["姓名"], prof_user_info["工号"])
             assert user_manage_page.is_create_user_success(), "创建专业负责人失败"
-            screenshot_helper.capture_full_page("创建专业负责人成功")
+            screenshot_helper.capture_viewport("创建专业负责人成功")
 
     @pytest.mark.run(order=120)
     @pytest.mark.skip_local
@@ -110,13 +110,13 @@ class TestSetInitialUser:
             user_manage_page = UserManagePage(page)
             user_manage_page.bind_user(dean_info["工号"], dean_cms_id)
             assert user_manage_page.is_bind_user_success(), "绑定教务管理员失败"
-            screenshot_helper.capture_full_page("绑定教务管理员成功")
+            screenshot_helper.capture_viewport("绑定教务管理员成功")
 
         with allure.step("绑定专业负责人"):
             user_manage_page = UserManagePage(page)
             user_manage_page.bind_user(prof_info["工号"], prof_cms_id)
             assert user_manage_page.is_bind_user_success(), "绑定专业负责人失败"
-            screenshot_helper.capture_full_page("绑定专业负责人成功")
+            screenshot_helper.capture_viewport("绑定专业负责人成功")
 
     @pytest.mark.run(order=130)
     @pytest.mark.skip_prod
@@ -140,7 +140,7 @@ class TestSetInitialUser:
             login_page.login(dean_info["工号"], dean_info["工号"][-6:])
             login_page.reset_password(dean_cms_info["username"], dean_cms_info["password"])
             assert login_page.is_reset_password_success(), "重置教务管理员密码失败"
-            screenshot_helper.capture_full_page("重置教务管理员密码成功")
+            screenshot_helper.capture_viewport("重置教务管理员密码成功")
 
         with allure.step("重置专业负责人密码"):
             login_page = GqktLoginPage(page, base_url)
@@ -148,7 +148,7 @@ class TestSetInitialUser:
             login_page.login(prof_info["工号"], prof_info["工号"][-6:])
             login_page.reset_password(prof_cms_info["username"], prof_cms_info["password"])
             assert login_page.is_reset_password_success(), "重置专业负责人密码失败"
-            screenshot_helper.capture_full_page("重置专业负责人密码成功")
+            screenshot_helper.capture_viewport("重置专业负责人密码成功")
 
     @pytest.mark.run(order=140)
     @allure.title("分配角色")
@@ -181,4 +181,4 @@ class TestSetInitialUser:
             role_manage_page = RoleManagePage(page)
             role_manage_page.assign_role_to_user("教师", prof_info["姓名"])
             assert role_manage_page.is_assign_role_success(), "分配教务管理员角色失败"
-            screenshot_helper.capture_full_page("分配教务管理员角色成功")
+            screenshot_helper.capture_viewport("分配教务管理员角色成功")

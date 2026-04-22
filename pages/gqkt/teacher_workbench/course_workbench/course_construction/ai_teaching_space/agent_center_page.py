@@ -21,12 +21,15 @@ class AgentCenterPage(CourseWorkbenchPage):
         super().__init__(page)
         # iframe：课程工作台内容区域
         self.iframe = self.base_iframe.frame_locator("iframe#course-workspace-iframe")
-        
+
         # 智能体广场按钮
         self.agent_square_button = self.iframe.get_by_role("button", name="智能体广场")
         # 添加成功提示
         self.add_success_toast = self.iframe.locator("xpath=//p[contains(text(),'已成功将') and contains(text(),'添加到课程智能体列表')]").last
+        # 加入按钮
+        self.join_agent_button = self.iframe.get_by_role("button", name="加入")
     # ================== 动态定位器生成方法 ==================
+
     def get_join_agent_button_by_name(self, agent_name: str):
         """
         根据智能体名称返回对应加入按钮的定位器
@@ -44,6 +47,14 @@ class AgentCenterPage(CourseWorkbenchPage):
     def click_join_agent_button_by_name(self, agent_name: str):
         """点击对应智能体名称的加入按钮"""
         self.click_element(self.get_join_agent_button_by_name(agent_name))
+    # 依次点击加入按钮，从最后一个开始点击
+
+    def click_join_agent_buttons(self):
+        """依次点击加入按钮，从最后一个开始点击"""
+        num = self.join_agent_button.count()
+        indices = sorted(range(num), reverse=True)  # 从最后一个到第一个
+        for idx in indices:
+            self.click_element(self.join_agent_button.nth(idx))
 
     # ================== 断言方法 ==================
     def is_add_agent_success(self) -> bool:

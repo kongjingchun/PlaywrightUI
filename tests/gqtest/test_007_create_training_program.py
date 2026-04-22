@@ -56,4 +56,4 @@ class TestCreateTrainingProgram:
                 training_program_version_year=tp_info["版本年份"]
             )
             assert tp_manage_page.is_create_training_program_success(), "创建培养方案失败"
-            screenshot_helper.capture_full_page("创建培养方案成功")
+            screenshot_helper.capture_viewport("创建培养方案成功")

@@ -55,7 +55,7 @@ class TestCreateLiteracyGraph:
         with allure.step("创建素质图谱"):
             literacy_graph_page.click_create_graph_button()
             assert literacy_graph_page.is_create_graph_success(), "创建素质图谱失败"
-            screenshot_helper.capture_full_page("创建素质图谱完成")
+            screenshot_helper.capture_viewport("创建素质图谱完成")
 
         lg = literacy_graph
         level1 = lg.get("一级能力", [])
@@ -91,4 +91,4 @@ class TestCreateLiteracyGraph:
                 literacy_graph_page.add_sub_ability(parent, name, desc, tags, knowledge)
                 assert literacy_graph_page.is_add_sub_ability_success(), f"添加三级素质失败: {name}"
 
-            screenshot_helper.capture_full_page("添加素质完成")
+            screenshot_helper.capture_viewport("添加素质完成")

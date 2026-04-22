@@ -59,4 +59,4 @@ class TestCoursePortalManage:
             portal_page.add_component(component_name="课程门户首页", component_index=1, position=(0.8, 0.8))
         with allure.step("确认发布"):
             portal_page.confirm_publish()
-            screenshot_helper.capture_full_page("发布课程门户")
+            screenshot_helper.capture_viewport("发布课程门户")

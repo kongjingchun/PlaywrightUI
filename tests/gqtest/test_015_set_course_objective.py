@@ -59,7 +59,7 @@ class TestSetCourseObjective:
         with allure.step("编辑课程目标描述"):
             objective_page.edit_description(course_objective["描述"])
             assert objective_page.is_edit_description_success(), "编辑课程目标描述失败"
-            screenshot_helper.capture_full_page("课程目标描述设置完成")
+            screenshot_helper.capture_viewport("课程目标描述设置完成")
 
         with allure.step("添加课程目标并关联毕业要求"):
             for goal in course_objective["目标列表"]:
@@ -72,4 +72,4 @@ class TestSetCourseObjective:
                 assert objective_page.is_create_goal_success(), f"添加课程目标失败: {goal['标题']}"
                 objective_page.associate_goal_with_indicator(goal["标题"], goal["关联毕业要求"])
                 assert objective_page.is_associate_goal_with_indicator_success(), f"关联毕业要求失败: {goal['标题']} -> {goal['关联毕业要求']}"
-            screenshot_helper.capture_full_page("课程目标设置完成")
+            screenshot_helper.capture_viewport("课程目标设置完成")

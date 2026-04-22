@@ -64,4 +64,4 @@ class TestSetConstructionHistory:
                 team=construction_history["建设团队"]
             )
             assert history_page.is_set_construction_history_success(), "设置建设历程失败"
-            screenshot_helper.capture_full_page("建设历程设置完成")
+            screenshot_helper.capture_viewport("建设历程设置完成")

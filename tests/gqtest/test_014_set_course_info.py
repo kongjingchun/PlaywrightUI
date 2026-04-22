@@ -59,4 +59,4 @@ class TestSetCourseInfo:
         with allure.step("编辑并保存课程信息"):
             course_info_page.edit_course_detail_introduction(course_info["课程详情介绍"])
             assert course_info_page.is_edit_course_info_success(), "设置课程信息失败"
-            screenshot_helper.capture_full_page("课程信息设置完成")
+            screenshot_helper.capture_viewport("课程信息设置完成")

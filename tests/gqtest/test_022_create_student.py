@@ -57,7 +57,7 @@ class TestCreateStudent:
                 admin_class_name=admin_class_info["行政班名称"]
             )
             assert user_manage_page.is_create_user_success(), "创建学生失败"
-            screenshot_helper.capture_full_page("创建学生成功")
+            screenshot_helper.capture_viewport("创建学生成功")
 
     # TODO: 可能注册失败
     @pytest.mark.run(order=355)
@@ -92,7 +92,7 @@ class TestCreateStudent:
             user_manage_page = UserManagePage(page)
             user_manage_page.bind_user(student_info["学号"], student_cms_id)
             assert user_manage_page.is_bind_user_success(), "绑定学生失败"
-            screenshot_helper.capture_full_page("绑定学生成功")
+            screenshot_helper.capture_viewport("绑定学生成功")
 
     @pytest.mark.run(order=357)
     @pytest.mark.skip_prod
@@ -112,4 +112,4 @@ class TestCreateStudent:
             login_page.login(student_info["学号"], student_info["学号"][-6:])
             login_page.reset_password(student_cms_info["username"], student_cms_info["password"])
             assert login_page.is_reset_password_success(), "重置学生密码失败"
-            screenshot_helper.capture_full_page("重置学生密码成功")
+            screenshot_helper.capture_viewport("重置学生密码成功")

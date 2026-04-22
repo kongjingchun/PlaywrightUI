@@ -47,9 +47,9 @@ class TestCreateSemester:
             semester_manage_page = SemesterManagePage(page)
             semester_manage_page.create_semester(semester_info["学年"])
             assert semester_manage_page.is_create_semester_success(), "创建学期失败"
-            screenshot_helper.capture_full_page("创建学期成功")
+            screenshot_helper.capture_viewport("创建学期成功")
 
         with allure.step("设为当前学期"):
             semester_manage_page.set_current_semester(semester_info["学期值"])
             assert semester_manage_page.is_set_current_semester_success(), "设为当前学期失败"
-            screenshot_helper.capture_full_page("设为当前学期成功")
+            screenshot_helper.capture_viewport("设为当前学期成功")

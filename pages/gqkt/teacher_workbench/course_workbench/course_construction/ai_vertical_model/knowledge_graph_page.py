@@ -59,7 +59,7 @@ class KnowledgeGraphPage(CourseWorkbenchPage):
         # 创建成功提示框
         self.create_success_message = self.iframe.locator("xpath=//p[contains(text(),'创建成功')]").last
         # 新建子级按钮
-        self.new_sub_node_button = self.iframe.get_by_role("button", name="子级")
+        self.new_sub_node_button = self.iframe.get_by_role("button", name="子级").last
         # ========== 弹窗 / 表单 ==========
     # ==================== 动态定位器生成方法 ====================
 
@@ -86,6 +86,7 @@ class KnowledgeGraphPage(CourseWorkbenchPage):
         """
         node_locator = self.get_node_locator_by_name(node_name)
         self.hover_element(node_locator)
+        self.wait_for_load_state()
         self.click_element(self.new_sub_node_button)
 
     # ==================== 业务方法 ====================

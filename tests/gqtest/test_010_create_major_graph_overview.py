@@ -60,7 +60,7 @@ class TestCreateMajorGraphOverview:
                     node.get("描述", "")
                 )
                 assert graph_page.is_add_node_success(), f"添加节点失败: {node['类型']} - {node['名称']}"
-        screenshot_helper.capture_full_page("专业图谱概览创建完成")
+        screenshot_helper.capture_viewport("专业图谱概览创建完成")
 
         with allure.step("关联节点"):
             # (源节点索引, 目标节点索引) 跨类型关联形成更丰富的图谱
@@ -80,4 +80,4 @@ class TestCreateMajorGraphOverview:
                 src, tgt = node_list[src_idx], node_list[tgt_idx]
                 graph_page.associate_node_by_names(src["名称"], tgt["类型"], tgt["名称"])
                 assert graph_page.is_associate_node_success(), f"关联节点失败: {src['名称']} -> {tgt['名称']}"
-            screenshot_helper.capture_full_page("专业图谱概览关联完成")
+            screenshot_helper.capture_viewport("专业图谱概览关联完成")

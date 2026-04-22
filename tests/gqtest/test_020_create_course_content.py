@@ -117,4 +117,4 @@ class TestCreateCourseContent:
                         raise NotImplementedError(f"学习单元类型「{unit_type}」暂未实现")
                     assert content_page.is_create_learning_unit_success(), f"创建{unit_type}学习单元失败: {title}"
 
-        screenshot_helper.capture_full_page("课程内容创建完成")
+        screenshot_helper.capture_viewport("课程内容创建完成")

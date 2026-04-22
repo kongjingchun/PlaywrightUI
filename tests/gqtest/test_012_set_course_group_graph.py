@@ -51,4 +51,4 @@ class TestSetCourseGroupGraph:
         with allure.step("关联图谱"):
             graph_page.associate_graph(graph_name)
             assert graph_page.is_associate_graph_success(), "关联图谱失败"
-            screenshot_helper.capture_full_page("专业课程群图谱设置完成")
+            screenshot_helper.capture_viewport("专业课程群图谱设置完成")

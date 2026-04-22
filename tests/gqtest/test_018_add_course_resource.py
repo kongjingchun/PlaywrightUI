@@ -16,6 +16,7 @@ from pages.gqkt.teacher_workbench.course_workbench.course_construction import Co
 from pages.gqkt.teacher_workbench.course_workbench.course_construction.course_resource import ExamPage, HomeworkPage, LinkPage, OverviewPage, QuestionBankPage
 from tests.gqtest import TestContextHelper
 
+
 @allure.feature("光穹课堂")
 @allure.story("添加课程资源")
 class TestAddCourseResource:
@@ -56,7 +57,7 @@ class TestAddCourseResource:
         with allure.step("点击课程资源"):
             resource_page = CourseResourcePage(page)
             resource_page.click_left_menu_by_name("课程资源")
-        
+
         with allure.step("点击资料"):
             resource_page.click_left_menu_by_name("资料")
 
@@ -67,7 +68,7 @@ class TestAddCourseResource:
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
                 resource_page.upload_file(str(file_path))
                 assert resource_page.is_upload_file_success(), f"上传视频失败: {path_str}"
-            screenshot_helper.capture_full_page("视频上传完成")
+            screenshot_helper.capture_viewport("视频上传完成")
 
         with allure.step("上传教材"):
             resource_page.click_directory_type_by_name("教材")
@@ -76,7 +77,7 @@ class TestAddCourseResource:
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
                 resource_page.upload_file(str(file_path))
                 assert resource_page.is_upload_file_success(), f"上传教材失败: {path_str}"
-            screenshot_helper.capture_full_page("教材上传完成")
+            screenshot_helper.capture_viewport("教材上传完成")
 
         with allure.step("上传课件"):
             resource_page.click_directory_type_by_name("课件")
@@ -85,7 +86,7 @@ class TestAddCourseResource:
                 assert file_path.exists(), f"上传文件不存在: {file_path}"
                 resource_page.upload_file(str(file_path))
                 assert resource_page.is_upload_file_success(), f"上传课件失败: {path_str}"
-            screenshot_helper.capture_full_page("课件上传完成")
+            screenshot_helper.capture_viewport("课件上传完成")
 
         with allure.step("新建简答题"):
             qb_config = gqkt_data["question_bank"]["简答题"]
@@ -106,7 +107,7 @@ class TestAddCourseResource:
                 knowledge_info=knowledge_info
             )
             assert question_page.is_question_create_success(), "新建简答题失败"
-            screenshot_helper.capture_full_page("简答题创建完成")
+            screenshot_helper.capture_viewport("简答题创建完成")
 
         with allure.step("导入题库"):
             resource_page.click_left_menu_by_name("题库")
@@ -115,10 +116,10 @@ class TestAddCourseResource:
             assert file_path.exists(), f"导入文件不存在: {file_path}"
             question_page.upload_question(str(file_path))
             assert question_page.is_question_upload_success(), "导入题库失败"
-            screenshot_helper.capture_full_page("题库导入完成")
+            screenshot_helper.capture_viewport("题库导入完成")
 
 
-# TODO: 其他资源上传  
+# TODO: 其他资源上传
 
         # with allure.step("新建链接"):
         #     link_page = LinkPage(page)
@@ -126,7 +127,7 @@ class TestAddCourseResource:
         #     for path_str in course_resource["链接"]:
         #         link_page.create_link(path_str)
         #         assert link_page.is_link_create_success(), f"创建链接失败: {path_str}"
-        #     screenshot_helper.capture_full_page("链接创建完成")
+        #     screenshot_helper.capture_viewport("链接创建完成")
         # with allure.step("上传音频"):
         #     resource_page.click_directory_type_by_name("音频")
         #     for path_str in course_resource["音频"]:
@@ -134,7 +135,7 @@ class TestAddCourseResource:
         #         assert file_path.exists(), f"上传文件不存在: {file_path}"
         #         resource_page.upload_file(str(file_path))
         #         assert resource_page.is_upload_file_success(), f"上传音频失败: {path_str}"
-        #     screenshot_helper.capture_full_page("音频上传完成")
+        #     screenshot_helper.capture_viewport("音频上传完成")
 
         # with allure.step("上传论文"):
         #     resource_page.click_directory_type_by_name("论文")
@@ -143,7 +144,7 @@ class TestAddCourseResource:
         #         assert file_path.exists(), f"上传文件不存在: {file_path}"
         #         resource_page.upload_file(str(file_path))
         #         assert resource_page.is_upload_file_success(), f"上传论文失败: {path_str}"
-        #     screenshot_helper.capture_full_page("论文上传完成")
+        #     screenshot_helper.capture_viewport("论文上传完成")
 
         # with allure.step("上传案例"):
         #     resource_page.click_directory_type_by_name("案例")
@@ -152,7 +153,7 @@ class TestAddCourseResource:
         #         assert file_path.exists(), f"上传文件不存在: {file_path}"
         #         resource_page.upload_file(str(file_path))
         #         assert resource_page.is_upload_file_success(), f"上传案例失败: {path_str}"
-        #     screenshot_helper.capture_full_page("案例上传完成")
+        #     screenshot_helper.capture_viewport("案例上传完成")
 
         # with allure.step("上传图片"):
         #     resource_page.click_directory_type_by_name("图片")
@@ -161,7 +162,7 @@ class TestAddCourseResource:
         #         assert file_path.exists(), f"上传文件不存在: {file_path}"
         #         resource_page.upload_file(str(file_path))
         #         assert resource_page.is_upload_file_success(), f"上传图片失败: {path_str}"
-        #     screenshot_helper.capture_full_page("图片上传完成")
+        #     screenshot_helper.capture_viewport("图片上传完成")
 
         # with allure.step("上传其他材料"):
         #     resource_page.click_directory_type_by_name("其他材料")
@@ -170,11 +171,7 @@ class TestAddCourseResource:
         #         assert file_path.exists(), f"上传文件不存在: {file_path}"
         #         resource_page.upload_file(str(file_path))
         #         assert resource_page.is_upload_file_success(), f"上传其他资料失败: {path_str}"
-        #     screenshot_helper.capture_full_page("其他资料上传完成")
-
-
-
-
+        #     screenshot_helper.capture_viewport("其他资料上传完成")
 
         # with allure.step("添加作业"):
         #     resource_page.click_directory_type_by_name("作业")
@@ -182,7 +179,7 @@ class TestAddCourseResource:
         #     homework_title = gqkt_data["homework"]["作业标题"]
         #     homework_page.create_homework(homework_title)
         #     assert homework_page.is_homework_save_success(), "添加作业失败"
-        #     screenshot_helper.capture_full_page("作业创建完成")
+        #     screenshot_helper.capture_viewport("作业创建完成")
 
         # with allure.step("添加试卷"):
         #     resource_page.click_directory_type_by_name("试卷")
@@ -190,11 +187,11 @@ class TestAddCourseResource:
         #     exam_title = gqkt_data["exam"]["试卷标题"]
         #     exam_page.create_exam(exam_title)
         #     assert exam_page.is_exam_save_success(), "添加试卷失败"
-        #     screenshot_helper.capture_full_page("试卷创建完成")
+        #     screenshot_helper.capture_viewport("试卷创建完成")
 
         # with allure.step("概览：获取资源数量"):
         #     resource_page.click_left_menu_by_name("概览")
         #     overview_page = OverviewPage(page)
         #     resource_count = overview_page.get_resource_count()
         #     assert resource_count > 0, "资源数量为0"
-        #     screenshot_helper.capture_full_page("资源数量获取完成")
+        #     screenshot_helper.capture_viewport("资源数量获取完成")

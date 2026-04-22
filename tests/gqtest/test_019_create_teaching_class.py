@@ -64,7 +64,7 @@ class TestCreateTeachingClass:
                 use_class_size_unlimited=tc_config.get("班级人数无限制", False)
             )
             assert workbench_page.is_create_teaching_class_success(tc_config["教学班名称"]), "创建教学班失败"
-            screenshot_helper.capture_full_page("教学班创建完成")
+            screenshot_helper.capture_viewport("教学班创建完成")
 
         with allure.step("给教学班设置主讲教师"):
             workbench_page.set_main_teacher_for_class(
@@ -72,4 +72,4 @@ class TestCreateTeachingClass:
                 teacher_name=tc_config["主讲教师"]
             )
             assert workbench_page.is_set_main_teacher_success(), "设置主讲教师失败"
-            screenshot_helper.capture_full_page("主讲教师设置完成")
+            screenshot_helper.capture_viewport("主讲教师设置完成")

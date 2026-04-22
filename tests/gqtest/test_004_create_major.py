@@ -55,4 +55,4 @@ class TestCreateMajor:
                 major_feature=major_info["专业特色标签"]
             )
             assert major_manage_page.is_create_major_success(), "创建专业失败"
-            screenshot_helper.capture_full_page("创建专业成功")
+            screenshot_helper.capture_viewport("创建专业成功")

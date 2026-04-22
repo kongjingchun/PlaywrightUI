@@ -57,4 +57,4 @@ class TestCreateCourse:
                 is_first_class_course=course_info["是否一流课程"]
             )
             assert course_manage_page.is_create_course_success(), "创建课程失败"
-            screenshot_helper.capture_full_page("创建课程成功")
+            screenshot_helper.capture_viewport("创建课程成功")

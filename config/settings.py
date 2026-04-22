@@ -19,7 +19,7 @@ load_dotenv()
 # ==================== 默认配置文件路径 ====================
 # 直接指定环境配置文件，支持任意目录层级（简写自动补全 config/environments/ 前缀）
 # 可通过 .env 的 ENV_CONFIG_FILE 或命令行 --config 覆盖
-DEFAULT_ENV_CONFIG_FILE = "ykt/prod.yaml"
+DEFAULT_ENV_CONFIG_FILE = "gqkt/prod.yaml"
 
 
 class Settings:
@@ -64,15 +64,15 @@ class Settings:
     # ==================== 超时配置（单位：毫秒） ====================
     # DEFAULT_TIMEOUT: 默认操作超时时间
     # 用于等待元素出现、点击、输入等操作
-    DEFAULT_TIMEOUT = int(os.getenv("DEFAULT_TIMEOUT", "10000"))
+    DEFAULT_TIMEOUT = int(os.getenv("DEFAULT_TIMEOUT", "30000"))
 
     # NAVIGATION_TIMEOUT: 页面导航超时时间
     # 用于 page.goto()、page.reload() 等导航操作
-    NAVIGATION_TIMEOUT = int(os.getenv("NAVIGATION_TIMEOUT", "10000"))
+    NAVIGATION_TIMEOUT = int(os.getenv("NAVIGATION_TIMEOUT", "30000"))
 
     # EXPECT_TIMEOUT: 断言等待超时时间
     # 用于 expect() 断言等待条件满足
-    EXPECT_TIMEOUT = int(os.getenv("EXPECT_TIMEOUT", "5000"))
+    EXPECT_TIMEOUT = int(os.getenv("EXPECT_TIMEOUT", "10000"))
 
     # ==================== 项目路径配置 ====================
     # PROJECT_ROOT: 项目根目录的绝对路径

@@ -54,4 +54,4 @@ class TestCreateAdminClass:
                 admin_class_description=admin_class_info["描述"]
             )
             assert admin_class_manage_page.is_create_admin_class_success(), "创建行政班失败"
-            screenshot_helper.capture_full_page("创建行政班成功")
+            screenshot_helper.capture_viewport("创建行政班成功")

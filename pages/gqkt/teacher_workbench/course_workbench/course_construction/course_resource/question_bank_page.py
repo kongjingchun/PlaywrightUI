@@ -41,9 +41,10 @@ class QuestionBankPage(CourseResourcePage):
         self.create_button = self.iframe.get_by_role("button", name="创建")
         # 题目创建成功
         self.question_create_success_message = self.iframe.locator("xpath=//p[contains(text(),'题目创建成功')]")
+        # 导入导出按钮
+        self.import_export_button = self.iframe.get_by_role("button", name="导入导出")
         # 导入题库按钮
-        self.import_question_bank_button = self.iframe.get_by_role("button", name="导入题库")
-        # 点击上传按钮
+        self.import_question_bank_button = self.iframe.get_by_role("menuitem", name="导入题库")
         self.click_upload_button = self.iframe.get_by_text("点击上传")
         # 确认导入按钮
         self.confirm_import_button = self.iframe.get_by_role("button", name="确认导入")
@@ -155,6 +156,8 @@ class QuestionBankPage(CourseResourcePage):
 
         :param file_path: 题目文件路径
         """
+        # 点击导入导出按钮
+        self.click_element(self.import_export_button)
         # 点击导入题库按钮
         self.click_element(self.import_question_bank_button)
         # 通过文件选择器上传文件

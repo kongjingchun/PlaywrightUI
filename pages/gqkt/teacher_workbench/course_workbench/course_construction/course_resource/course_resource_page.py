@@ -23,11 +23,14 @@ class CourseResourcePage(CourseWorkbenchPage):
         self.upload_file_button = self.iframe.get_by_role("button", name="上传文件").first
         # 上传成功提示
         self.upload_success_message = self.iframe.locator("xpath=//p[contains(text(),'上传成功')]").last
+        # 确定按钮
+        self.confirm_button = self.iframe.get_by_role("button", name="确定")
     # ==================== 业务方法 ====================
 
     def upload_file(self, file_path: str):
         """上传文件"""
         self.upload_file_via_chooser(self.upload_file_button, file_path)
+        self.click_element(self.confirm_button)
     # ==================== 断言方法 ====================
 
     def is_upload_file_success(self) -> bool:

@@ -263,7 +263,7 @@ def pytest_runtest_makereport(item, call):
 
             # 记录失败
             process.update_fail()
-            process.record_failed_testcase(test_name)
+            process.record_failed_testcase(item.nodeid, test_name)
 
         elif rep.passed:
             logger.info("=" * 80)
@@ -272,7 +272,7 @@ def pytest_runtest_makereport(item, call):
 
             # 记录成功
             process.update_success()
-            process.record_success_testcase(test_name)
+            process.record_success_testcase(item.nodeid, test_name)
 
     # 跳过的用例处理
     elif rep.when == "setup" and rep.skipped:
@@ -282,7 +282,7 @@ def pytest_runtest_makereport(item, call):
             test_name = item.name
 
         process.update_skip()
-        process.record_skipped_testcase(test_name)
+        process.record_skipped_testcase(item.nodeid, test_name)
 
 
 def pytest_sessionfinish(session, exitstatus):

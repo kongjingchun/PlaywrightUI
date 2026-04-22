@@ -13,6 +13,7 @@ from pages.gqkt.teacher_workbench import MyTaughtCoursesPage
 from pages.gqkt.teacher_workbench.course_workbench.course_construction import ProblemGraphPage
 from tests.gqtest import TestContextHelper
 
+
 @allure.feature("光穹课堂")
 @allure.story("创建问题图谱")
 class TestCreateProblemGraph:
@@ -56,7 +57,7 @@ class TestCreateProblemGraph:
         with allure.step("创建问题图谱"):
             problem_graph_page.click_create_problem_graph_button()
             assert problem_graph_page.is_create_graph_success(), "创建问题图谱失败"
-            screenshot_helper.capture_full_page("创建问题图谱完成")
+            screenshot_helper.capture_viewport("创建问题图谱完成")
 
         for level_block in problem_graph_config:
             level_title = level_block["层级"]
@@ -81,4 +82,4 @@ class TestCreateProblemGraph:
                         knowledge_points=knowledge,
                     )
 
-        screenshot_helper.capture_full_page("问题图谱添加完成")
+        screenshot_helper.capture_viewport("问题图谱添加完成")
