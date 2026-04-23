@@ -23,6 +23,8 @@ class ConstructionHistoryPage(CourseWorkbenchPage):
         # ========== 头部按钮 / 搜索 ==========
         # 编辑按钮
         self.edit_button = self.iframe.get_by_role("button", name="编辑")
+        # 添加历程按钮
+        self.add_history_button = self.iframe.get_by_role("button", name="添加历程")
         # 建设时间输入框
         self.construction_time_input = self.iframe.get_by_placeholder("请选择建设时间")
         # 建设内容输入框
@@ -49,6 +51,7 @@ class ConstructionHistoryPage(CourseWorkbenchPage):
         :param team: 建设团队，可选
         """
         self.click_element(self.edit_button)  # 点击编辑按钮
+        self.click_element(self.add_history_button)  # 点击添加历程按钮
         if construction_time:
             self.fill_element(self.construction_time_input, construction_time)  # 填写建设时间
         if content:

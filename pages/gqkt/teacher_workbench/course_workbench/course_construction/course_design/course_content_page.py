@@ -64,6 +64,8 @@ class CourseContentPage(CourseWorkbenchPage):
         self.new_learning_unit_title_input = self.iframe.get_by_role("textbox", name="* 学习单元标题")
         # 学习单元正文输入框
         self.new_learning_unit_content_input = self.iframe.locator("xpath=//div[@contenteditable='true']")
+        # 选择课程资源按钮
+        self.new_learning_unit_select_course_resource_button = self.iframe.get_by_role("menuitem", name="课程资源")
         # 第一个选择按钮（有可能是全选按钮，也有可能是第一个文件选择按钮）
         self.new_learning_unit_first_select_button = self.iframe.get_by_label("选择文件").get_by_role("row").locator("span").first
 
@@ -245,6 +247,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("视频")  # 点击创建学习单元按钮并选择视频学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_video_file_button)  # 点击请选择视频文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_first_select_button)  # 点击第一个文件选择按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮
@@ -259,6 +262,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("资料")  # 点击创建学习单元按钮并选择资料学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_material_file_button)  # 点击请选择资料文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_first_select_button)  # 点击第一个文件选择按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮
@@ -273,6 +277,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("课件")  # 点击创建学习单元按钮并选择课件学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_courseware_file_button)  # 点击请选择课件文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_first_select_button)  # 点击第一个文件选择按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮
@@ -298,6 +303,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("作业")  # 点击创建学习单元按钮并选择作业学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_homework_file_button)  # 点击请选择作业文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_homework_all_select_button)  # 点击第一个文件选择按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮
@@ -312,6 +318,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("考试")  # 点击创建学习单元按钮并选择考试学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_exam_file_button)  # 点击请选择考试文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_exam_all_select_button)  # 点击考试全选按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮
@@ -326,6 +333,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("链接")  # 点击创建学习单元按钮并选择链接学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_link_file_button)  # 点击请选择链接文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_first_select_button)  # 点击第一个文件选择按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮
@@ -340,6 +348,7 @@ class CourseContentPage(CourseWorkbenchPage):
         self.click_create_learning_unit_and_select_type("音频")  # 点击创建学习单元按钮并选择音频学习单元类型
         self._fill_learning_unit_form(learning_unit_title=learning_unit_title, learning_unit_content=learning_unit_content)
         self.click_element(self.new_learning_unit_audio_file_button)  # 点击请选择音频文件按钮
+        self.click_element(self.new_learning_unit_select_course_resource_button)  # 点击选择课程资源按钮
         self.click_element(self.new_learning_unit_first_select_button)  # 点击第一个文件选择按钮
         self.click_element(self.confirm_button)  # 点击确定按钮
         self.click_element(self.new_learning_unit_create_button)  # 点击创建按钮

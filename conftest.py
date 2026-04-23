@@ -40,6 +40,94 @@ _report_printed = False  # 防止报告重复打印
 _viewport_logged = False  # 视口是否已打印（仅首次测试前打印一次）
 
 
+def _format_seconds_duration(seconds: float) -> str:
+    """与 common/process_file.get_duration 风格一致，用于终端 reporter 的秒数。"""
+    if seconds is None or seconds < 0:
+        return "未知"
+    total_seconds = int(seconds)
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    sec = total_seconds % 60
+    if hours > 0:
+        return f"{hours}小时{minutes}分{sec}秒"
+    if minutes > 0:
+        return f"{minutes}分{sec}秒"
+    return f"{sec}秒"
+
+
+def _report_display_name(rep: object) -> str:
+    """
+    从 TestReport/CollectReport 取展示用名称。
+    优先 conftest 里写入的 description（用例 docstring 首行，中文），
+    避免 head_line 为英文 ClassName.test_name[chromium]。
+    """
+    try:
+        desc = getattr(rep, "description", None)
+        if desc is not None and str(desc).strip() and str(desc).strip() != "None":
+            return str(desc).strip().split("\n")[0]
+    except Exception:
+        pass
+    try:
+        if hasattr(rep, "head_line"):
+            hl = rep.head_line
+            if hl:
+                return str(hl).strip().split("\n")[0]
+    except Exception:
+        pass
+    if hasattr(rep, "nodeid") and getattr(rep, "nodeid", None):
+        return str(rep.nodeid).split("::")[-1]
+    return "未知用例"
+
+
+def _summary_from_terminal_reporter(terminalreporter) -> dict:
+    """
+    用 TerminalReporter 统计本次 pytest 会话（与 short summary 同源，xdist 下为主进程汇总后结果）。
+    不依赖 logs/test_process.json，避免 worker 与主进程各写各的导致汇总混入历史。
+    """
+    tr = terminalreporter
+    stats: dict = getattr(tr, "stats", {}) or {}
+    n_passed = len(stats.get("passed", []))
+    n_failed = len(stats.get("failed", [])) + len(stats.get("error", []))
+    n_skipped = len(stats.get("skipped", []))
+    pass_names: list = []
+    for rep in stats.get("passed", []):
+        pass_names.append(_report_display_name(rep))
+    fail_names: list = []
+    for cat in ("failed", "error"):
+        for rep in stats.get(cat, []):
+            fail_names.append(_report_display_name(rep))
+    skip_names: list = []
+    for rep in stats.get("skipped", []):
+        skip_names.append(_report_display_name(rep))
+    total = int(getattr(tr, "_numcollected", 0) or 0)
+    if total == 0 and (n_passed + n_failed + n_skipped) > 0:
+        total = n_passed + n_failed + n_skipped
+    success = n_passed
+    fail = n_failed
+    skip = n_skipped
+    executed = success + fail
+    duration = "未知"
+    st = getattr(tr, "_session_start", None)
+    if st is not None:
+        try:
+            duration = _format_seconds_duration(st.elapsed().seconds)
+        except Exception:
+            pass
+    if duration == "未知":
+        duration = process.get_duration()
+    return {
+        "total": total,
+        "success": success,
+        "fail": fail,
+        "skip": skip,
+        "executed": executed,
+        "duration": duration,
+        "success_testcases": pass_names,
+        "failed_testcases": fail_names,
+        "skipped_testcases": skip_names,
+    }
+
+
 # ==================== pytest 钩子函数 ====================
 
 def pytest_addoption(parser):
@@ -190,21 +278,53 @@ def pytest_collection_modifyitems(session, config, items):
     items.sort(key=get_order_key)
 
 
+def _parse_xdist_numprocesses(config) -> int:
+    """解析 pytest-xdist 的 -n 数量；无法解析为整数时返回 0。"""
+    try:
+        n = config.getoption("numprocesses", default=0) or 0
+    except Exception:
+        return 0
+    if n in (None, 0, False, ""):
+        return 0
+    if isinstance(n, int):
+        return n
+    s = str(n).strip()
+    if s.isdigit() or (s.startswith("-") and s[1:].isdigit()):
+        return int(s)
+    return 0
+
+
 def pytest_collection_finish(session):
     """
     pytest 收集完测试用例后执行
 
-    初始化测试进度（只在主进程中执行）
+    初始化进度 JSON（供钉钉等仍读 process 的场景）：xdist 下子进程带 workerinput 时
+    若不再 reset 会沿用历史；对 -n1 在子进程也 reset。终端「汇总报告」已改读
+    TerminalReporter，不依赖本处数据。
     """
     if not hasattr(session, 'items') or len(session.items) == 0:
         return
 
-    # 只在主进程中初始化进度
-    if not hasattr(session.config, 'workerinput'):
-        total = len(session.items)
+    total = len(session.items)
+    in_xdist_worker = bool(os.environ.get("PYTEST_XDIST_WORKER"))
+    nproc = _parse_xdist_numprocesses(session.config)
+
+    if not in_xdist_worker:
         process.reset_all()
         process.init_process(total)
         logger.info(f"收集到 {total} 个测试用例")
+        return
+
+    if nproc == 1:
+        process.reset_all()
+        process.init_process(total)
+        logger.info(f"收集到 {total} 个测试用例 [xdist -n1，已清空 logs 进度/用例记录]")
+        return
+
+    logger.warning(
+        "xdist 多进程（-n>1 或 -n auto）时子进程不重置 progress 文件；"
+        "终端自定义汇总已改为根据 pytest 报告，不读该文件。"
+    )
 
 
 def pytest_runtest_setup(item):
@@ -236,8 +356,11 @@ def pytest_runtest_makereport(item, call):
     # 存储每个阶段的结果
     setattr(item, f"rep_{rep.when}", rep)
 
-    # 将测试函数的文档字符串添加到报告
-    rep.description = str(item.function.__doc__) if item.function.__doc__ else item.name
+    # 与日志/原 JSON 汇总一致：展示用名称为 docstring 首行，勿用整段或英文 head_line
+    if getattr(item, "function", None) and item.function.__doc__:
+        rep.description = item.function.__doc__.strip().split("\n")[0]
+    else:
+        rep.description = item.name
 
     # 测试执行阶段处理
     if rep.when == "call":
@@ -247,7 +370,10 @@ def pytest_runtest_makereport(item, call):
         else:
             test_name = item.name
 
-        if rep.failed:
+        if rep.skipped:
+            process.update_skip()
+            process.record_skipped_testcase(item.nodeid, test_name)
+        elif rep.failed:
             logger.info("=" * 80)
             logger.info(f"{'=' * 20} ❌ 执行失败: {test_name} {'=' * 20}")
             logger.info("=" * 80)
@@ -322,10 +448,14 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     if hasattr(config, 'workerinput'):
         return
 
-    # 获取测试结果
-    total, success, fail, skip, start_time = process.get_result()
-    duration = process.get_duration()
-    executed = success + fail
+    # 与 pytest 短摘要同源（含 xdist 汇总），避免 logs JSON 与 worker/主进程不同步导致混入历史
+    m = _summary_from_terminal_reporter(terminalreporter)
+    total = m["total"]
+    success = m["success"]
+    fail = m["fail"]
+    skip = m["skip"]
+    duration = m["duration"]
+    executed = m["executed"]
 
     # 计算成功率
     if executed > 0:
@@ -359,8 +489,8 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         "",
     ]
 
-    # 成功用例列表
-    success_testcases = process.get_success_testcases()
+    # 成功用例列表（来自本次 terminalreporter，非 logs/testcase_records.json）
+    success_testcases = m["success_testcases"]
     if success_testcases:
         report_lines.append(" " * 25 + "【执行成功的用例】" + " " * 25)
         report_lines.append("-" * 80)
@@ -370,8 +500,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         report_lines.append("-" * 80)
         report_lines.append("")
 
-    # 失败用例列表
-    failed_testcases = process.get_failed_testcases()
+    failed_testcases = m["failed_testcases"]
     if failed_testcases:
         report_lines.append(" " * 25 + "【执行失败的用例】" + " " * 25)
         report_lines.append("-" * 80)
@@ -381,8 +510,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         report_lines.append("-" * 80)
         report_lines.append("")
 
-    # 跳过用例列表
-    skipped_testcases = process.get_skipped_testcases()
+    skipped_testcases = m["skipped_testcases"]
     if skipped_testcases:
         report_lines.append(" " * 25 + "【跳过的用例】" + " " * 25)
         report_lines.append("-" * 80)
